@@ -9,3 +9,24 @@
 文献整理：https://whimsical.com/GBpbqF6efxGdigyB7r6CKW
 
 目前想的流程图：https://whimsical.com/7HmnmH2N8buk5dpZpQc12n
+
+2021.11.8
+
+开发环境
+python3.6.9 wsl2
+
+使用的文件目录格式
+https://cloud.tencent.com/developer/article/1175298
+
+开发安装的插件
+file-icons
+Remote -wsl
+python
+pylance 
+python preview
+python test explorer for visual studio code
+python type hint
+test adapter converter
+test expoler ui
+better align
+visual studio intellicode

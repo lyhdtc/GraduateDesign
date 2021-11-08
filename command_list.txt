@@ -1,0 +1,2 @@
+推送到git上
+git push -u origin main
