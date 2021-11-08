@@ -1,5 +1,5 @@
 开发环境
-python3.8.8 wsl2
+python3.6.9 wsl2
 
 使用的文件目录格式
 https://cloud.tencent.com/developer/article/1175298
@@ -14,3 +14,5 @@ python test explorer for visual studio code
 python type hint
 test adapter converter
 test expoler ui
+better align
+visual studio intellicode
