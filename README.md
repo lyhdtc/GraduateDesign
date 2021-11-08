@@ -30,3 +30,6 @@ test adapter converter
 test expoler ui
 better align
 visual studio intellicode
+
+变量命名规范
+https://zhuanlan.zhihu.com/p/74072586
