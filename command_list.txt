@@ -1,2 +1,8 @@
 推送到git上
 git push -u origin main
+
+测试github通不通
+ssh -T git@github.com
+
+启用可视化界面
+startxfce4
