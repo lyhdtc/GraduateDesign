@@ -6,3 +6,6 @@ ssh -T git@github.com
 
 启用可视化界面
 startxfce4
+
+删除虚拟环境
+conda env remove --name your_env_name
