@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import ColorCharacteristics as cc
 import TextureCharacteristics as tc
+import LossAboutColor as lac
 
 
 
@@ -34,6 +35,10 @@ if __name__=="__main__":
     #print(ret)
     # for i in range (3,8):
     #     print(i)
+    imga = cv2.imread("/mnt/d/GraduateDesign/graduate_design/Data/aaa.jpg")    
+    imgb = cv2.imread("/mnt/d/GraduateDesign/graduate_design/Data/bbb.jpg")
+    res=lac.loss_UnderexposedPhoto_CVPR2019_colorloss(imga, imgb)
+    print(res)
     
     
     # HJL = np.array([
@@ -41,11 +46,14 @@ if __name__=="__main__":
     #             [3,4]],
  
     #             [[5,6],
+    #              [7,8]],
+                
+    #             [[5,6],
     #              [7,8]]
     #             ])
     # print(HJL[0][0][1])
-
-    
+    # print(HJL[1])
+    # lac.loss_UnderexposedPhoto_CVPR2019_colorloss(HJL, HJL)
     # a = np.array([6,6,6])
     # b = np.array([3,3,3])
     # c = a/b
@@ -91,6 +99,4 @@ if __name__=="__main__":
     ans = cc.metrix_minusoneround(ans)
     print(len(ans))
     print(len(ans[0])) """
-    
-print(cv2)
-print(np)
+
