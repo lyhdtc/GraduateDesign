@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import scipy
 import tensorflow as tf
 
 
@@ -21,13 +22,108 @@ def __tv_loss(rgb_img, weight):
         return weight * tf.reduce_sum(tf.image.total_variation(rgb_img))
     
 # L1 loss
-def _l1_loss(rgb_img_a, rgb_img_b):
+def __l1_loss(rgb_img_a, rgb_img_b):
     return np.sum(np.abs(rgb_img_a-rgb_img_b))
 
 # L2 loss
-def _l2_loss(rgb_img_a, rgb_img_b):
+def __l2_loss(rgb_img_a, rgb_img_b):
     return np.sum(np.square(rgb_img_a - rgb_img_b))
-    
+  
+  
+# SSIM
+def __ssim(img1,img2,K,win):
+
+    M,N = img1.shape
+
+    img1 = img1.astype(np.float32)
+    img2 = img2.astype(np.float32)
+
+    C1 = (K[0]*255)**2
+    C2 = (K[1]*255) ** 2
+    win = win/np.sum(win)
+
+    mu1 = scipy.signal.convolve2d(img1,win,mode='valid')
+    mu2 = scipy.signal.convolve2d(img2,win,mode='valid')
+    mu1_sq = np.multiply(mu1,mu1)
+    mu2_sq = np.multiply(mu2,mu2)
+    mu1_mu2 = np.multiply(mu1,mu2)
+    sigma1_sq = scipy.signal.convolve2d(np.multiply(img1,img1),win,mode='valid') - mu1_sq
+    sigma2_sq = scipy.signal.convolve2d(np.multiply(img2, img2), win, mode='valid') - mu2_sq
+    img12 = np.multiply(img1, img2)
+    sigma12 = scipy.signal.convolve2d(np.multiply(img1, img2), win, mode='valid') - mu1_mu2
+
+    if(C1 > 0 and C2>0):
+        ssim1 =2*sigma12 + C2
+        ssim_map = np.divide(np.multiply((2*mu1_mu2 + C1),(2*sigma12 + C2)),np.multiply((mu1_sq+mu2_sq+C1),(sigma1_sq+sigma2_sq+C2)))
+        cs_map = np.divide((2*sigma12 + C2),(sigma1_sq + sigma2_sq + C2))
+    else:
+        numerator1 = 2*mu1_mu2 + C1
+        numerator2 = 2*sigma12 + C2
+        denominator1 = mu1_sq + mu2_sq +C1
+        denominator2 = sigma1_sq + sigma2_sq +C2
+
+        ssim_map = np.ones(mu1.shape)
+        index = np.multiply(denominator1,denominator2)
+        #如果index是真，就赋值，是假就原值
+        n,m = mu1.shape
+        for i in range(n):
+            for j in range(m):
+                if(index[i][j] > 0):
+                    ssim_map[i][j] = numerator1[i][j]*numerator2[i][j]/denominator1[i][j]*denominator2[i][j]
+                else:
+                    ssim_map[i][j] = ssim_map[i][j]
+        for i in range(n):
+            for j in range(m):
+                if((denominator1[i][j] != 0)and(denominator2[i][j] == 0)):
+                    ssim_map[i][j] = numerator1[i][j]/denominator1[i][j]
+                else:
+                    ssim_map[i][j] = ssim_map[i][j]
+
+        cs_map = np.ones(mu1.shape)
+        for i in range(n):
+            for j in range(m):
+                if(denominator2[i][j] > 0):
+                    cs_map[i][j] = numerator2[i][j]/denominator2[i][j]
+                else:
+                    cs_map[i][j] = cs_map[i][j]
+    mssim = np.mean(ssim_map)
+    mcs = np.mean(cs_map)
+    return  mssim,mcs
+
+# MS-SSIM
+def __msssim(img1,img2):
+
+    K = [0.01,0.03]
+    win  = np.multiply(cv2.getGaussianKernel(11, 1.5), (cv2.getGaussianKernel(11, 1.5)).T)  # H.shape == (r, c)
+    level = 5
+    weight = [0.0448,0.2856,0.3001,0.2363,0.1333]
+    method = 'product'
+
+    M,N = img1.shape
+    H,W = win.shape
+
+    downsample_filter = np.ones((2,2))/4
+    img1 = img1.astype(np.float32)
+    img2 = img2.astype(np.float32)
+
+    mssim_array = []
+    mcs_array = []
+
+    for i in range(0,level):
+        mssim,mcs = __ssim(img1,img2,K,win)
+        mssim_array.append(mssim)
+        mcs_array.append(mcs)
+        filtered_im1 = cv2.filter2D(img1,-1,downsample_filter,anchor = (0,0),borderType=cv2.BORDER_REFLECT)
+        filtered_im2 = cv2.filter2D(img2,-1,downsample_filter,anchor = (0,0),borderType=cv2.BORDER_REFLECT)
+        img1 = filtered_im1[::2,::2]
+        img2 = filtered_im2[::2,::2]
+
+    # print(np.power(mcs_array[:level-1],weight[:level-1]))
+    # print(mssim_array[level-1]**weight[level-1])
+    overall_mssim = np.prod(np.power(mcs_array[:level-1],weight[:level-1]))*(mssim_array[level-1]**weight[level-1])
+
+    return overall_mssim
+
     
 
 # ————————————————————————————————————————————————————————————————————————————————————————————————————————
@@ -62,7 +158,7 @@ def loss_DSLRQualityPhotos_ICCV2017_totalvariationloss(rgb_img,weight=1):
 
 # 定义L2误差度量来测量重建误差
 def loss_UnderexposedPhoto_CVPR2019_reconstructionloss(rgb_img_a, rgb_img_b):
-    return _l2_loss(rgb_img_a, rgb_img_b)
+    return __l2_loss(rgb_img_a, rgb_img_b)
 
 # 根据先验光滑性，自然图像中的光照一般为局部光滑。Smoothness Loss为预测的全分辨率光照S的平滑度损失
 # 这个是给他们计算光照函数的损失的，故暂不考虑
@@ -94,3 +190,36 @@ def loss_UnderexposedPhoto_CVPR2019_colorloss(rgb_img_a, rgb_img_b):
     return np.sum(matrix_angle)
 
 # ——————————————————————————————————————————————————————————————————————————————————————————
+# Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices（ECCV-PIRM2018）
+# https://openaccess.thecvf.com/content_ECCVW_2018/papers/11133/Huang_Range_Scaling_Global_U-Net_for_Perceptual_Image_Enhancement_on_Mobile_ECCVW_2018_paper.pdf
+
+# L1 loss
+def loss_RangeScalingGlobalUNet_ECCV2018_l1loss(rgb_img_a, rgb_img_b):
+    return __l1_loss(rgb_img_a, rgb_img_b)
+
+# MS-SSIM loss
+def loss_RangeScalingGlobalUNet_ECCV2018_MSSSIMloss(rgb_img_a, rgb_img_b):
+    return 1-__msssim(rgb_img_a, rgb_img_b)
+
+# VGG损失，暂时跳过
+def __loss_RangeScalingGlobalUNet_ECCV2018_vggloss():
+    pass
+
+# GAN损失，暂时跳过
+def __loss_RangeScalingGlobalUNet_ECCV2018_ganloss():
+    pass
+
+# TV loss 和前面的TV loss一样
+def _loss_RangeScalingGlobalUNet_ECCV2018_tvloss(rgb_img_a, weight = 1):
+    return __tv_loss(rgb_img_a, weight)
+
+
+# ————————————————————————————————————————————————————————————————————————————————————————————
+# Loss Functions for Image Restoration with Neural Networks
+# https://arxiv.org/pdf/1511.08861.pdf
+
+# 前面几个损失函数跟上面的论文基本一致
+# MS-SSIM + L1 loss， 论文中有一个G项不知道说的是啥，给出的源码里面就是两个损失函数的线性插值
+def loss_LossFunctions_IEEE2017_l1andmsssimloss(rgb_img_a, rgb_img_b, alpha=0.84):
+    return alpha*(1-__msssim(rgb_img_a, rgb_img_b)) + (1-alpha)*(__l1_loss(rgb_img_a, rgb_img_b))
+
