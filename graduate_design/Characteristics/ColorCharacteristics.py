@@ -1,5 +1,8 @@
+import sys
+sys.setrecursionlimit(100000000)
 import cv2
 import numpy as np
+
 
 
 #直方图 输入某一通道的图片，直接返回灰度矩阵
@@ -11,18 +14,18 @@ def histogram(img):
 #颜色矩 输入某一通道的图片，返回1*3矩阵，分别为该通道的一阶矩二阶矩三阶矩
 #颜色矩的计算建议使用HSV通道
 def color_moments(img):
-    color_feature = []
+    color_feature = np.zeros(3)
     # N = channel_a.shape[0] * channel_a.shape[1]
     #一阶矩 - average
     first_moment = np.mean(img)# np.sum(channel_a)/float(N)        
-    color_feature.extend(first_moment)
+    color_feature[0]=first_moment
     #二阶矩 - standard deviation
     second_moment = np.std(img)# np.sqrt(np.mean(abs(channel_a - channel_a.mean())**2))
-    color_feature.extend(second_moment)
+    color_feature[1]=second_moment
     #三阶矩 - the third root of the skewness
     img_skewness = np.mean(abs(img - img.mean())**3)
     third_moment = img_skewness**(1./3)
-    color_feature.extend(third_moment)
+    color_feature[2]=third_moment
     
     return color_feature
 
@@ -57,14 +60,15 @@ def color_coherence_vector(img,color_threshold = 8, area_threshold = 100, bit_de
 DIRECTION = [[-1,-1],[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
 
 #颜色聚合向量的dfs
-def coherence_dfs(img, count, cur_color,color_threshold, pos_x, pos_y):
-    
+def coherence_dfs(img, count, cur_color,color_threshold, pos_x, pos_y):    
     img[pos_x][pos_y] = color_threshold
     #python竟然不支持引用传参。。是根据变量类型自动决定深拷贝还是浅拷贝的，先用这个很丑陋的方法跑通再说
     count[0]  = count[0] + 1
+    # print(count[0])
     for i in range(7):
-        if(img[pos_x+DIRECTION[i][0]][pos_y+DIRECTION[i][1]] == cur_color):
+        if(img[pos_x+DIRECTION[i][0]][pos_y+DIRECTION[i][1]] == cur_color):            
             coherence_dfs(img, count, cur_color, color_threshold, pos_x+DIRECTION[i][0], pos_y+DIRECTION[i][1])
+    return
     
  
  
@@ -86,7 +90,7 @@ def metrix_minusoneround(metrix):
 #图像量化，color_threshold是量化的级数，bit_depth是图片的位数（通常为8位）
 def img_quantify(img, color_threshold = 8, bit_depth = 8):
     color_range = pow(2, bit_depth)/color_threshold
-    print(color_range)
+    # print(color_range)
     img = np.floor(np.array(img)/color_range)
     return img
 #——————————————————————————————————————————————————————————————————————
