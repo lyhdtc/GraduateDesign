@@ -33,7 +33,8 @@ def color_moments(img):
 
 #普通矩 输入某一通道图片，输出三阶及以下的几何矩（mpq）、中心矩(mupq)和归一化的矩(nupq)
 def ordinary_moments(img):
-    return cv2.moments(img)
+    print(cv2.moments(img))
+    return list(cv2.moments(img).values())
 
 #这个是自己写的...网上没找到...
 #参照的这个https://blog.csdn.net/u014655590/article/details/25108297
