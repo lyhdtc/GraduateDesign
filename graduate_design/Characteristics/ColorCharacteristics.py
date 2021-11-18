@@ -58,7 +58,7 @@ def color_coherence_vector(img,color_threshold = 8, area_threshold = 100, bit_de
  
 #——————————————————————————————颜色聚合向量计算用的函数——————————————————— 
 #dfs用方向向量，聚合向量的判断是周围八个元素            
-DIRECTION = [[-1,-1],[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
+__DIRECTION = [[-1,-1],[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
 
 #颜色聚合向量的dfs
 def coherence_dfs(img, count, cur_color,color_threshold, pos_x, pos_y):    
@@ -67,7 +67,7 @@ def coherence_dfs(img, count, cur_color,color_threshold, pos_x, pos_y):
     count[0]  = count[0] + 1
     # print(count[0])
     for i in range(7):
-        if(img[pos_x+DIRECTION[i][0]][pos_y+DIRECTION[i][1]] == cur_color):            
+        if(img[pos_x+__DIRECTION[i][0]][pos_y+__DIRECTION[i][1]] == cur_color):            
             coherence_dfs(img, count, cur_color, color_threshold, pos_x+DIRECTION[i][0], pos_y+DIRECTION[i][1])
     return
     
