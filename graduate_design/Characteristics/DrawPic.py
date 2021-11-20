@@ -248,17 +248,58 @@ class Draw_Texture_Characteristics(object):
     
      
     
+class Draw_LossAboutColor_Characteristics(object):
+    def __draw_loss_DSLRQualityPhotos_ICCV2017(self):
+        plt.figure()
+        plt.title('loss--DSLR-Quality Photos on Mobile \nDevices with Deep Convolutional Networks(ICCV 2017)')        
+        loss = [lac.loss_DSLRQualityPhotos_ICCV2017(self.img_a, self.img_b)]           
+        loss = np.round(loss,3)
+        collabel = ['color loss', 'texture loss', 'total veriation loss']        
+        loss_table = plt.table(loss, colLabels=collabel, loc='center',  cellLoc='center', rowLoc='center' )
+        loss_table.auto_set_font_size(False)
+        loss_table.set_fontsize(8)
+        plt.axis('off')
     
+    def __draw_loss_UnderexposedPhoto_CVPR2019(self):
+        plt.figure()
+        plt.title('loss--Underexposed Photo \n Enhancement using Deep Illumination Estimation(CVPR 2019)')
+        loss = [lac.loss_UnderexposedPhoto_CVPR2019(self.img_a, self.img_b)]
+        loss = np.round(loss,3)
+        collabel = ['l2 loss', 'color loss']
+        loss_table = plt.table(loss, colLabels=collabel, loc='center',  cellLoc='center', rowLoc='center' )
+        loss_table.auto_set_font_size(False)
+        loss_table.set_fontsize(8)
+        plt.axis('off')
     
+    def __draw_loss_RangeScalingGlobalUNet_ECCV2018(self):
+        plt.figure()
+        plt.title('loss--Range Scaling Global U-Net for Perceptual \nImage Enhancement on Mobile Devices(ECCV-PIRM2018)')        
+        loss = [lac.loss_RangScalingGlobalUNet_ECCV2018(self.img_a, self.img_b)]           
+        loss = np.round(loss,3)
+        collabel = ['l1 loss', 'MS-SSIM loss--r channel','MS-SSIM loss--g channel','MS-SSIM loss--b channel', 'total veriation loss']        
+        loss_table = plt.table(loss, colLabels=collabel, loc='center',  cellLoc='center', rowLoc='center' )
+        loss_table.auto_set_font_size(False)
+        loss_table.set_fontsize(8)
+        plt.axis('off')
+        
+    def __draw_loss_LossFunctions_IEEE2017(self):
+        plt.figure()
+        plt.title('loss--Loss Functions for \n Image Restoration with Neural Networks(IEEE2017)')        
+        loss = [lac.loss_LossFunctions_IEEE2017(self.img_a, self.img_b)]           
+        loss = np.round(loss,3)
+        collabel = ['MS-SSIM+L1 loss -- r channel', 'MS-SSIM+L1 loss -- g channel', 'MS-SSIM+L1 loss -- b channel']        
+        loss_table = plt.table(loss, colLabels=collabel, loc='center',  cellLoc='center', rowLoc='center' )
+        loss_table.auto_set_font_size(False)
+        loss_table.set_fontsize(8)
+        plt.axis('off')
+        
     
-    
-    
-    
-    
-
-    
-    
-    
-def texture_characteristics(matrix_a, matrix_b):
-      #灰度共生矩阵
-      pass
+    def draw_loss_about_color(self):
+        self.__draw_loss_DSLRQualityPhotos_ICCV2017()
+        self.__draw_loss_UnderexposedPhoto_CVPR2019()
+        self.__draw_loss_RangeScalingGlobalUNet_ECCV2018()
+        self.__draw_loss_LossFunctions_IEEE2017()
+        plt.show()
+    def __init__(self, img_a, img_b):
+        self.img_a = img_a
+        self.img_b = img_b
