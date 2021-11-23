@@ -2,6 +2,7 @@ import numpy as np
 import math
 import pywt
 from scipy import signal as sg
+from skimage.feature import local_binary_pattern
 np.set_printoptions(suppress=True)
 
 # 工具函数
@@ -16,8 +17,8 @@ def __norm(ar):
 # 熵（entropy）度量了图像包含信息量的随机性，表现了图像的复杂程度。当共生矩阵中所有值均相等或者像素值表现出最大的随机性时，熵最大
 # 对比度（contrast）反应了图像的清晰度和纹理的沟纹深浅。纹理越清晰反差越大对比度也就越大
 # 反差分矩阵（Inverse Differential Moment, IDM）反映了纹理的清晰程度和规则程度，纹理清晰、规律性较强、易于描述的，值较大
-def glcm_feature(gray_gray_img,d_x, d_y,gray_level=16):
-    glcm = __glcm(gray_gray_img,d_x, d_y,gray_level)
+def glcm_feature(gray_img,d_x, d_y,gray_level=16):
+    glcm = __glcm(gray_img,d_x, d_y,gray_level)
    
     res = []
     # feature == "energy":
@@ -74,50 +75,55 @@ def __glcm(arr, d_x, d_y, gray_level=16):
 #————————————————————————————————————————————————————————————————————————————————  
 
 #————————————————————————局部二值（LBP）——————————————————————————————————————————
-#https://zhuanlan.zhihu.com/p/91768977
+def rotation_invariant_LBP(gray_img, radius=3, neighbors=8):
+    lbp = local_binary_pattern(gray_img, neighbors , radius)
+    # print(lbp)
+    return lbp
+# https://zhuanlan.zhihu.com/p/91768977
+# 下面的代码是根据原理来的，整个流程循环较多计算时间较长
 # 在圆形选取框基础上，加入旋转不变操作
-def rotation_invariant_LBP(gray_gray_img, radius=3, neighbors=8):
-    h,w=gray_gray_img.shape
-    dst = np.zeros((h-2*radius, w-2*radius),dtype=gray_gray_img.dtype)
-    for i in range(radius,h-radius):
-        for j in range(radius,w-radius):
-            # 获得中心像素点的灰度值
-            center = gray_gray_img[i,j]
-            for k in range(neighbors):
-                # 计算采样点对于中心点坐标的偏移量rx，ry
-                rx = radius * np.cos(2.0 * np.pi * k / neighbors)
-                ry = -(radius * np.sin(2.0 * np.pi * k / neighbors))
-                # 为双线性插值做准备
-                # 对采样点偏移量分别进行上下取整
-                x1 = int(np.floor(rx))
-                x2 = int(np.ceil(rx))
-                y1 = int(np.floor(ry))
-                y2 = int(np.ceil(ry))
-                # 将坐标偏移量映射到0-1之间
-                tx = rx - x1
-                ty = ry - y1
-                # 根据0-1之间的x，y的权重计算公式计算权重，权重与坐标具体位置无关，与坐标间的差值有关
-                w1 = (1-tx) * (1-ty)
-                w2 =    tx  * (1-ty)
-                w3 = (1-tx) *    ty
-                w4 =    tx  *    ty
-                # 根据双线性插值公式计算第k个采样点的灰度值
-                neighbor = gray_gray_img[i+y1,j+x1] * w1 + gray_gray_img[i+y2,j+x1] *w2 + gray_gray_img[i+y1,j+x2] *  w3 +gray_gray_img[i+y2,j+x2] *w4
-                # LBP特征图像的每个邻居的LBP值累加，累加通过与操作完成，对应的LBP值通过移位取得
-                dst[i-radius,j-radius] |= (neighbor>center)  <<  (np.uint8)(neighbors-k-1)
-    # 进行旋转不变处理
-    for i in range(dst.shape[0]):
-        for j in range(dst.shape[1]):
-            currentValue = dst[i,j]
-            minValue = currentValue
-            for k in range(1, neighbors):
-                # 对二进制编码进行循环左移，意思即选取移动过程中二进制码最小的那个作为最终值
-                temp = (np.uint8)(currentValue>>(neighbors-k)) |  (np.uint8)(currentValue<<k)
-                if temp < minValue:
-                    minValue = temp
-            dst[i,j] = minValue
+# def rotation_invariant_LBP(gray_gray_img, radius=3, neighbors=8):
+#     h,w=gray_gray_img.shape
+#     dst = np.zeros((h-2*radius, w-2*radius),dtype=gray_gray_img.dtype)
+#     for i in range(radius,h-radius):
+#         for j in range(radius,w-radius):
+#             # 获得中心像素点的灰度值
+#             center = gray_gray_img[i,j]
+#             for k in range(neighbors):
+#                 # 计算采样点对于中心点坐标的偏移量rx，ry
+#                 rx = radius * np.cos(2.0 * np.pi * k / neighbors)
+#                 ry = -(radius * np.sin(2.0 * np.pi * k / neighbors))
+#                 # 为双线性插值做准备
+#                 # 对采样点偏移量分别进行上下取整
+#                 x1 = int(np.floor(rx))
+#                 x2 = int(np.ceil(rx))
+#                 y1 = int(np.floor(ry))
+#                 y2 = int(np.ceil(ry))
+#                 # 将坐标偏移量映射到0-1之间
+#                 tx = rx - x1
+#                 ty = ry - y1
+#                 # 根据0-1之间的x，y的权重计算公式计算权重，权重与坐标具体位置无关，与坐标间的差值有关
+#                 w1 = (1-tx) * (1-ty)
+#                 w2 =    tx  * (1-ty)
+#                 w3 = (1-tx) *    ty
+#                 w4 =    tx  *    ty
+#                 # 根据双线性插值公式计算第k个采样点的灰度值
+#                 neighbor = gray_gray_img[i+y1,j+x1] * w1 + gray_gray_img[i+y2,j+x1] *w2 + gray_gray_img[i+y1,j+x2] *  w3 +gray_gray_img[i+y2,j+x2] *w4
+#                 # LBP特征图像的每个邻居的LBP值累加，累加通过与操作完成，对应的LBP值通过移位取得
+#                 dst[i-radius,j-radius] |= (neighbor>center)  <<  (np.uint8)(neighbors-k-1)
+#     # 进行旋转不变处理
+#     for i in range(dst.shape[0]):
+#         for j in range(dst.shape[1]):
+#             currentValue = dst[i,j]
+#             minValue = currentValue
+#             for k in range(1, neighbors):
+#                 # 对二进制编码进行循环左移，意思即选取移动过程中二进制码最小的那个作为最终值
+#                 temp = (np.uint8)(currentValue>>(neighbors-k)) |  (np.uint8)(currentValue<<k)
+#                 if temp < minValue:
+#                     minValue = temp
+#             dst[i,j] = minValue
 
-    return dst    
+#     return dst    
 #————————————————————————————————————————————————————————————————————————————————
 
 # TODO:Malkov random field
@@ -130,14 +136,14 @@ def rotation_invariant_LBP(gray_gray_img, radius=3, neighbors=8):
 def tamura_feature(gray_img, kmax, dist):
     tamura_feature = []
     tamura_feature.append(__tamura_coarseness(gray_img, kmax))
-    print('coarseness finished')
+    # print('coarseness finished')
     tamura_feature.append(__tamura_contrast(gray_img))
-    print('contrast finished')
+    # print('contrast finished')
     fdir,theta = __tamura_directionality(gray_img)
     tamura_feature.append(fdir)
-    print('directionality finished')
+    # print('directionality finished')
     tamura_feature.append(__tamura_linelikeness(gray_img, theta, dist))
-    print('linelikeness finished')
+    # print('linelikeness finished')
     return tamura_feature
 
 
@@ -245,11 +251,14 @@ def __tamura_directionality(gray_img):
 	t = 12
 	cnt = 0
 	hd = np.zeros(n)
+    
 	dlen = deltaG_vec.shape[0]
 	for ni in range(n):
 		for k in range(dlen):
 			if((deltaG_vec[k] >= t) and (theta_vec[k] >= (2*ni-1) * np.pi / (2 * n)) and (theta_vec[k] < (2*ni+1) * np.pi / (2 * n))):
 				hd[ni] += 1
+    
+    
 	hd = hd / np.mean(hd)
 	hd_max_index = np.argmax(hd)
 	fdir = 0
@@ -279,7 +288,7 @@ def __tamura_linelikeness(gray_img, theta, dist):
                     for d in range(8):                        
                         if((theta[i][j]>=((2*(m1-1)*pi)/(2*n))) and (theta[i][j]<(((2*(m1-1)+1)*pi)/(2*n))) and (theta[i+DIRECTION[d][0]][j+DIRECTION[d][1]]>=((2*(m1-1)*pi)/(2*n))) and (theta[i+DIRECTION[d][0]][j+DIRECTION[d][1]]<(((2*(m1-1)+1)*pi)/(2*n)))):
                             dcm[d][m1][m2] += 1
-    print('part1 finished')
+    # print('part1 finished')
     matrix_f = np.zeros((1,8))
     matrix_g = np.zeros((1,8))
     for i in range(n):
@@ -287,7 +296,7 @@ def __tamura_linelikeness(gray_img, theta, dist):
             for d in range(8):
                 matrix_f[0][d] += dcm[d][i][j]*(math.cos((i-j)*2*pi/n))
                 matrix_g[0][d] += dcm[d][i][j]
-    print('part2 finished')            
+    # print('part2 finished')            
     matrix_res = matrix_f/matrix_g
     res = np.max(matrix_res)
     return res

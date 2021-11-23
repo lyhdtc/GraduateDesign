@@ -11,6 +11,7 @@ import ColorCharacteristics as cc
 import TextureCharacteristics as tc
 import LossAboutColor as lac
 
+import time
 
 RGB_COLOR_CHANNEL = {
     0: 'r',
@@ -18,10 +19,22 @@ RGB_COLOR_CHANNEL = {
     2: 'b'
 }
 
+def timmer(func):
+    print('run timmer')
+    def deco(*args, **kwargs):
+        print('\n函数： {_funcname_} 开始运行：'.format(_funcname_ = func.__name__))
+        start_time = time.time()
+        res = func(*args, **kwargs)
+        end_time = time.time()
+        print('函数:{_funcname_}运行了 {_time_}秒'
+              .format(_funcname_=func.__name__, _time_=(end_time - start_time)))
+        return res
+    return deco
 
 class Draw_Color_Characteristics(object):
     
     #直方图
+    @timmer
     def __draw_color_characteristics_histogram(self):
         plt.figure()
         plt.title('histogram')
@@ -37,6 +50,7 @@ class Draw_Color_Characteristics(object):
         plt.plot()
     
     # 颜色矩   
+    @timmer
     def __draw_color_characteristics_color_moments(self):
         plt.figure()  
         plt.title('color_moments')   
@@ -62,35 +76,81 @@ class Draw_Color_Characteristics(object):
         plt.axis('off')
         # color_moments_table.scale(0.5,0.5) 
     
-    # TODO：颜色聚合向量需要大改   
-    def __draw_color_characteristics_color_coherence_vector():
-        pass
     
+    @timmer  
+    def __draw_color_characteristics_color_coherence_vector(self):
+        plt.figure(figsize=(15,8))
+        plt.title('color coherence vector')
+        color_threshold=8
+        area_threshold=100
+        ccv = []
+        ccv_collabel = []
+        ccv_rowlabel = []
+        for i in range(color_threshold):
+            delta = int(256/color_threshold)
+            buttom = delta * i
+            top = delta*(i+1)-1
+            cur_row_label = str(buttom) + "~" + str(top)
+            ccv_rowlabel.append(cur_row_label)
+        for i in range(3):
+            ccv_a_smaller, ccv_a_bigger = cc.color_coherence_vector(self.matrix_a[i], color_threshold, area_threshold)
+            ccv_b_smaller, ccv_b_bigger = cc.color_coherence_vector(self.matrix_b[i], color_threshold, area_threshold)
+            ccv.append(ccv_a_smaller)
+            ccv.append(ccv_a_bigger)
+            ccv.append(ccv_b_smaller)
+            ccv.append(ccv_b_bigger)
+            label_a_smaller = RGB_COLOR_CHANNEL.get(i)+'_img_a_smaller'
+            label_a_bigger = RGB_COLOR_CHANNEL.get(i)+'_img_a_bigger'            
+            label_b_smaller = RGB_COLOR_CHANNEL.get(i)+'_img_b_smaller'
+            label_b_bigger = RGB_COLOR_CHANNEL.get(i)+'_img_b_bigger'
+            ccv_collabel.append(label_a_smaller)
+            ccv_collabel.append(label_a_bigger)
+            ccv_collabel.append(label_b_smaller)
+            ccv_collabel.append(label_b_bigger)
+        ccv = np.transpose(ccv)
+        
+        ccv_table = plt.table(ccv, colLabels=ccv_collabel, rowLabels=ccv_rowlabel, loc='center',  cellLoc='center', rowLoc='center')
+        ccv_table.auto_set_font_size(False)
+        ccv_table.set_fontsize(8)
+        plt.axis('off')   
     # 普通矩
+    @timmer
     def __draw_color_characteristics_ordinary_moments(self):
-        plt.figure()
-        plt.title('ordinary_moments')
+        plt.figure(figsize=(15,8))
+        plt.title('ordinary_moments', verticalalignment = 'top')
         ordinary_moments = []
+        ordinary_moments_collabel = []
+        ordinary_moments_rowlabel = ['m00', 'm10', 'm01', 'm20', 'm11', 'm02', 'm30', 'm21', 'm12',
+                                     'm02', 'mu20', 'mu11', 'mu02', 'mu30', 'mu21', 'mu12', 'mu03',
+                                     'nu20', 'nu11', 'nu02', 'nu30', 'nu21', 'nu12', 'nu03']
         for i in range(3):
             ordinary_moments_a = cc.ordinary_moments(self.matrix_a[i])
             ordinary_moments_b = cc.ordinary_moments(self.matrix_b[i])
             
             ordinary_moments.append(ordinary_moments_a)
             ordinary_moments.append(ordinary_moments_b)        
-        
+
+            label_a = RGB_COLOR_CHANNEL.get(i)+'_img_a'
+            label_b = RGB_COLOR_CHANNEL.get(i)+'_img_b'
+            ordinary_moments_collabel.append(label_a)
+            ordinary_moments_collabel.append(label_b) 
+            
         ordinary_moments = np.transpose(ordinary_moments)
-        ordinary_moments = np.round(ordinary_moments)
+        # ordinary_moments = np.round(ordinary_moments,3)
         # print(ordinary_moments)
 
-        ordinary_moments_table = plt.table(ordinary_moments,loc='center',  cellLoc='center', rowLoc='center')
+        ordinary_moments_table = plt.table(ordinary_moments,colLabels=ordinary_moments_collabel,rowLabels=ordinary_moments_rowlabel,loc='center',  cellLoc='center', rowLoc='center')
         ordinary_moments_table.auto_set_font_size(False)
         ordinary_moments_table.set_fontsize(8)
         plt.axis('off')
-
+        
+    
     def draw_color_characteristics(self):
         self.__draw_color_characteristics_histogram()
         self.__draw_color_characteristics_color_moments()
+        self.__draw_color_characteristics_color_coherence_vector()
         self.__draw_color_characteristics_ordinary_moments()
+        plt.tight_layout()
         plt.show()
 
     def __init__(self, matrix_a, matrix_b):
@@ -99,6 +159,7 @@ class Draw_Color_Characteristics(object):
     
     
 class Draw_Texture_Characteristics(object):
+    @timmer
     def __draw_texture_characteristics_glcm_feature(self):
         plt.figure()
         plt.title('glcm_feature')
@@ -113,8 +174,8 @@ class Draw_Texture_Characteristics(object):
         glcm_feature_collabel = []
         for i in range(3):
             for j in range(4):
-                print('i=='+str(i))
-                print('j=='+str(j))
+                # print('i=='+str(i))
+                # print('j=='+str(j))
                 glcm_grad_single_channel_a = tc.glcm_feature(self.matrix_a[i], DIRECTION.get(j)[0], DIRECTION.get(j)[1])
                 glcm_grad_single_channel_b = tc.glcm_feature(self.matrix_b[i], DIRECTION.get(j)[0], DIRECTION.get(j)[1])
                 glcm_feature.append(glcm_grad_single_channel_a)
@@ -131,20 +192,30 @@ class Draw_Texture_Characteristics(object):
         glcm_feaure_table.set_fontsize(8)
         plt.axis('off')
     
+    @timmer
     def __draw_texture_characteristics_lbp(self):
-        plt.figure()
+        plt.figure(figsize=(10,5))
         plt.title('lbp')
         for i in range(3):
-            print(i)
-            ax1 = plt.subplot(3,2,2*i+1)
+            # print(i)
+            ax1 = plt.subplot(3,4,4*i+1)
             lbp_a = tc.rotation_invariant_LBP(self.matrix_a[i])
-            ax1.imshow(lbp_a)
-            ax2 = plt.subplot(3,2,2*i+2)
+            ax1.imshow(lbp_a,cmap='gray')
+            ax2 = plt.subplot(3,4,4*i+2)
+            lbp_a = lbp_a.astype(np.uint8)
+            hist_lbp_a = cc.histogram(lbp_a)
+            ax2.plot(hist_lbp_a,RGB_COLOR_CHANNEL.get(i))
+            ax3 = plt.subplot(3,4,4*i+3)
             lbp_b = tc.rotation_invariant_LBP(self.matrix_b[i])
-            ax2.imshow(lbp_b)
+            ax3.imshow(lbp_b,cmap='gray')
+            ax4 = plt.subplot(3,4,4*i+4)
+            lbp_b = lbp_b.astype(np.uint8)
+            hist_lbp_b = cc.histogram(lbp_b)
+            ax4.plot(hist_lbp_b,RGB_COLOR_CHANNEL.get(i))
         plt.tight_layout()
         plt.plot()
     
+    @timmer
     def __draw_texture_characteristics_tamura_feature(self):
         plt.figure()
         plt.title('tamura')
@@ -170,6 +241,7 @@ class Draw_Texture_Characteristics(object):
         tamura_feature_table.set_fontsize(8)
         plt.axis('off')
      
+    @timmer
     def __draw_texture_characteristics_dwt_feature(self):
         plt.figure()
         plt.title('dwt')
@@ -196,7 +268,7 @@ class Draw_Texture_Characteristics(object):
         dwt_feature_table.auto_set_font_size(False)
         dwt_feature_table.set_fontsize(8)
         plt.axis('off')
-        
+    @timmer   
     def __draw_texture_characteristics_laws_feature(self):
         plt.figure()
         plt.title('laws')
@@ -234,10 +306,15 @@ class Draw_Texture_Characteristics(object):
         
     def draw_texture_characteristics(self):
         self.__draw_texture_characteristics_glcm_feature()
+        # print('glcm finished!')
         self.__draw_texture_characteristics_lbp()
+        # print('lbp finished')
         self.__draw_texture_characteristics_tamura_feature()
+        # print('tamura feature finished')
         self.__draw_texture_characteristics_dwt_feature()
+        # print('dwf feature finished')
         self.__draw_texture_characteristics_laws_feature()
+        # print('laws feature finished')
         plt.show()
         
     def __init__(self, matrix_a, matrix_b):
@@ -249,6 +326,7 @@ class Draw_Texture_Characteristics(object):
      
     
 class Draw_LossAboutColor_Characteristics(object):
+    @timmer
     def __draw_loss_DSLRQualityPhotos_ICCV2017(self):
         plt.figure()
         plt.title('loss--DSLR-Quality Photos on Mobile \nDevices with Deep Convolutional Networks(ICCV 2017)')        
@@ -259,7 +337,8 @@ class Draw_LossAboutColor_Characteristics(object):
         loss_table.auto_set_font_size(False)
         loss_table.set_fontsize(8)
         plt.axis('off')
-    
+        
+    @timmer
     def __draw_loss_UnderexposedPhoto_CVPR2019(self):
         plt.figure()
         plt.title('loss--Underexposed Photo \n Enhancement using Deep Illumination Estimation(CVPR 2019)')
@@ -271,6 +350,7 @@ class Draw_LossAboutColor_Characteristics(object):
         loss_table.set_fontsize(8)
         plt.axis('off')
     
+    @timmer
     def __draw_loss_RangeScalingGlobalUNet_ECCV2018(self):
         plt.figure()
         plt.title('loss--Range Scaling Global U-Net for Perceptual \nImage Enhancement on Mobile Devices(ECCV-PIRM2018)')        
@@ -282,6 +362,7 @@ class Draw_LossAboutColor_Characteristics(object):
         loss_table.set_fontsize(8)
         plt.axis('off')
         
+    @timmer    
     def __draw_loss_LossFunctions_IEEE2017(self):
         plt.figure()
         plt.title('loss--Loss Functions for \n Image Restoration with Neural Networks(IEEE2017)')        
@@ -296,9 +377,13 @@ class Draw_LossAboutColor_Characteristics(object):
     
     def draw_loss_about_color(self):
         self.__draw_loss_DSLRQualityPhotos_ICCV2017()
+        # print('loss--DSLR-Quality Photos on Mobile Devices with Deep Convolutional Networks(ICCV 2017) -- finished')
         self.__draw_loss_UnderexposedPhoto_CVPR2019()
+        # print('loss--Underexposed Photo Enhancement using Deep Illumination Estimation(CVPR 2019) -- finished')
         self.__draw_loss_RangeScalingGlobalUNet_ECCV2018()
+        # print('loss--Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices(ECCV-PIRM2018) -- finished')
         self.__draw_loss_LossFunctions_IEEE2017()
+        # print('loss--Loss Functions for Image Restoration with Neural Networks(IEEE2017) -- finished')
         plt.show()
     def __init__(self, img_a, img_b):
         self.img_a = img_a

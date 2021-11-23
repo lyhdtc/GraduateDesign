@@ -1,4 +1,6 @@
 import sys
+
+from numpy.core.shape_base import _block_info_recursion
 sys.setrecursionlimit(100000000)
 import cv2
 import numpy as np
@@ -31,30 +33,59 @@ def color_moments(img):
 
 
 
-#普通矩 输入某一通道图片，输出三阶及以下的几何矩（mpq）、中心矩(mupq)和归一化的矩(nupq)
+# 普通矩 输入某一通道图片，输出三阶及以下的几何矩（mpq）、中心矩(mupq)和归一化的矩(nupq)
 def ordinary_moments(img):
-    print(cv2.moments(img))
+    # print(cv2.moments(img))
     return list(cv2.moments(img).values())
 
-#这个是自己写的...网上没找到...
-#参照的这个https://blog.csdn.net/u014655590/article/details/25108297
-#颜色聚合向量 输入某一通道图片，量化级数，聚合阈值，色彩深度，输出该通道下的颜色聚合向量，其中后三个选项可不填
+# 这个是自己写的...网上没找到...
+# 第二版，调用了opencv的查找连通域的函数
 def color_coherence_vector(img,color_threshold = 8, area_threshold = 100, bit_depth = 8):
-    img = img_quantify(img, color_threshold, bit_depth)
-    img = metrix_addoneround(img, color_threshold)
-    vec = np.zeros((color_threshold, 2), dtype = int)
-    for i in range(len(img)):
-        for j in range(len(img[0])):
-            if(img[i][j] != 8):
-                cur_color = img[i][j]                
-                count = [0]
-                coherence_dfs(img, count, cur_color,color_threshold, i, j)
-                if(count[0]>=area_threshold):
-                    vec[int(cur_color)][1] = vec[int(cur_color)][1] + count[0]
-                else:
-                    vec[int(cur_color)][0] = vec[int(cur_color)][1] + count[0]
-    return vec
- 
+    # 高斯模糊，测试1920*1080的图片不需要做此操作提速
+    # img = cv2.GaussianBlur(img, (3,3),0)
+    # 使用opencv4自带函数之后就不需要手动量化图片了
+    # img = img_quantify(img, color_threshold, bit_depth)
+    vec_smaller = np.zeros(color_threshold, dtype=int)
+    vec_bigger  = np.zeros(color_threshold, dtype=int)
+    ret,th = cv2.threshold(img,127,255,0)
+    ret, labeled, stat, centroids = cv2.connectedComponentsWithStats(th, None, cv2.CC_STAT_AREA, None,connectivity=8)
+    
+    areas = [[v[4],label_idx] for label_idx,v in enumerate(stat)]
+    coord = [[v[0],v[1]] for label_idx,v in enumerate(stat)]
+    for a,c in zip(areas, coord):
+        area_size = a[0]
+        x,y = c[0],c[1]
+        if(x<img.shape[1])and(y<img.shape[0]):
+            bin_idx = int(img[y,x]/(256/color_threshold))
+            if(area_size >= area_threshold):
+                vec_bigger[bin_idx] = vec_bigger[bin_idx]+1
+            else:
+                vec_smaller[bin_idx] = vec_smaller[bin_idx]+1
+    return vec_smaller,vec_bigger
+
+
+# 第一版，迭代过深，不好用
+# 参照的这个https://blog.csdn.net/u014655590/article/details/25108297
+# 颜色聚合向量 输入某一通道图片，量化级数，聚合阈值，色彩深度，输出该通道下的颜色聚合向量，其中后三个选项可不填
+# def color_coherence_vector(img,color_threshold = 8, area_threshold = 100, bit_depth = 8):
+#     img = cv2.GaussianBlur(img, (3,3),0)
+#     img = img_quantify(img, color_threshold, bit_depth)
+#     img = metrix_addoneround(img, color_threshold)
+#     vec = np.zeros((color_threshold, 2), dtype = int)
+#     for i in range(len(img)):
+#         for j in range(len(img[0])):
+#             if(img[i][j] != color_threshold):
+
+#                 cur_color = img[i][j]                
+#                 count = [0]
+#                 coherence_dfs(img, count, cur_color,color_threshold, i, j)
+#                 if(count[0]>=area_threshold):
+#                     vec[int(cur_color)][1] = vec[int(cur_color)][1] + count[0]
+#                 else:
+#                     vec[int(cur_color)][0] = vec[int(cur_color)][1] + count[0]
+#     return vec
+
+        
  
 #——————————————————————————————颜色聚合向量计算用的函数——————————————————— 
 #dfs用方向向量，聚合向量的判断是周围八个元素            
@@ -66,9 +97,9 @@ def coherence_dfs(img, count, cur_color,color_threshold, pos_x, pos_y):
     #python竟然不支持引用传参。。是根据变量类型自动决定深拷贝还是浅拷贝的，先用这个很丑陋的方法跑通再说
     count[0]  = count[0] + 1
     # print(count[0])
-    for i in range(7):
+    for i in range(7):       
         if(img[pos_x+__DIRECTION[i][0]][pos_y+__DIRECTION[i][1]] == cur_color):            
-            coherence_dfs(img, count, cur_color, color_threshold, pos_x+DIRECTION[i][0], pos_y+DIRECTION[i][1])
+            coherence_dfs(img, count, cur_color, color_threshold, pos_x+__DIRECTION[i][0], pos_y+__DIRECTION[i][1])
     return
     
  
