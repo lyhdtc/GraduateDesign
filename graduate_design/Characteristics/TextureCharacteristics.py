@@ -3,7 +3,12 @@ import math
 import pywt
 from scipy import signal as sg
 from skimage.feature import local_binary_pattern
+
+from tests import TestScripts
 np.set_printoptions(suppress=True)
+
+
+
 
 # 工具函数
 # 将数组转换为0-255
@@ -150,6 +155,7 @@ def tamura_feature(gray_img, kmax, dist):
 # 粗糙度 coarseness
 # 用来反映纹理粒度
 # 输入为图像，活动窗口的尺寸（边长为2^kmax）
+@TestScripts.timmer
 def __tamura_coarseness(gray_img, kmax):
 	gray_img = np.array(gray_img)
 	w = gray_img.shape[0]
@@ -188,6 +194,7 @@ def __tamura_coarseness(gray_img, kmax):
 # 对比度
 # 是通过对像素强度分布情况的统计得到的，其大小由四个因素决定：灰度动态范围、直方图上黑白部分两极分化程度、边缘锐度和重复模式的周期。一般情况下，对比度指前面两个因素。
 # 输入为图像
+@TestScripts.timmer
 def __tamura_contrast(gray_img):
 	gray_img = np.array(gray_img)
 	gray_img = np.reshape(gray_img, (1, gray_img.shape[0]*gray_img.shape[1]))
@@ -201,6 +208,7 @@ def __tamura_contrast(gray_img):
 # 方向度
 # 给定纹理区域的全局特性，描述纹理如何沿着某些方向发散或者集中的
 # 输入为图像
+@TestScripts.timmer
 def __tamura_directionality(gray_img):
 	gray_img = np.array(gray_img, dtype = 'int64')
 	h = gray_img.shape[0]
@@ -268,6 +276,7 @@ def __tamura_directionality(gray_img):
 
 # 线性度
 # 输入为图片，tamura_directionality输出的矩阵，共生矩阵计算时的像素间隔距离 
+@TestScripts.timmer
 def __tamura_linelikeness(gray_img, theta, dist):
     # http://www.skcircle.com/?id=1496
     # 建立方向向量，分别为左上、中上、右上、左中、右中、左下、中下、右下
@@ -278,7 +287,7 @@ def __tamura_linelikeness(gray_img, theta, dist):
     w = gray_img.shape[1]
     pi = 3.1415926
     dcm = np.zeros((8,n,n))
-    # 便利图像中间区域（因为考虑到步长的问题不能从最边缘开始）
+    # 遍历图像中间区域（因为考虑到步长的问题不能从最边缘开始）
     for i in range(dist+1, h-dist-2):
         for j in range(dist+1, w-dist-2):
             # 共生矩阵遍历

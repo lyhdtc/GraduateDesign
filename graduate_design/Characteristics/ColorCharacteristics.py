@@ -1,7 +1,6 @@
 import sys
 
-from numpy.core.shape_base import _block_info_recursion
-sys.setrecursionlimit(100000000)
+
 import cv2
 import numpy as np
 

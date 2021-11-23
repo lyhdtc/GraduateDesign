@@ -1,17 +1,11 @@
-from collections import _OrderedDictItemsView
-from operator import sub
-import sys
-from typing import Tuple
 
-import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-import pandas as pd
 import ColorCharacteristics as cc
 import TextureCharacteristics as tc
 import LossAboutColor as lac
 
-import time
+from tests import TestScripts
 
 RGB_COLOR_CHANNEL = {
     0: 'r',
@@ -19,22 +13,12 @@ RGB_COLOR_CHANNEL = {
     2: 'b'
 }
 
-def timmer(func):
-    print('run timmer')
-    def deco(*args, **kwargs):
-        print('\n函数： {_funcname_} 开始运行：'.format(_funcname_ = func.__name__))
-        start_time = time.time()
-        res = func(*args, **kwargs)
-        end_time = time.time()
-        print('函数:{_funcname_}运行了 {_time_}秒'
-              .format(_funcname_=func.__name__, _time_=(end_time - start_time)))
-        return res
-    return deco
+
 
 class Draw_Color_Characteristics(object):
     
     #直方图
-    @timmer
+    @TestScripts.timmer
     def __draw_color_characteristics_histogram(self):
         plt.figure()
         plt.title('histogram')
@@ -50,7 +34,7 @@ class Draw_Color_Characteristics(object):
         plt.plot()
     
     # 颜色矩   
-    @timmer
+    @TestScripts.timmer
     def __draw_color_characteristics_color_moments(self):
         plt.figure()  
         plt.title('color_moments')   
@@ -77,7 +61,7 @@ class Draw_Color_Characteristics(object):
         # color_moments_table.scale(0.5,0.5) 
     
     
-    @timmer  
+    @TestScripts.timmer  
     def __draw_color_characteristics_color_coherence_vector(self):
         plt.figure(figsize=(15,8))
         plt.title('color coherence vector')
@@ -114,7 +98,7 @@ class Draw_Color_Characteristics(object):
         ccv_table.set_fontsize(8)
         plt.axis('off')   
     # 普通矩
-    @timmer
+    @TestScripts.timmer
     def __draw_color_characteristics_ordinary_moments(self):
         plt.figure(figsize=(15,8))
         plt.title('ordinary_moments', verticalalignment = 'top')
@@ -144,14 +128,14 @@ class Draw_Color_Characteristics(object):
         ordinary_moments_table.set_fontsize(8)
         plt.axis('off')
         
-    
+    # @profile
     def draw_color_characteristics(self):
         self.__draw_color_characteristics_histogram()
         self.__draw_color_characteristics_color_moments()
         self.__draw_color_characteristics_color_coherence_vector()
         self.__draw_color_characteristics_ordinary_moments()
         plt.tight_layout()
-        plt.show()
+        # plt.show()
 
     def __init__(self, matrix_a, matrix_b):
         self.matrix_a = matrix_a
@@ -159,7 +143,7 @@ class Draw_Color_Characteristics(object):
     
     
 class Draw_Texture_Characteristics(object):
-    @timmer
+    @TestScripts.timmer
     def __draw_texture_characteristics_glcm_feature(self):
         plt.figure()
         plt.title('glcm_feature')
@@ -192,7 +176,7 @@ class Draw_Texture_Characteristics(object):
         glcm_feaure_table.set_fontsize(8)
         plt.axis('off')
     
-    @timmer
+    @TestScripts.timmer
     def __draw_texture_characteristics_lbp(self):
         plt.figure(figsize=(10,5))
         plt.title('lbp')
@@ -215,7 +199,7 @@ class Draw_Texture_Characteristics(object):
         plt.tight_layout()
         plt.plot()
     
-    @timmer
+    @TestScripts.timmer
     def __draw_texture_characteristics_tamura_feature(self):
         plt.figure()
         plt.title('tamura')
@@ -241,7 +225,7 @@ class Draw_Texture_Characteristics(object):
         tamura_feature_table.set_fontsize(8)
         plt.axis('off')
      
-    @timmer
+    @TestScripts.timmer
     def __draw_texture_characteristics_dwt_feature(self):
         plt.figure()
         plt.title('dwt')
@@ -268,7 +252,7 @@ class Draw_Texture_Characteristics(object):
         dwt_feature_table.auto_set_font_size(False)
         dwt_feature_table.set_fontsize(8)
         plt.axis('off')
-    @timmer   
+    @TestScripts.timmer   
     def __draw_texture_characteristics_laws_feature(self):
         plt.figure()
         plt.title('laws')
@@ -315,7 +299,7 @@ class Draw_Texture_Characteristics(object):
         # print('dwf feature finished')
         self.__draw_texture_characteristics_laws_feature()
         # print('laws feature finished')
-        plt.show()
+        # plt.show()
         
     def __init__(self, matrix_a, matrix_b):
         self.matrix_a = matrix_a
@@ -326,7 +310,7 @@ class Draw_Texture_Characteristics(object):
      
     
 class Draw_LossAboutColor_Characteristics(object):
-    @timmer
+    @TestScripts.timmer
     def __draw_loss_DSLRQualityPhotos_ICCV2017(self):
         plt.figure()
         plt.title('loss--DSLR-Quality Photos on Mobile \nDevices with Deep Convolutional Networks(ICCV 2017)')        
@@ -338,7 +322,7 @@ class Draw_LossAboutColor_Characteristics(object):
         loss_table.set_fontsize(8)
         plt.axis('off')
         
-    @timmer
+    @TestScripts.timmer
     def __draw_loss_UnderexposedPhoto_CVPR2019(self):
         plt.figure()
         plt.title('loss--Underexposed Photo \n Enhancement using Deep Illumination Estimation(CVPR 2019)')
@@ -350,7 +334,7 @@ class Draw_LossAboutColor_Characteristics(object):
         loss_table.set_fontsize(8)
         plt.axis('off')
     
-    @timmer
+    @TestScripts.timmer
     def __draw_loss_RangeScalingGlobalUNet_ECCV2018(self):
         plt.figure()
         plt.title('loss--Range Scaling Global U-Net for Perceptual \nImage Enhancement on Mobile Devices(ECCV-PIRM2018)')        
@@ -362,7 +346,7 @@ class Draw_LossAboutColor_Characteristics(object):
         loss_table.set_fontsize(8)
         plt.axis('off')
         
-    @timmer    
+    @TestScripts.timmer    
     def __draw_loss_LossFunctions_IEEE2017(self):
         plt.figure()
         plt.title('loss--Loss Functions for \n Image Restoration with Neural Networks(IEEE2017)')        
@@ -384,7 +368,7 @@ class Draw_LossAboutColor_Characteristics(object):
         # print('loss--Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices(ECCV-PIRM2018) -- finished')
         self.__draw_loss_LossFunctions_IEEE2017()
         # print('loss--Loss Functions for Image Restoration with Neural Networks(IEEE2017) -- finished')
-        plt.show()
+        # plt.show()
     def __init__(self, img_a, img_b):
         self.img_a = img_a
         self.img_b = img_b
