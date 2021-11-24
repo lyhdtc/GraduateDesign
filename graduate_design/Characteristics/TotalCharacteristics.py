@@ -1,11 +1,12 @@
-
+import sys
+sys.path.append('../test/')
 import numpy as np
 from matplotlib import pyplot as plt
 import ColorCharacteristics as cc
 import TextureCharacteristics as tc
 import LossAboutColor as lac
-
-from tests import TestScripts
+import TestScripts
+# from tests.TestScripts import TestScripts
 
 RGB_COLOR_CHANNEL = {
     0: 'r',
@@ -289,17 +290,17 @@ class Draw_Texture_Characteristics(object):
         
         
     def draw_texture_characteristics(self):
-        self.__draw_texture_characteristics_glcm_feature()
-        # print('glcm finished!')
-        self.__draw_texture_characteristics_lbp()
-        # print('lbp finished')
+        # self.__draw_texture_characteristics_glcm_feature()
+        
+        # self.__draw_texture_characteristics_lbp()
+       
         self.__draw_texture_characteristics_tamura_feature()
-        # print('tamura feature finished')
-        self.__draw_texture_characteristics_dwt_feature()
-        # print('dwf feature finished')
-        self.__draw_texture_characteristics_laws_feature()
-        # print('laws feature finished')
-        # plt.show()
+        
+        # self.__draw_texture_characteristics_dwt_feature()
+        
+        # self.__draw_texture_characteristics_laws_feature()
+        
+        plt.show()
         
     def __init__(self, matrix_a, matrix_b):
         self.matrix_a = matrix_a

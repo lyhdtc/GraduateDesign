@@ -1,12 +1,14 @@
+import sys
+sys.path.append('../test/')
 import numpy as np
 import math
 import pywt
 from scipy import signal as sg
 from skimage.feature import local_binary_pattern
-
-from tests import TestScripts
+import cv2
+import TestScripts
 np.set_printoptions(suppress=True)
-
+import time
 
 
 
@@ -208,6 +210,8 @@ def __tamura_contrast(gray_img):
 # 方向度
 # 给定纹理区域的全局特性，描述纹理如何沿着某些方向发散或者集中的
 # 输入为图像
+
+
 @TestScripts.timmer
 def __tamura_directionality(gray_img):
 	gray_img = np.array(gray_img, dtype = 'int64')
@@ -276,40 +280,90 @@ def __tamura_directionality(gray_img):
 
 # 线性度
 # 输入为图片，tamura_directionality输出的矩阵，共生矩阵计算时的像素间隔距离 
+
+# created by lyh 2021.11.24
+# 之前的版本运行时间过长，重写了线性度的计算函数
 @TestScripts.timmer
 def __tamura_linelikeness(gray_img, theta, dist):
-    # http://www.skcircle.com/?id=1496
-    # 建立方向向量，分别为左上、中上、右上、左中、右中、左下、中下、右下
-    DIRECTION = [[-dist,-dist],[-dist,0],[dist,0],[0,-dist],[0,dist],[dist,-dist],[dist,0],[dist,dist]]
-    # n这里默认取16了，具体原因还得再看看
     n = 16
     h = gray_img.shape[0]
     w = gray_img.shape[1]
     pi = 3.1415926
     dcm = np.zeros((8,n,n))
-    # 遍历图像中间区域（因为考虑到步长的问题不能从最边缘开始）
-    for i in range(dist+1, h-dist-2):
-        for j in range(dist+1, w-dist-2):
-            # 共生矩阵遍历
-            for m1 in range(1,n):
-                for m2 in range(1,n):
-                    # 每一个方向上判断，满足条件共生矩阵对应位置加一
-                    for d in range(8):                        
-                        if((theta[i][j]>=((2*(m1-1)*pi)/(2*n))) and (theta[i][j]<(((2*(m1-1)+1)*pi)/(2*n))) and (theta[i+DIRECTION[d][0]][j+DIRECTION[d][1]]>=((2*(m1-1)*pi)/(2*n))) and (theta[i+DIRECTION[d][0]][j+DIRECTION[d][1]]<(((2*(m1-1)+1)*pi)/(2*n)))):
-                            dcm[d][m1][m2] += 1
-    # print('part1 finished')
+    dir = np.float32([   [[1,0,-dist],   [0,1,-dist]],
+                    [[1,0,-dist],   [0,1,0]],
+                    [[1,0,dist],    [0,1,0]],
+                    [[1,0,0],       [0,1,-dist]],
+                    [[1,0,0],       [0,1,dist]],
+                    [[1,0,dist],    [0,1,-dist]],
+                    [[1,0,dist],    [0,1,0]],
+                    [[1,0,dist],    [0,1,dist]]
+                 ])
+    cooccurrence_matrixes = []
+    for i in range(8):
+        cooccurrence_matrixes.append(cv2.warpAffine(theta, dir[i], (w,h)))
+        
+    for m1 in range(1,n):
+        for m2 in range(1,n):
+            for d in range(8):
+                m_theta_bottom = ( theta>=((2*(m1-1)*pi)/(2*n)) )
+                m_theta_top = (theta<(((2*(m1-1)+1)*pi)/(2*n)) )  
+                m_theta = np.logical_and(m_theta_bottom, m_theta_top)
+                m_ccoccurrence_matrixes_bottom = ( cooccurrence_matrixes[d]>=((2*(m2-1)*pi)/(2*n)))
+                m_ccoccurrence_matrixes_top = ( cooccurrence_matrixes[d]<(((2*(m2-1)+1)*pi)/(2*n)))
+                m_ccoccurrence_matrixes = np.logical_and(m_ccoccurrence_matrixes_bottom, m_ccoccurrence_matrixes_top)
+                dcm_matrix = np.logical_and(m_theta, m_ccoccurrence_matrixes)
+                dcm_matrix = dcm_matrix.astype(int)
+                dcm[d][m1][m2] = np.sum(dcm_matrix)                
     matrix_f = np.zeros((1,8))
     matrix_g = np.zeros((1,8))
     for i in range(n):
         for j in range(n):
             for d in range(8):
                 matrix_f[0][d] += dcm[d][i][j]*(math.cos((i-j)*2*pi/n))
-                matrix_g[0][d] += dcm[d][i][j]
-    # print('part2 finished')            
+                matrix_g[0][d] += dcm[d][i][j]          
     matrix_res = matrix_f/matrix_g
     res = np.max(matrix_res)
-    return res
-	
+    return res	
+
+# @TestScripts.timmer
+# def __tamura_linelikeness(gray_img, theta, dist):
+#     # http://www.skcircle.com/?id=1496
+#     # 建立方向向量，分别为左上、中上、右上、左中、右中、左下、中下、右下
+#     DIRECTION = [[-dist,-dist],[-dist,0],[dist,0],[0,-dist],[0,dist],[dist,-dist],[dist,0],[dist,dist]]
+#     # n这里默认取16了，具体原因还得再看看
+#     n = 16
+#     h = gray_img.shape[0]
+#     w = gray_img.shape[1]
+#     pi = 3.1415926
+#     dcm = np.zeros((8,n,n))
+#     round1begin = time.perf_counter()
+#     # 遍历图像中间区域（因为考虑到步长的问题不能从最边缘开始）
+#     for i in range(dist+1, h-dist-2):
+#         for j in range(dist+1, w-dist-2):
+#             # 共生矩阵遍历
+#             for m1 in range(1,n):
+#                 for m2 in range(1,n):
+#                     # 每一个方向上判断，满足条件共生矩阵对应位置加一
+#                     for d in range(8):                        
+#                         if((theta[i][j]>=((2*(m1-1)*pi)/(2*n))) and (theta[i][j]<(((2*(m1-1)+1)*pi)/(2*n))) and (theta[i+DIRECTION[d][0]][j+DIRECTION[d][1]]>=((2*(m2-1)*pi)/(2*n))) and (theta[i+DIRECTION[d][0]][j+DIRECTION[d][1]]<(((2*(m2-1)+1)*pi)/(2*n)))):
+#                             dcm[d][m1][m2] += 1
+#     round1end = time.perf_counter()
+#     print('part1 finished, total time is {_funcname_}s'.format(_funcname_ = round1end - round1begin))
+#     matrix_f = np.zeros((1,8))
+#     matrix_g = np.zeros((1,8))
+#     round2begin = time.perf_counter()
+#     for i in range(n):
+#         for j in range(n):
+#             for d in range(8):
+#                 matrix_f[0][d] += dcm[d][i][j]*(math.cos((i-j)*2*pi/n))
+#                 matrix_g[0][d] += dcm[d][i][j]
+#     round2end = time.perf_counter()
+#     print('part2 finished, total time is {_funcname_}s'.format(_funcname_ = round2end - round2begin))           
+#     matrix_res = matrix_f/matrix_g
+#     res = np.max(matrix_res)
+#     return res
+
 
 #规整度
 def __tamura_regularity(gray_img, filter):
