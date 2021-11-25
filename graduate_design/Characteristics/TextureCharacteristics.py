@@ -157,7 +157,6 @@ def tamura_feature(gray_img, kmax, dist):
 # 粗糙度 coarseness
 # 用来反映纹理粒度
 # 输入为图像，活动窗口的尺寸（边长为2^kmax）
-@TestScripts.timmer
 def __tamura_coarseness(gray_img, kmax):
 	gray_img = np.array(gray_img)
 	w = gray_img.shape[0]
@@ -196,7 +195,6 @@ def __tamura_coarseness(gray_img, kmax):
 # 对比度
 # 是通过对像素强度分布情况的统计得到的，其大小由四个因素决定：灰度动态范围、直方图上黑白部分两极分化程度、边缘锐度和重复模式的周期。一般情况下，对比度指前面两个因素。
 # 输入为图像
-@TestScripts.timmer
 def __tamura_contrast(gray_img):
 	gray_img = np.array(gray_img)
 	gray_img = np.reshape(gray_img, (1, gray_img.shape[0]*gray_img.shape[1]))
@@ -210,9 +208,6 @@ def __tamura_contrast(gray_img):
 # 方向度
 # 给定纹理区域的全局特性，描述纹理如何沿着某些方向发散或者集中的
 # 输入为图像
-
-
-@TestScripts.timmer
 def __tamura_directionality(gray_img):
 	gray_img = np.array(gray_img, dtype = 'int64')
 	h = gray_img.shape[0]
@@ -283,7 +278,6 @@ def __tamura_directionality(gray_img):
 
 # created by lyh 2021.11.24
 # 之前的版本运行时间过长，重写了线性度的计算函数
-@TestScripts.timmer
 def __tamura_linelikeness(gray_img, theta, dist):
     n = 16
     h = gray_img.shape[0]
@@ -479,5 +473,4 @@ def  laws_feature(gray_img):
     texture_maps.append(__norm((conv_maps[:, :, 11]+conv_maps[:, :, 14])//2))
     
     return texture_maps
-
 
