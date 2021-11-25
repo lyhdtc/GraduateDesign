@@ -9,9 +9,9 @@ import TestScripts
 # from tests.TestScripts import TestScripts
 
 RGB_COLOR_CHANNEL = {
-    0: 'r',
+    0: 'b',
     1: 'g',
-    2: 'b'
+    2: 'r'
 }
 
 
@@ -61,7 +61,7 @@ class Draw_Color_Characteristics(object):
         plt.axis('off')
         # color_moments_table.scale(0.5,0.5) 
     
-    
+    # 颜色聚合向量
     @TestScripts.timmer  
     def __draw_color_characteristics_color_coherence_vector(self):
         plt.figure(figsize=(15,8))
@@ -144,6 +144,7 @@ class Draw_Color_Characteristics(object):
     
     
 class Draw_Texture_Characteristics(object):
+    # 灰度共生矩阵
     @TestScripts.timmer
     def __draw_texture_characteristics_glcm_feature(self):
         plt.figure()
@@ -177,6 +178,7 @@ class Draw_Texture_Characteristics(object):
         glcm_feaure_table.set_fontsize(8)
         plt.axis('off')
     
+    # 局部二值
     @TestScripts.timmer
     def __draw_texture_characteristics_lbp(self):
         plt.figure(figsize=(10,5))
@@ -200,6 +202,7 @@ class Draw_Texture_Characteristics(object):
         plt.tight_layout()
         plt.plot()
     
+    # Tamura特征
     @TestScripts.timmer
     def __draw_texture_characteristics_tamura_feature(self):
         plt.figure()
@@ -225,7 +228,8 @@ class Draw_Texture_Characteristics(object):
         tamura_feature_table.auto_set_font_size(False)
         tamura_feature_table.set_fontsize(8)
         plt.axis('off')
-     
+    
+    # 小波变换
     @TestScripts.timmer
     def __draw_texture_characteristics_dwt_feature(self):
         plt.figure()
@@ -253,6 +257,8 @@ class Draw_Texture_Characteristics(object):
         dwt_feature_table.auto_set_font_size(False)
         dwt_feature_table.set_fontsize(8)
         plt.axis('off')
+        
+    # laws纹理测量
     @TestScripts.timmer   
     def __draw_texture_characteristics_laws_feature(self):
         plt.figure()
@@ -275,11 +281,11 @@ class Draw_Texture_Characteristics(object):
             plt.subplot(9,6,2*i+1)
             origin_a_label = RGB_COLOR_CHANNEL.get(i) + '_img_a_original'
             plt.imshow(self.matrix_a[i], 'gray')
-            plt.suptitle(origin_a_label)
+            # plt.suptitle(origin_a_label)
             plt.subplot(9,6,2*i+2)
             origin_b_label = RGB_COLOR_CHANNEL.get(i) + '_img_b_original'
             plt.imshow(self.matrix_b[i], 'gray')
-            plt.suptitle(origin_b_label)
+            # plt.suptitle(origin_b_label)
         for i in range(6):
             for j in range(8):
                 plt.subplot(9,6,6+6*j+i+1)
@@ -290,17 +296,17 @@ class Draw_Texture_Characteristics(object):
         
         
     def draw_texture_characteristics(self):
-        # self.__draw_texture_characteristics_glcm_feature()
+        self.__draw_texture_characteristics_glcm_feature()
         
-        # self.__draw_texture_characteristics_lbp()
+        self.__draw_texture_characteristics_lbp()
        
         self.__draw_texture_characteristics_tamura_feature()
         
-        # self.__draw_texture_characteristics_dwt_feature()
+        self.__draw_texture_characteristics_dwt_feature()
         
-        # self.__draw_texture_characteristics_laws_feature()
+        self.__draw_texture_characteristics_laws_feature()
         
-        plt.show()
+        # plt.show()
         
     def __init__(self, matrix_a, matrix_b):
         self.matrix_a = matrix_a
