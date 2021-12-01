@@ -9,3 +9,6 @@ startxfce4
 
 删除虚拟环境
 conda env remove --name your_env_name
+
+调用资源监视器
+gnome-system-monitor

@@ -20,14 +20,16 @@ def get_img(path):
 
 if __name__=="__main__":
     print('Start!')
-    path_a = 'graduate_design/Data/cornelbox_measured1.jpg'
-    path_b = 'graduate_design/Data/cornelbox_measured1.jpg'
+    path_a = 'graduate_design/Data/Roughness_0.jpg'
+    path_b = 'graduate_design/Data/Roughness_0.jpg'
     img_a = cv2.imread(path_a)
     img_b = cv2.imread(path_b)    
 
     matrix_a =  cv2.split(img_a)
     matrix_b =  cv2.split(img_b)
-    rgb_img_b, r_img_b, g_img_b, b_img_b = get_img(path_b)
+    print(np.shape(matrix_a))
+    print(np.shape(matrix_b))
+    # rgb_img_b, r_img_b, g_img_b, b_img_b = get_img(path_b)
 
     drawpic_cc = TotalCharacteristics.Draw_Color_Characteristics(matrix_a, matrix_b)    
     drawpic_cc.draw_color_characteristics()
