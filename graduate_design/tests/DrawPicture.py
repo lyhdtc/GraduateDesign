@@ -6,8 +6,9 @@ from matplotlib import pyplot as plt
 import ColorCharacteristics as cc
 import TextureCharacteristics as tc
 import LossAboutColor as lac
-import TotalCharacteristics
+import MatPlob_Characteristics
 import profile
+import FakeColor_Characteristics as fcc
 
 
 
@@ -20,8 +21,8 @@ def get_img(path):
 
 if __name__=="__main__":
     print('Start!')
-    path_a = 'graduate_design/Data/Roughness_0.jpg'
-    path_b = 'graduate_design/Data/Roughness_0.jpg'
+    path_a = 'graduate_design/Data/aaa.jpg'
+    path_b = 'graduate_design/Data/bbb.jpg'
     img_a = cv2.imread(path_a)
     img_b = cv2.imread(path_b)    
 
@@ -31,16 +32,16 @@ if __name__=="__main__":
     print(np.shape(matrix_b))
     # rgb_img_b, r_img_b, g_img_b, b_img_b = get_img(path_b)
 
-    drawpic_cc = TotalCharacteristics.Draw_Color_Characteristics(matrix_a, matrix_b)    
-    drawpic_cc.draw_color_characteristics()
-    drawpic_tc = TotalCharacteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
-    drawpic_tc.draw_texture_characteristics()
-    # tc.test_linelikeness(r_img_b, r_img_b, 4)
-    drawpic_lac = TotalCharacteristics.Draw_LossAboutColor_Characteristics(img_a, img_b)
-    drawpic_lac.draw_loss_about_color()
-    # profile.run('drawpic_cc.draw_color_characteristics()')
+    # drawpic_cc = MatPlob_Characteristics.Draw_Color_Characteristics(matrix_a, matrix_b)    
+    # drawpic_cc.draw_color_characteristics()
+    # drawpic_tc = MatPlob_Characteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
+    # drawpic_tc.draw_texture_characteristics()
+    # # tc.test_linelikeness(r_img_b, r_img_b, 4)
+    # drawpic_lac = MatPlob_Characteristics.Draw_LossAboutColor_Characteristics(img_a, img_b)
+    # drawpic_lac.draw_loss_about_color()
+    # # profile.run('drawpic_cc.draw_color_characteristics()')
 
-    plt.show()
+    # plt.show()
     
     # dir = np.float32([[1,0,400],[0,1,400]])
     # print(type(dir))
@@ -48,3 +49,11 @@ if __name__=="__main__":
     # ajs = cv2.warpAffine(img_a, dir, (1920,1080))
     # cv2.imshow("adsfa",ajs)
     # cv2.waitKey(0)
+    
+    ans = fcc.single_channel_fake_color(matrix_a[1],matrix_b[1], cc.color_moments, 20, 20)
+    ans = (255*ans) / np.max(ans)
+    ans = ans.astype(np.uint8)
+    ans_fakecolor = cv2.applyColorMap(ans, cv2.COLORMAP_JET)
+    cv2.imshow('adfaf', ans)
+    cv2.waitKey(0)
+    
