@@ -50,10 +50,14 @@ if __name__=="__main__":
     # cv2.imshow("adsfa",ajs)
     # cv2.waitKey(0)
     
-    ans = fcc.single_channel_fake_color(matrix_a[1],matrix_b[1], cc.color_moments, 20, 20)
-    ans = (255*ans) / np.max(ans)
-    ans = ans.astype(np.uint8)
-    ans_fakecolor = cv2.applyColorMap(ans, cv2.COLORMAP_JET)
-    cv2.imshow('adfaf', ans)
-    cv2.waitKey(0)
+    
+        
+    fcc.single_channel_fake_color(matrix_a,matrix_b, lac.loss_DSLRQualityPhotos_ICCV2017, size_w=20, size_h=20)
+    plt.show()
+    # ans2 = (255*ans2) / np.max(ans2)
+    # ans2 = ans2.astype(np.uint8)
+    # ans2_fakecolor = cv2.applyColorMap(ans2, cv2.COLORMAP_JET)
+    # cv2.imshow('111', ans_fakecolor)
+    # # cv2.imshow('adfa222f', ans2_fakecolor)
+    # cv2.waitKey(0)
     
