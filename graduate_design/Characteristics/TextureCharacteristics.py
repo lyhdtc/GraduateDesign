@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../test/')
+sys.path.append('graduate_design/tests')
 import numpy as np
 import math
 import pywt
@@ -394,7 +394,11 @@ def dwt_feature(gray_img, wave_func = "haar"):
 
 def __dwt(gray_img, wave_func):
     ca,(ch, cv, cd) = pywt.dwt2(gray_img, wave_func)
+    
     res = np.array([__norm(ca),__norm(ch),__norm(cv),__norm(cd)])
+    np.nan_to_num(res)
+    # print(res)
+    # res = np.array([ca,ch,cv,cd])
     return res
 
 

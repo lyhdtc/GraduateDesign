@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../test/')
+sys.path.append('graduate_design/tests')
 import numpy as np
 from matplotlib import pyplot as plt
 import ColorCharacteristics as cc
@@ -296,13 +296,13 @@ class Draw_Texture_Characteristics(object):
         
         
     def draw_texture_characteristics(self):
-        self.__draw_texture_characteristics_glcm_feature()
+        # self.__draw_texture_characteristics_glcm_feature()
         
-        self.__draw_texture_characteristics_lbp()
+        # self.__draw_texture_characteristics_lbp()
        
-        self.__draw_texture_characteristics_tamura_feature()
+        # self.__draw_texture_characteristics_tamura_feature()
         
-        self.__draw_texture_characteristics_dwt_feature()
+        # self.__draw_texture_characteristics_dwt_feature()
         
         self.__draw_texture_characteristics_laws_feature()
         

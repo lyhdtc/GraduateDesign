@@ -12,3 +12,8 @@ conda env remove --name your_env_name
 
 调用资源监视器
 gnome-system-monitor
+
+vscode双屏显示
+ctrl + shift + P
+输入下面内容即可
+Workspace: Duplicate As Workspace in New Window

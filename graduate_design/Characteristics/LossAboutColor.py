@@ -152,7 +152,7 @@ def __msssim(img1,img2):
 
     # print(np.power(mcs_array[:level-1],weight[:level-1]))
     # print(mssim_array[level-1]**weight[level-1])
-    overall_mssim = np.prod(np.power(mcs_array[:level-1],weight[:level-1]))*(mssim_array[level-1]**weight[level-1])
+    overall_mssim = np.prod(np.power(mcs_array[level-1],weight[level-1]))*(mssim_array[level-1]**weight[level-1])
 
     return overall_mssim
 
