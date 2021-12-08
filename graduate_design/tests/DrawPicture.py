@@ -43,12 +43,12 @@ if __name__=="__main__":
     # ans = tc.glcm_feature(matrix_a[1],1,0)
     # print(ans)
     
-    # fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = 20, size_w = 20, size_h =20, folder = 'graduate_design/Results/')
-    # fakecolor_tc.fakecolor_texture_characteristics()
+    fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = 20, size_w = 40, size_h =40, folder = 'graduate_design/Results/')
+    fakecolor_tc.fakecolor_texture_characteristics()
 
 
-    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = 20, size_w = 20, size_h =20, folder = 'graduate_design/Results/')
-    fakecolor_lac.fakecolor_loss_about_color()
+    # fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = 20, size_w = 20, size_h =20, folder = 'graduate_design/Results/')
+    # fakecolor_lac.fakecolor_loss_about_color()
     # drawpic_tc = MatPlob_Characteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
     # drawpic_tc.draw_texture_characteristics()
     # plt.show()

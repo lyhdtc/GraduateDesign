@@ -15,7 +15,8 @@ import time
 # 工具函数
 # 将数组转换为0-255
 def __norm(ar):
-    return 255.*np.absolute(ar)/np.max(ar)
+    # if(np.max(ar)==0):print(ar)
+    return 255.*np.absolute(ar)/(np.max(ar)+1e-7)
 
 #————————————————————————————灰度共生矩阵————————————————————————————————
 # 输入图片和需要的灰度共生矩阵特征，输出对应的特征
@@ -394,6 +395,7 @@ def dwt_feature(gray_img, wave_func = "haar"):
 
 def __dwt(gray_img, wave_func):
     ca,(ch, cv, cd) = pywt.dwt2(gray_img, wave_func)
+    delta = 1e-7
     
     res = np.array([__norm(ca),__norm(ch),__norm(cv),__norm(cd)])
     np.nan_to_num(res)

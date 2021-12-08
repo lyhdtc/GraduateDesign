@@ -19,12 +19,14 @@ RGB_COLOR_CHANNEL = {
 
 # TODO:
 # cc.color_coherence_vector输出为二维向量(fixed)
-# tc.glcm_feature貌似存在越界情况(fixed)
-# tc.rotation_invariant_LBP本身输出就是灰度图了(fixed)
+# tc.glcm_feature貌似存在越界情况(fixed，把窗口放大了，不知道为啥20*20跑不了)
+# tc.rotation_invariant_LBP本身输出就是灰度图了(fixed，直接套用了表格的图)
 # tc.tamura_feature需要多核优化，且输出为空白
-# tc.dwt_feature输出为全白，需要看下代码
-# tc.laws_feature本身输出就是一组图像了(fixed)
-# loss function 输入为彩色图像，还需要重写一组(fixed)
+# tc.dwt_feature输出为全白，需要看下代码(fixed,__norm(ar):分母除0，增加了一个1e-7)
+# tc.laws_feature本身输出就是一组图像了(fixed，直接套用了表格的图)
+# loss function 输入为彩色图像，还需要重写一组
+#       (fixed，出现了空白输出的情况，排查代码发现__msssim(img1,img2)最后计算overall_mssim的时候写成了
+#       mcs_array[：level-1],weight[:level-1]，目前参照了其他几个人的代码把冒号去掉了（不排除是之前写错了））
 
 
 # 三通道伪彩色，目前是为损失函数写的，故func调用了两张图片作为参数（与单通道不同）
@@ -238,6 +240,7 @@ class FakeColor_Color_Characteristics(object):
         
 class FakeColor_Texture_Characteristecs(object):
     
+    # !窗口是20*20跑不了，40*40可以。。。
     @TestScripts.timmer
     def __fakecolor_texture_characteristics_glcm_feature(self):
         glcm_feature_label = ['Energy', 'Entropy', 'Contrast', 'IDM']
@@ -252,7 +255,7 @@ class FakeColor_Texture_Characteristecs(object):
                 ans = single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], tc.glcm_feature, self.step, self.size_w, self.size_h,d_x=DIRECTION.get(j)[0],d_y=DIRECTION.get(j)[1])
                 
                 for k in range(ans.shape[0]):
-                    path = self.folder + 'Texture_GLCMFeature'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))+'_'+glcm_feature_label[k]+'.jpg'
+                    path = self.folder + 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))+'_'+glcm_feature_label[k]+'.jpg'
                     ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                     print(path)
                     plt.figure()
@@ -312,7 +315,7 @@ class FakeColor_Texture_Characteristecs(object):
                 plt.close()
         return
     
-    # TODO:out put nan need to be solved
+    # TODO:output nan need to be solved
     @TestScripts.timmer
     def __fakecolor_texture_characteristics_dwt_feature(self):
         wave_func = 'haar'
@@ -360,8 +363,8 @@ class FakeColor_Texture_Characteristecs(object):
         # TODO:mutithread needed
         # self.__fakecolor_texture_characteristics_glcm_feature()
         # self.__fakecolor_texture_characteristics_lbp()
-        self.__fakecolor_texture_characteristics_tamura_feature()
-        # self.__fakecolor_texture_characteristics_dwt_feature()
+        # self.__fakecolor_texture_characteristics_tamura_feature()
+        self.__fakecolor_texture_characteristics_dwt_feature()
         # self.__fakecolor_texture_characteristics_laws_feature()
         return
     
