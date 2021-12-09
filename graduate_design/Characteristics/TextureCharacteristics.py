@@ -204,8 +204,8 @@ def __tamura_contrast(gray_img):
 	m4 = np.mean(np.power(gray_img - np.mean(gray_img),4))
 	v = np.var(gray_img)
 	std = np.power(v, 0.5)
-	alfa4 = m4 / np.power(v,2)
-	fcon = std / np.power(alfa4, 0.25)
+	alfa4 = m4 / np.power(v+1e-7,2)
+	fcon = std / np.power(alfa4+1e-7, 0.25)
 	return fcon
 
 # 方向度
@@ -259,9 +259,10 @@ def __tamura_directionality(gray_img):
 
 	n = 16
 	t = 12
+    
 	cnt = 0
 	hd = np.zeros(n)
-    
+ 
 	dlen = deltaG_vec.shape[0]
 	for ni in range(n):
 		for k in range(dlen):
@@ -269,7 +270,7 @@ def __tamura_directionality(gray_img):
 				hd[ni] += 1
     
     
-	hd = hd / np.mean(hd)
+	hd = hd / np.mean(hd+1e-7)
 	hd_max_index = np.argmax(hd)
 	fdir = 0
 	for ni in range(n):

@@ -9,7 +9,7 @@ import ColorCharacteristics as cc
 import TextureCharacteristics as tc
 import LossAboutColor as lac
 import TestScripts
-
+import time
 
 RGB_COLOR_CHANNEL = {
     0: 'b',
@@ -30,7 +30,7 @@ RGB_COLOR_CHANNEL = {
 
 
 # 三通道伪彩色，目前是为损失函数写的，故func调用了两张图片作为参数（与单通道不同）
-def rgb_channel_slide_window_parameters(rgb_img_a, rgb_img_b, func , step = 8, size_w = 0, size_h = 0, *args, **kwargs):
+def rgb_channel_slide_window_parameters(rgb_img_a, rgb_img_b, func , step = 8, size_w = 40, size_h = 40, *args, **kwargs):
     w = rgb_img_a.shape[0]
     h = rgb_img_a.shape[1]
     if((w%size_w!=0)or(h%size_h!=0)):
@@ -57,16 +57,35 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
         print('Please check slide window SIZE!')
         return
     ans_a = []
-    ans_b = []    
+    ans_b = []   
+    #!
+    start_time = time.perf_counter() 
+    signal_single = False
+    signal_inside = False
     for i in range(int(w/step)):
         raw_a = []
         raw_b = []
+        #!
+        start_time_inside = time.perf_counter() 
         for j in range(int(h/step)): 
-            if(i*step+size_w>=w)or(j*step+size_h>=h):break           
+            if(i*step+size_w>=w)or(j*step+size_h>=h):break   
+            start_time_single = time.perf_counter()        
             raw_a.append(func(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+            end_time_single = time.perf_counter() 
+            if(signal_single==False):
+                print('单指令共运行了 {_time_}秒'.format(_time_=(end_time_single - start_time_single)))
+                signal_single=True
             raw_b.append(func(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+        #!
+        end_time_inside = time.perf_counter() 
+        if(signal_inside==False):
+            print('内循环共运行了 {_time_}秒'.format(_time_=(end_time_inside - start_time_inside)))
+            signal_inside=True
         if(raw_a!=[]):ans_a.append(raw_a)
-        if(raw_b!=[]):ans_b.append(raw_b)   
+        if(raw_b!=[]):ans_b.append(raw_b) 
+    #!
+    end_time = time.perf_counter()  
+    print('循环共运行了 {_time_}秒'.format(_time_=(end_time - start_time)))
     ans_a = np.array(ans_a)
     ans_b = np.array(ans_b)
     ans = np.abs(ans_a-ans_b)
@@ -298,6 +317,7 @@ class FakeColor_Texture_Characteristecs(object):
         kmax = 3    
         dist = 4
         tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness']
+        # tamura_label = ['contrast']
         for i in range(3):
             ans = single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], tc.tamura_feature, self.step, self.size_w, self.size_h, kmax=kmax, dist=dist)
           
@@ -363,8 +383,8 @@ class FakeColor_Texture_Characteristecs(object):
         # TODO:mutithread needed
         # self.__fakecolor_texture_characteristics_glcm_feature()
         # self.__fakecolor_texture_characteristics_lbp()
-        # self.__fakecolor_texture_characteristics_tamura_feature()
-        self.__fakecolor_texture_characteristics_dwt_feature()
+        self.__fakecolor_texture_characteristics_tamura_feature()
+        # self.__fakecolor_texture_characteristics_dwt_feature()
         # self.__fakecolor_texture_characteristics_laws_feature()
         return
     

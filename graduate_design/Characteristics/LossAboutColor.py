@@ -133,7 +133,7 @@ def __msssim(img1,img2):
 
     M,N = img1.shape
     H,W = win.shape
-
+    
     downsample_filter = np.ones((2,2))/4
     img1 = img1.astype(np.float32)
     img2 = img2.astype(np.float32)
