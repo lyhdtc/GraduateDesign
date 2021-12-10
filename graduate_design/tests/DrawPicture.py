@@ -23,8 +23,8 @@ def get_img(path):
 if __name__=="__main__":
     start_time = time.perf_counter()
     print('Start!')
-    path_a = 'graduate_design/Data/aaa.jpg'
-    path_b = 'graduate_design/Data/bbb.jpg'
+    path_a = 'graduate_design/Data/Roughness_0.jpg'
+    path_b = 'graduate_design/Data/Roughness_1.jpg'
     img_a = cv2.imread(path_a)
     img_b = cv2.imread(path_b)    
 
@@ -34,8 +34,14 @@ if __name__=="__main__":
     matrix_b =  cv2.split(img_b)
     print(np.shape(matrix_a))
     print(np.shape(matrix_b))
+    
+    step = 8
+    size_w = 30 
+    size_h = 30
+    folder = 'graduate_design/Results/'
+    
      
-    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = 8, size_w = 40, size_h = 40, folder = 'graduate_design/Results/')
+    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder)
     fakecolor_cc.fakecolor_color_characteristics()
     # ans = FakeColor_Characteristics.single_channel_slide_window_pictures(matrix_a[1],matrix_b[1],func=tc.rotation_invariant_LBP,step=8,size_w=40,size_h=40)
 
@@ -45,11 +51,11 @@ if __name__=="__main__":
     # ans = tc.glcm_feature(matrix_a[1],1,0)
     # print(ans)
     
-    fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = 20, size_w = 40, size_h =40, folder = 'graduate_design/Results/')
+    fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder)
     fakecolor_tc.fakecolor_texture_characteristics()
 
 
-    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = 20, size_w = 20, size_h =20, folder = 'graduate_design/Results/')
+    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder)
     fakecolor_lac.fakecolor_loss_about_color()
     # drawpic_tc = MatPlob_Characteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
     # drawpic_tc.draw_texture_characteristics()

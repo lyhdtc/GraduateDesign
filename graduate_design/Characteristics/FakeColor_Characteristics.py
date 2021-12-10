@@ -68,8 +68,9 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
         #!
         start_time_inside = time.perf_counter() 
         for j in range(int(h/step)): 
-            if(i*step+size_w>=w)or(j*step+size_h>=h):break   
-            start_time_single = time.perf_counter()        
+            if(i*step+size_w>w)or(j*step+size_h>h):break   
+            start_time_single = time.perf_counter()   
+            # print('submat shape is {shape}'.format(shape=np.shape(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)])))     
             raw_a.append(func(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
             end_time_single = time.perf_counter() 
             if(signal_single==False):
@@ -89,6 +90,8 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
     ans_a = np.array(ans_a)
     ans_b = np.array(ans_b)
     ans = np.abs(ans_a-ans_b)
+    # print(np.shape(ans))
+    # print(ans_a)
     ans = ans.transpose(2,0,1)
     ans = (255*ans) / np.max(ans)    
     return ans
@@ -227,7 +230,7 @@ class FakeColor_Color_Characteristics(object):
         for i in range(3):
             ans = single_channel_slide_window_vectors(self.matrix_a[i], self.matrix_b[i], cc.color_coherence_vector, step = self.step, size_w=self.size_w, size_h=self.size_h, color_threshold=color_threshold, area_threshold=area_threshold)
             for j in range(ans.shape[0]):
-                path = self.folder + 'ColorCoherenceVector_'+RGB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]+'.jpg'
+                path = self.folder + 'Color_CoherenceVector_'+RGB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]+'.jpg'
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
