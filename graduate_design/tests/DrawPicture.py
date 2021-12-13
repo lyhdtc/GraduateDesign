@@ -10,7 +10,7 @@ import MatPlob_Characteristics
 import profile
 import FakeColor_Characteristics
 import time
-
+import os
 
 
 def get_img(path):
@@ -38,31 +38,23 @@ if __name__=="__main__":
     step = 8
     size_w = 30 
     size_h = 30
-    folder = 'graduate_design/Results/'
+    figsize = (18,10)
+    folder = '/home/lyh/results/test/'
+    if(not os.path.exists(folder)):
+        os.makedirs(folder)
+        print("New Folder Created!")
     
      
-    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder)
+    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
     fakecolor_cc.fakecolor_color_characteristics()
-    # ans = FakeColor_Characteristics.single_channel_slide_window_pictures(matrix_a[1],matrix_b[1],func=tc.rotation_invariant_LBP,step=8,size_w=40,size_h=40)
-
- 
     
-    
-    # ans = tc.glcm_feature(matrix_a[1],1,0)
-    # print(ans)
-    
-    fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder)
-    fakecolor_tc.fakecolor_texture_characteristics()
+    # fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    # fakecolor_tc.fakecolor_texture_characteristics()
 
-
-    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder)
-    fakecolor_lac.fakecolor_loss_about_color()
+    # fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    # fakecolor_lac.fakecolor_loss_about_color()
     # drawpic_tc = MatPlob_Characteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
     # drawpic_tc.draw_texture_characteristics()
     # plt.show()
-    end_time = time.perf_counter()  
-    print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
-    # a = np.array([[np.nan,np.nan],[np.nan,np.nan]])
-    # print(a)
-    # a = np.nan_to_num(a)
-    # print(a)
+    # end_time = time.perf_counter()  
+    # print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))

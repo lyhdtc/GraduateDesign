@@ -155,10 +155,12 @@ def single_channel_slide_window_pictures(gray_img_a, gray_img_b, func , step = 8
     # ans = (255*ans) / np.max(ans)    
     return ans
 
+# ---------------------------------------------------------------------------------
+
 class FakeColor_Color_Characteristics(object): 
     @TestScripts.timmer
     def __fakecolor_color_characteristics_histogram(self):
-        plt.figure()
+        plt.figure(figsize=self.figsize)
         plt.title('histogram')
         path = self.folder + 'Color_Histogram.jpg'
         for i in range(3):
@@ -187,7 +189,7 @@ class FakeColor_Color_Characteristics(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 print(path)
-                plt.figure()
+                plt.figure(figsize=self.figsize)
                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
@@ -209,7 +211,7 @@ class FakeColor_Color_Characteristics(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 print(path)
-                plt.figure()
+                plt.figure(figsize=self.figsize)
                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
@@ -236,7 +238,7 @@ class FakeColor_Color_Characteristics(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 print(path)
-                plt.figure()
+                plt.figure(figsize=self.figsize)
                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
@@ -251,13 +253,14 @@ class FakeColor_Color_Characteristics(object):
         self.__fakecolor_color_characteristics_color_coherence_vector()
         return
     
-    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder):
+    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):
         self.matrix_a = matrix_a
         self.matrix_b = matrix_b
         self.step = step
         self.size_w = size_w
         self.size_h = size_h   
         self.folder = folder 
+        self.figsize = figsize
         
         
 class FakeColor_Texture_Characteristecs(object):
@@ -280,7 +283,7 @@ class FakeColor_Texture_Characteristecs(object):
                     path = self.folder + 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))+'_'+glcm_feature_label[k]+'.jpg'
                     ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                     print(path)
-                    plt.figure()
+                    plt.figure(figsize=self.figsize)
                     plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                     plt.colorbar()
                     plt.savefig(path)
@@ -290,7 +293,7 @@ class FakeColor_Texture_Characteristecs(object):
     @TestScripts.timmer
     def __fakecolor_texture_characteristics_lbp(self):
         print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
-        plt.figure(figsize=(10,5))
+        plt.figure(figsize=self.figsize)
         plt.title('lbp')
         path = self.folder + 'Texture_LBP.jpg'
         for i in range(3):
@@ -331,7 +334,7 @@ class FakeColor_Texture_Characteristecs(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 print(path)
-                plt.figure()
+                plt.figure(figsize=self.figsize)
                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
@@ -356,7 +359,7 @@ class FakeColor_Texture_Characteristecs(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 print(path)
-                plt.figure()
+                plt.figure(figsize=self.figsize)
                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
@@ -376,7 +379,7 @@ class FakeColor_Texture_Characteristecs(object):
             for j in range(8):
                 path = self.folder + 'Texture_Laws_'+RGB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]+'.jpg'
                 print(path)
-                plt.figure()
+                plt.figure(figsize=self.figsize)
                 plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
@@ -384,20 +387,21 @@ class FakeColor_Texture_Characteristecs(object):
         
     def fakecolor_texture_characteristics(self):
         # TODO:mutithread needed
-        # self.__fakecolor_texture_characteristics_glcm_feature()
-        # self.__fakecolor_texture_characteristics_lbp()
+        self.__fakecolor_texture_characteristics_glcm_feature()
+        self.__fakecolor_texture_characteristics_lbp()
         self.__fakecolor_texture_characteristics_tamura_feature()
-        # self.__fakecolor_texture_characteristics_dwt_feature()
-        # self.__fakecolor_texture_characteristics_laws_feature()
+        self.__fakecolor_texture_characteristics_dwt_feature()
+        self.__fakecolor_texture_characteristics_laws_feature()
         return
     
-    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder):
+    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):
         self.matrix_a = matrix_a
         self.matrix_b = matrix_b
         self.step = step
         self.size_w = size_w
         self.size_h = size_h   
         self.folder = folder 
+        self.figsize = figsize
         
 class FakeColor_LossAboutColor_Characteristics(object):
     
@@ -409,7 +413,7 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + 'Loss_DSLRQualityPhotos_ICCV2017_'+label[j]+'.jpg'
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
-            plt.figure()
+            plt.figure(figsize=self.figsize)
             plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
             plt.colorbar()
             plt.savefig(path)
@@ -423,7 +427,7 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + 'Loss_UnderexposedPhoto_CVPR2019_'+label[j]+'.jpg'
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
-            plt.figure()
+            plt.figure(figsize=self.figsize)
             plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
             plt.colorbar()
             plt.savefig(path)
@@ -438,7 +442,7 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + 'Loss_RangeScalingGlobalUNet_ECCV2018_'+label[j]+'.jpg'
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
-            plt.figure()
+            plt.figure(figsize=self.figsize)
             plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
             plt.colorbar()
             plt.savefig(path)
@@ -452,7 +456,7 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + 'Loss_LossFunctions_IEEE2017_'+label[j]+'.jpg'
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
-            plt.figure()
+            plt.figure(figsize=self.figsize)
             plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
             plt.colorbar()
             plt.savefig(path)
@@ -464,10 +468,11 @@ class FakeColor_LossAboutColor_Characteristics(object):
         self.__fakecolor_loss_RangeScalingGlobalUNet_ECCV2018()
         self.__fakecolor_loss_LossFunctions_IEEE2017()
        
-    def __init__(self, img_a, img_b, step, size_w, size_h, folder):
+    def __init__(self, img_a, img_b, step, size_w, size_h, folder, figsize):
         self.img_a = img_a
         self.img_b = img_b
         self.step = step
         self.size_w = size_w
         self.size_h = size_h   
         self.folder = folder 
+        self.figsize = figsize
