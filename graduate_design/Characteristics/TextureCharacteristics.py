@@ -64,7 +64,7 @@ def __glcm(arr, d_x, d_y, gray_level=16):
     height, width = arr.shape
     
     arr = arr.astype(np.float64)  # 将uint8类型转换为float64，以免数据失真
-    arr = arr * (gray_level - 1) // max_gray  # 若灰度级数大于gray_level，则将图像的灰度级缩小至gray_level，减小灰度共生矩阵的大小。量化后灰度值范围：0 ~ gray_level - 1
+    arr = arr * (gray_level - 1) // (max_gray+1e-7)  # 若灰度级数大于gray_level，则将图像的灰度级缩小至gray_level，减小灰度共生矩阵的大小。量化后灰度值范围：0 ~ gray_level - 1
     ret = np.zeros([gray_level, gray_level])
     for j in range(height -  abs(d_y)):
         for i in range(width - abs(d_x)):  # range(width - d_x)  #注释为源代码，经评论指出错误后修改
