@@ -10,6 +10,9 @@ import TextureCharacteristics as tc
 import LossAboutColor as lac
 import TestScripts
 import time
+import multiprocessing
+import tqdm
+from functools import partial
 
 RGB_COLOR_CHANNEL = {
     0: 'b',
@@ -28,6 +31,126 @@ RGB_COLOR_CHANNEL = {
 #       (fixed，出现了空白输出的情况，排查代码发现__msssim(img1,img2)最后计算overall_mssim的时候写成了
 #       mcs_array[：level-1],weight[:level-1]，目前参照了其他几个人的代码把冒号去掉了（不排除是之前写错了））
 
+
+def temura_inside(j, kmax, dist, step, w,h,size_w, size_h, gray_img_a, gray_img_b, i):
+    if(i*step+size_w>w)or(j*step+size_h>h):return ([0,0,0,0],[0,0,0,0])
+    raw_a = tc.tamura_feature(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist)
+    raw_b = tc.tamura_feature(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist)
+    return (raw_a, raw_b)
+def multithread_temurafeture_single_channel_slide_window_parameters_2( gray_img_a, gray_img_b, step, size_w, size_h):
+    w = gray_img_a.shape[0]
+    h = gray_img_a.shape[1]
+    tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness']
+    kmax = 3    
+    dist = 4
+    if((w%size_w!=0)or(h%size_h!=0)):
+        print('Please check slide window SIZE!')
+        return
+    ans_a = []
+    ans_b = []   
+
+    for i in tqdm.trange(int(w/step)):
+
+        pool = multiprocessing.Pool()
+        func = partial(temura_inside, kmax = kmax, dist = dist, step = step, w = w, h = h,size_w = size_w, size_h = size_h, gray_img_a = gray_img_a, gray_img_b = gray_img_b, i = i)
+        raw= pool.map(func, range(int(h/step)))
+        # print(type(raw))
+        # for j in range(int(h/step)): 
+        #     if(i*step+size_w>w)or(j*step+size_h>h):break   
+
+            # print('submat shape is {shape}'.format(shape=np.shape(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)])))     
+            # raw_a.append(tc.tamura_feature(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist))
+
+           
+            # raw_b.append(tc.tamura_feature(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist))
+        # if i==0:print(raw)
+        pool.close()
+        pool.join()
+        # print(np.shape(raw))
+        # raw = np.array(raw)
+        # raw = raw.transpose(1,0)
+        # raw = list(raw)
+        raw = list(map(list, zip(*raw)))
+        # if i==0:print(raw)
+        # print(np.shape(raw))
+        # print(type(raw))
+        raw_a = raw[0]
+        raw_b = raw[1]
+        # if i==0 :print(raw_a)
+        # print("raw_a type is {}".format(type(raw_a)))
+        if(raw_a!=[]):ans_a.append(raw_a)
+        if(raw_b!=[]):ans_b.append(raw_b) 
+
+    ans_a = np.array(ans_a)
+    ans_b = np.array(ans_b)
+    # print(type(ans_a))
+    # print(np.shape(ans_a))
+    # print(ans_a)
+    ans = np.abs(ans_a-ans_b)
+    # print(np.shape(ans))
+    # print(ans_a)
+    ans = ans.transpose(2,0,1)
+    return ans
+
+def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a, gray_img_b, step, size_w, size_h, folder, figsize):
+    w = gray_img_a.shape[0]
+    h = gray_img_a.shape[1]
+    tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness']
+    kmax = 3    
+    dist = 4
+    if((w%size_w!=0)or(h%size_h!=0)):
+        print('Please check slide window SIZE!')
+        return
+    ans_a = []
+    ans_b = []   
+    #!
+    start_time = time.perf_counter() 
+    signal_single = False
+    signal_inside = False
+    for i in range(int(w/step)):
+        raw_a = []
+        raw_b = []
+        #!
+        start_time_inside = time.perf_counter() 
+        for j in range(int(h/step)): 
+            if(i*step+size_w>w)or(j*step+size_h>h):break   
+            start_time_single = time.perf_counter()   
+            # print('submat shape is {shape}'.format(shape=np.shape(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)])))     
+            raw_a.append(tc.tamura_feature(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist))
+            end_time_single = time.perf_counter() 
+            if(signal_single==False):
+                print('单指令共运行了 {_time_}秒'.format(_time_=(end_time_single - start_time_single)))
+                signal_single=True
+            raw_b.append(tc.tamura_feature(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist))
+        #!
+        end_time_inside = time.perf_counter() 
+        if(signal_inside==False):
+            print('内循环共运行了 {_time_}秒'.format(_time_=(end_time_inside - start_time_inside)))
+            signal_inside=True
+        if(raw_a!=[]):ans_a.append(raw_a)
+        if(raw_b!=[]):ans_b.append(raw_b) 
+    #!
+    end_time = time.perf_counter()  
+    print('循环共运行了 {_time_}秒'.format(_time_=(end_time - start_time)))
+    ans_a = np.array(ans_a)
+    ans_b = np.array(ans_b)
+    ans = np.abs(ans_a-ans_b)
+    # print(np.shape(ans))
+    # print(ans_a)
+    ans = ans.transpose(2,0,1)
+    ans = (255*ans) / np.max(ans)    
+    for j in range(ans.shape[0]):
+        path = folder + 'Texture_TamuraFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]+'.jpg'
+        ans_highsolution = cv2.resize(ans[j], None, fx=step, fy=step, interpolation=cv2.INTER_LINEAR)
+        # ans_highsolution = ans_highsolution.astype(np.uint8)
+        # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
+        # cv2.imwrite(path, ans_fakecolor)
+        print(path)
+        plt.figure(figsize=figsize)
+        plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+        plt.colorbar()
+        plt.savefig(path)
+        plt.close()
 
 # 三通道伪彩色，目前是为损失函数写的，故func调用了两张图片作为参数（与单通道不同）
 def rgb_channel_slide_window_parameters(rgb_img_a, rgb_img_b, func , step = 8, size_w = 40, size_h = 40, *args, **kwargs):
@@ -62,7 +185,7 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
     start_time = time.perf_counter() 
     signal_single = False
     signal_inside = False
-    for i in range(int(w/step)):
+    for i in tqdm.trange(int(w/step)):
         raw_a = []
         raw_b = []
         #!
@@ -77,6 +200,7 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
                 print('单指令共运行了 {_time_}秒'.format(_time_=(end_time_single - start_time_single)))
                 signal_single=True
             raw_b.append(func(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+            # print("raw_a type is {}".format(type(raw_a)))
         #!
         end_time_inside = time.perf_counter() 
         if(signal_inside==False):
@@ -84,6 +208,7 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
             signal_inside=True
         if(raw_a!=[]):ans_a.append(raw_a)
         if(raw_b!=[]):ans_b.append(raw_b) 
+        
     #!
     end_time = time.perf_counter()  
     print('循环共运行了 {_time_}秒'.format(_time_=(end_time - start_time)))
@@ -341,6 +466,59 @@ class FakeColor_Texture_Characteristecs(object):
                 plt.close()
         return
     
+    @TestScripts.timmer
+    def __multithread_fakecolor_texture_characteristics_tamura_feature_2(self):
+        kmax = 3    
+        dist = 4
+        tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness']
+        # tamura_label = ['contrast']
+        for i in range(3):
+            ans = multithread_temurafeture_single_channel_slide_window_parameters_2(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)
+          
+            for j in range(ans.shape[0]):
+                path = self.folder + 'Texture_TamuraFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]+'.jpg'
+                ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                # ans_highsolution = ans_highsolution.astype(np.uint8)
+                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
+                # cv2.imwrite(path, ans_fakecolor)
+                print(path)
+                plt.figure(figsize=self.figsize)
+                plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                plt.colorbar()
+                plt.savefig(path)
+                plt.close()
+        return
+
+
+    
+    @TestScripts.timmer
+    def __multithread_fakecolor_texture_characteristics_tamura_feature(self):
+        pool = multiprocessing.Pool()
+
+        
+        for i in range(3):
+            # param = zip[self.matrix_a[i], self.matrix_b[i], tc.tamura_feature, self.step, self.size_w, self.size_h, self.folder,kmax, dist]
+            # param = zip(self, i, tamura_label, tc.tamura_feature,kmax, dist)
+            
+            gray_img_a = self.matrix_a[i]
+            gray_img_b = self.matrix_b[i]
+            step = self.step
+            size_w = self.size_w
+            size_h = self.size_h
+            folder = self.folder
+            figsize = self.figsize
+            func = partial(multithread_temurafeture_single_channel_slide_window_parameters, gray_img_a, gray_img_b, step, size_w, size_h, folder)
+            pool.map(func, figsize)
+        pool.close()
+        pool.join()
+
+    
+    
+
+
+    
+    
+    
     # TODO:output nan need to be solved
     @TestScripts.timmer
     def __fakecolor_texture_characteristics_dwt_feature(self):
@@ -387,11 +565,12 @@ class FakeColor_Texture_Characteristecs(object):
         
     def fakecolor_texture_characteristics(self):
         # TODO:mutithread needed
-        self.__fakecolor_texture_characteristics_glcm_feature()
-        self.__fakecolor_texture_characteristics_lbp()
-        self.__fakecolor_texture_characteristics_tamura_feature()
-        self.__fakecolor_texture_characteristics_dwt_feature()
-        self.__fakecolor_texture_characteristics_laws_feature()
+        # self.__fakecolor_texture_characteristics_glcm_feature()
+        # self.__fakecolor_texture_characteristics_lbp()
+        # self.__fakecolor_texture_characteristics_tamura_feature()
+        self.__multithread_fakecolor_texture_characteristics_tamura_feature_2()
+        # self.__fakecolor_texture_characteristics_dwt_feature()
+        # self.__fakecolor_texture_characteristics_laws_feature()
         return
     
     def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):
