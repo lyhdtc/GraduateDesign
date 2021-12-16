@@ -50,14 +50,14 @@ if __name__=="__main__":
         print("New Folder Created!")
     
      
-    # fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    # fakecolor_cc.fakecolor_color_characteristics()
+    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    fakecolor_cc.fakecolor_color_characteristics()
     
     fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
     fakecolor_tc.fakecolor_texture_characteristics()
 
-    # fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    # fakecolor_lac.fakecolor_loss_about_color()
+    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    fakecolor_lac.fakecolor_loss_about_color()
     
     # drawpic_tc = MatPlob_Characteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
     # drawpic_tc.draw_texture_characteristics()
