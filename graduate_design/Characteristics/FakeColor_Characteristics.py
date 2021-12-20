@@ -68,6 +68,45 @@ def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a,
     ans = (255*ans) / np.max(ans) 
     return ans
 
+#!Abandoned ! 单任务耗时过少，开启多进程反而增加时间消耗
+# # glcm feature 多核优化版本，可以跑满cpu
+# def __glcm_inside(j, d_x, d_y, step, w,h,size_w, size_h, gray_img_a, gray_img_b, i):
+#     print(i,j)
+#     if(i*step+size_w>w)or(j*step+size_h>h):return ([0,0,0,0],[0,0,0,0])
+#     raw_a = tc.tamura_feature(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], d_x, d_y)
+#     raw_b = tc.tamura_feature(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], d_x, d_y)
+#     return (raw_a, raw_b)
+
+
+# def multithread_glcmfeature_single_channel_slide_window_parameters(gray_img_a, gray_img_b, step, size_w, size_h, d_x, d_y):
+#     w = gray_img_a.shape[0]
+#     h = gray_img_a.shape[1]
+
+#     if((w%size_w!=0)or(h%size_h!=0)):
+#         print('Please check slide window SIZE!')
+#         return
+#     ans_a = []
+#     ans_b = []
+
+#     for i in tqdm.trange(int(w/step)):
+#         pool = multiprocessing.Pool(2)
+#         func = partial(__glcm_inside, d_x=d_x, d_y=d_y, step = step, w = w, h = h,size_w = size_w, size_h = size_h, gray_img_a = gray_img_a, gray_img_b = gray_img_b, i = i)
+#         raw= pool.map(func, range(int(h/step)))
+#         pool.close()
+#         pool.join()
+#         raw = list(map(list, zip(*raw)))
+#         raw_a = raw[0]
+#         raw_b = raw[1]
+
+#         if(raw_a!=[]):ans_a.append(raw_a)
+#         if(raw_b!=[]):ans_b.append(raw_b) 
+
+#     ans_a = np.array(ans_a)
+#     ans_b = np.array(ans_b)
+#     ans = np.abs(ans_a-ans_b)
+#     ans = ans.transpose(2,0,1)
+#     ans = (255*ans) / np.max(ans) 
+#     return ans    
 
 # 三通道伪彩色，目前是为损失函数写的，故func调用了两张图片作为参数（与单通道不同）
 def rgb_channel_slide_window_parameters(rgb_img_a, rgb_img_b, func , step = 8, size_w = 40, size_h = 40, *args, **kwargs):
@@ -99,7 +138,7 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
     ans_a = []
     ans_b = []   
     #!
-    start_time = time.perf_counter() 
+    start_time = time.perf_counter()
     signal_single = False
     signal_inside = False
     for i in tqdm.trange(int(w/step)):
@@ -108,6 +147,7 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
         #!
         start_time_inside = time.perf_counter() 
         for j in range(int(h/step)): 
+            # print(i,j)
             if(i*step+size_w>w)or(j*step+size_h>h):break   
             start_time_single = time.perf_counter()   
             # print('submat shape is {shape}'.format(shape=np.shape(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)])))     
@@ -332,6 +372,31 @@ class FakeColor_Texture_Characteristecs(object):
                     plt.close()
         return
     
+    #!Abandoned ! 单任务耗时过少，开启多进程反而增加时间消耗
+    # @TestScripts.timmer
+    # def __multithread_fakecolor_texture_characteristics_glcm_feature(self):
+    #     glcm_feature_label = ['Energy', 'Entropy', 'Contrast', 'IDM']
+    #     DIRECTION = {
+    #         0: [1,0],
+    #         1: [0,1],
+    #         2: [1,1],
+    #         3: [-1,1]
+    #     }
+    #     for i in range(3):
+    #         for j in range(4):
+    #             ans = multithread_glcmfeature_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i],  self.step, self.size_w, self.size_h,d_x=DIRECTION.get(j)[0],d_y=DIRECTION.get(j)[1])
+                
+    #             for k in range(ans.shape[0]):
+    #                 path = self.folder + 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))+'_'+glcm_feature_label[k]+'.jpg'
+    #                 ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+    #                 print(path)
+    #                 plt.figure(figsize=self.figsize)
+    #                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+    #                 plt.colorbar()
+    #                 plt.savefig(path)
+    #                 plt.close()
+    #     return
+    
     @TestScripts.timmer
     def __fakecolor_texture_characteristics_lbp(self):
         print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
@@ -451,8 +516,9 @@ class FakeColor_Texture_Characteristecs(object):
                 plt.close()
         
     def fakecolor_texture_characteristics(self):
-        # TODO:mutithread needed
+        
         self.__fakecolor_texture_characteristics_glcm_feature()
+        
         self.__fakecolor_texture_characteristics_lbp()
         
         self.__multithread_fakecolor_texture_characteristics_tamura_feature()

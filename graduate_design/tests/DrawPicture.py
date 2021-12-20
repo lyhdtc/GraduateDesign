@@ -28,8 +28,8 @@ if __name__=="__main__":
     #         time.sleep(0.25)
     start_time = time.perf_counter()
     print('Start!')
-    path_a = 'graduate_design/Data/Normal_Changed.jpg'
-    path_b = 'graduate_design/Data/Normal_Unchanged.jpg'
+    path_a = 'graduate_design/Data/Model_LS.png'
+    path_b = 'graduate_design/Data/Photo_LS.png'
     img_a = cv2.imread(path_a)
     img_b = cv2.imread(path_b)    
 
@@ -44,20 +44,20 @@ if __name__=="__main__":
     size_w = 40 
     size_h = 40
     figsize = (18,10)
-    folder = '/home/lyh/results/MultiThreadTest/'
+    folder = '/home/lyh/results/GlcmMultithreadTest/'
     if(not os.path.exists(folder)):
         os.makedirs(folder)
         print("New Folder Created!")
     
      
-    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    fakecolor_cc.fakecolor_color_characteristics()
+    # fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    # fakecolor_cc.fakecolor_color_characteristics()
     
     fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
     fakecolor_tc.fakecolor_texture_characteristics()
 
-    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    fakecolor_lac.fakecolor_loss_about_color()
+    # fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    # fakecolor_lac.fakecolor_loss_about_color()
     
     # drawpic_tc = MatPlob_Characteristics.Draw_Texture_Characteristics(matrix_a, matrix_b)
     # drawpic_tc.draw_texture_characteristics()
