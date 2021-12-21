@@ -266,7 +266,10 @@ class FakeColor_Color_Characteristics(object):
             ans = single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], cc.color_moments, self.step, self.size_w, self.size_h)
             
             for j in range(ans.shape[0]):
-                path = self.folder + 'Color_ColorMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+color_moments_label[j]+'.jpg'
+                
+                label =  'Color_ColorMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+color_moments_label[j]
+                path = self.folder + label+'.jpg'
+                self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
@@ -287,7 +290,10 @@ class FakeColor_Color_Characteristics(object):
             ans = single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], cc.ordinary_moments, self.step, self.size_w, self.size_h)
             
             for j in range(ans.shape[0]):
-                path = self.folder + 'Color_OrdinaryMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+ordinary_moments_label[j]+'.jpg'
+                
+                label = 'Color_OrdinaryMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+ordinary_moments_label[j]
+                path = self.folder + label +'.jpg'
+                self.csv_generate(ans[j],label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
@@ -313,8 +319,12 @@ class FakeColor_Color_Characteristics(object):
             ccv_label.append(cur_label)
         for i in range(3):
             ans = single_channel_slide_window_vectors(self.matrix_a[i], self.matrix_b[i], cc.color_coherence_vector, step = self.step, size_w=self.size_w, size_h=self.size_h, color_threshold=color_threshold, area_threshold=area_threshold)
+            
             for j in range(ans.shape[0]):
-                path = self.folder + 'Color_CoherenceVector_'+RGB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]+'.jpg'
+                
+                label = 'Color_CoherenceVector_'+RGB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]
+                path = self.folder + label +'.jpg'
+                self.csv_generate(ans[j],label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
@@ -327,6 +337,16 @@ class FakeColor_Color_Characteristics(object):
                 plt.close()
         return
     
+    def csv_generate(self, ans, label):
+        self.csv_label.append(label)
+        cal = np.sum(ans>=10)
+        total = np.size(ans)
+        # print(cal, total, cal/total)
+        if(cal/total>0.1):
+            self.csv_data.append(1)
+        else:
+            self.csv_data.append(0)
+            
     
     def fakecolor_color_characteristics(self):
         self.__fakecolor_color_characteristics_histogram()
@@ -343,6 +363,8 @@ class FakeColor_Color_Characteristics(object):
         self.size_h = size_h   
         self.folder = folder 
         self.figsize = figsize
+        self.csv_data = []
+        self.csv_label = []
         
         
 class FakeColor_Texture_Characteristecs(object):
@@ -362,7 +384,9 @@ class FakeColor_Texture_Characteristecs(object):
                 ans = single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], tc.glcm_feature, self.step, self.size_w, self.size_h,d_x=DIRECTION.get(j)[0],d_y=DIRECTION.get(j)[1])
                 
                 for k in range(ans.shape[0]):
-                    path = self.folder + 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))+'_'+glcm_feature_label[k]+'.jpg'
+                    label = 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))
+                    path = self.folder + label+'_'+glcm_feature_label[k]+'.jpg'
+                    self.csv_generate(ans[k], label)
                     ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                     print(path)
                     plt.figure(figsize=self.figsize)
@@ -459,7 +483,9 @@ class FakeColor_Texture_Characteristecs(object):
             ans = multithread_temurafeture_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)
           
             for j in range(ans.shape[0]):
-                path = self.folder + 'Texture_TamuraFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]+'.jpg'
+                label = 'Texture_TamuraFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]
+                path = self.folder + label+'.jpg'
+                self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
@@ -483,7 +509,9 @@ class FakeColor_Texture_Characteristecs(object):
             ans = single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], tc.dwt_feature, self.step, self.size_w, self.size_h, wave_func=wave_func)
             
             for j in range(ans.shape[0]):
-                path = self.folder + 'Texture_DWTFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+dwt_label[j]+'.jpg'
+                label = 'Texture_DWTFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+dwt_label[j]
+                path = self.folder + label+'.jpg'
+                self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
@@ -507,14 +535,28 @@ class FakeColor_Texture_Characteristecs(object):
             laws_feature_single_feature_b = np.array(laws_feature_single_feature_b)
             laws_feature_single_feature = np.absolute(laws_feature_single_feature_a-laws_feature_single_feature_b)
             for j in range(8):
-                path = self.folder + 'Texture_Laws_'+RGB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]+'.jpg'
+                label = 'Texture_Laws_'+RGB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]
+                path = self.folder + label+'.jpg'
+                self.csv_generate(laws_feature_single_feature[j], label)
                 print(path)
                 plt.figure(figsize=self.figsize)
                 plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
                 plt.colorbar()
                 plt.savefig(path)
                 plt.close()
-        
+    
+    def csv_generate(self, ans, label):
+        self.csv_label.append(label)
+        cal = np.sum(ans>=10)
+        total = np.size(ans)
+        # print(cal, total, cal/total)
+        if(cal/total>0.1):
+            self.csv_data.append(1)
+        else:
+            self.csv_data.append(0)
+    
+    
+     
     def fakecolor_texture_characteristics(self):
         
         self.__fakecolor_texture_characteristics_glcm_feature()
@@ -534,15 +576,19 @@ class FakeColor_Texture_Characteristecs(object):
         self.size_h = size_h   
         self.folder = folder 
         self.figsize = figsize
+        self.csv_data = []
+        self.csv_label = []
         
 class FakeColor_LossAboutColor_Characteristics(object):
     
     @TestScripts.timmer
     def __fakecolor_loss_DSLRQualityPhotos_ICCV2017(self):
-        label = ['color_loss', 'texture_loss', 'total_veriation_loss']   
+        loss_label = ['color_loss', 'texture_loss', 'total_veriation_loss']   
         ans = rgb_channel_slide_window_parameters(self.img_a, self.img_b, lac.loss_DSLRQualityPhotos_ICCV2017,self.step, self.size_w, self.size_h)
         for j in range(ans.shape[0]):
-            path = self.folder + 'Loss_DSLRQualityPhotos_ICCV2017_'+label[j]+'.jpg'
+            label = 'Loss_DSLRQualityPhotos_ICCV2017_'+loss_label[j]
+            path = self.folder + label+'.jpg'
+            self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
             plt.figure(figsize=self.figsize)
@@ -553,10 +599,12 @@ class FakeColor_LossAboutColor_Characteristics(object):
     
     @TestScripts.timmer        
     def __fakecolor_loss_UnderexposedPhoto_CVPR2019(self):
-        label = ['l2_loss', 'color_loss']
+        loss_label = ['l2_loss', 'color_loss']
         ans = rgb_channel_slide_window_parameters(self.img_a, self.img_b, lac.loss_UnderexposedPhoto_CVPR2019,self.step, self.size_w, self.size_h)
         for j in range(ans.shape[0]):
-            path = self.folder + 'Loss_UnderexposedPhoto_CVPR2019_'+label[j]+'.jpg'
+            label = 'Loss_UnderexposedPhoto_CVPR2019_'+loss_label[j]
+            path = self.folder + label+'.jpg'
+            self.csv_generate(label[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
             plt.figure(figsize=self.figsize)
@@ -567,11 +615,13 @@ class FakeColor_LossAboutColor_Characteristics(object):
     
     # @TestScripts.timmer
     def __fakecolor_loss_RangeScalingGlobalUNet_ECCV2018(self):
-        label = ['l1_loss', 'MS-SSIM_loss_r_channel','MS-SSIM_loss_g_channel','MS-SSIM_loss_b_channel', 'total_veriation_loss']  
+        loss_label = ['l1_loss', 'MS-SSIM_loss_r_channel','MS-SSIM_loss_g_channel','MS-SSIM_loss_b_channel', 'total_veriation_loss']  
         ans = rgb_channel_slide_window_parameters(self.img_a, self.img_b, lac.loss_RangScalingGlobalUNet_ECCV2018,self.step, self.size_w, self.size_h)
         # print(ans)
         for j in range(ans.shape[0]):
-            path = self.folder + 'Loss_RangeScalingGlobalUNet_ECCV2018_'+label[j]+'.jpg'
+            label = 'Loss_RangeScalingGlobalUNet_ECCV2018_'+loss_label[j]
+            path = self.folder + label+'.jpg'
+            self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
             plt.figure(figsize=self.figsize)
@@ -582,10 +632,12 @@ class FakeColor_LossAboutColor_Characteristics(object):
             
     @TestScripts.timmer            
     def __fakecolor_loss_LossFunctions_IEEE2017(self):
-        label = ['MS-SSIM+L1loss_r_channel', 'MS-SSIM+L1loss_g_channel', 'MS-SSIM+L1loss_b_channel'] 
+        loss_label = ['MS-SSIM+L1loss_r_channel', 'MS-SSIM+L1loss_g_channel', 'MS-SSIM+L1loss_b_channel'] 
         ans = rgb_channel_slide_window_parameters(self.img_a, self.img_b, lac.loss_LossFunctions_IEEE2017,self.step, self.size_w, self.size_h)
         for j in range(ans.shape[0]):
-            path = self.folder + 'Loss_LossFunctions_IEEE2017_'+label[j]+'.jpg'
+            label = 'Loss_LossFunctions_IEEE2017_'+loss_label[j]
+            path = self.folder + label+'.jpg'
+            self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
             plt.figure(figsize=self.figsize)
@@ -593,7 +645,18 @@ class FakeColor_LossAboutColor_Characteristics(object):
             plt.colorbar()
             plt.savefig(path)
             plt.close()
-        
+    
+    def csv_generate(self, ans, label):
+        self.csv_label.append(label)
+        cal = np.sum(ans>=10)
+        total = np.size(ans)
+        # print(cal, total, cal/total)
+        if(cal/total>0.1):
+            self.csv_data.append(1)
+        else:
+            self.csv_data.append(0)
+    
+       
     def fakecolor_loss_about_color(self):
         self.__fakecolor_loss_DSLRQualityPhotos_ICCV2017()
         self.__fakecolor_loss_UnderexposedPhoto_CVPR2019()
@@ -608,3 +671,9 @@ class FakeColor_LossAboutColor_Characteristics(object):
         self.size_h = size_h   
         self.folder = folder 
         self.figsize = figsize
+        self.csv_data = []
+        self.csv_label = []
+
+
+def write_csv():
+    pass
