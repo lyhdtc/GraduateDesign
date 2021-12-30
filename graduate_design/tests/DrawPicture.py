@@ -16,6 +16,7 @@ import os
 import tqdm
 import csv
 import Noise
+import Crop
 
 
 
@@ -101,32 +102,45 @@ if __name__=="__main__":
     # print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
 
         
-    path_a = 'graduate_design/Data/eee.jpg'
+    path_a = 'graduate_design/Data/Maya_Model.jpg'
     path_b = 'graduate_design/Data/bbb.jpg'
-    img = cv2.imread(path_a)
-    img_r,img_g,img_b = cv2.split(img)
+    img = cv2.imread(path_a, cv2.IMREAD_COLOR)
+    img2 = cv2.imread(path_b, cv2.IMREAD_COLOR)
+    # print(np.shape(img))
+    img = cv2.resize(img, (400,600))
+    img2 = cv2.resize(img2, (400,600))
+    mask = Crop.create_mask(img)
+    # res = cv2.resize(res, (400,600))
+    cv2.imshow("adfafd",mask)
+    cv2.waitKey(0)
     
-    noise = cv2.imread(path_b)
-    noise_r, noise_g, noise_b = cv2.split(noise)
-    # # cv2.imshow("origin", img)
-    # # cv2.waitKey(0) 
-    # ans = Noise.traditional_noise(img_r, "gaussian")
-    # print(ans)
+    res = Crop.use_mask(img2, mask)
+    cv2.imshow("dasf", res)
+    cv2.waitKey(0)
+    
+    # img_r,img_g,img_b = cv2.split(img)
+    
+    # noise = cv2.imread(path_b)
+    # noise_r, noise_g, noise_b = cv2.split(noise)
+    # # # cv2.imshow("origin", img)
+    # # # cv2.waitKey(0) 
+    # # ans = Noise.traditional_noise(img_r, "gaussian")
+    # # print(ans)
     
     
-    mat = np.array([[1,4,5,6,7],[2,3,5,9,8]])
+    # mat = np.array([[1,4,5,6,7],[2,3,5,9,8]])
     
-    noise = np.array([[255,255],[66,99]])
+    # noise = np.array([[255,255],[66,99]])
     
     
     
-    # ans = Noise.random_replace_element_from_another_picture(mat, noise, 0.5)
+    # # ans = Noise.random_replace_element_from_another_picture(mat, noise, 0.5)
     
   
-    # ans = Noise.random_replace_element(mat, 4)
-    # ans = Noise.random_replace_element(img_r, 0.99)
-    ans = Noise.random_replace_element_from_another_picture(img_r, noise_r, 0.8)
-    plt.figure()
-    plt.imshow(ans,cmap='gray')
-    plt.show()
+    # # ans = Noise.random_replace_element(mat, 4)
+    # # ans = Noise.random_replace_element(img_r, 0.99)
+    # ans = Noise.random_replace_element_from_another_picture(img_r, noise_r, 0.8)
+    # plt.figure()
+    # plt.imshow(ans,cmap='gray')
+    # plt.show()
     
