@@ -3,6 +3,7 @@
         "/home/lyh/anaconda3/envs/GraduateEnv01/lib/python3.6/site-packages",
         "./graduate_design/Characteristics",
         "./graduate_design/tests",
-        "./graduate_design/Tools"
+        "./graduate_design/Tools",
+        "./graduate_design/Calculator"
     ]
 }
