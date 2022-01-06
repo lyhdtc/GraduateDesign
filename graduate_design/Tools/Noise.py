@@ -1,6 +1,8 @@
 from matplotlib.pyplot import gray
 import skimage
 import numpy as np
+import cv2
+import tqdm
 
 
 # 传统的噪声模式
@@ -20,8 +22,8 @@ import numpy as np
 # local_vars：可选的，ndarry型，用于定义每个像素点的局部方差，在localvar中使用
 # amount： 可选的，float型，是椒盐噪声所占比例，默认值=0.05
 # salt_vs_pepper：可选的，float型，椒盐噪声中椒盐比例，值越大表示盐噪声越多，默认值=0.5，即椒盐等量
-def traditional_noise(gray_img, mode, *args, **kwargs):
-    ans = skimage.util.random_noise(gray_img, mode = mode, *args, **kwargs)
+def traditional_noise(img, mode, *args, **kwargs):
+    ans = skimage.util.random_noise(img, mode = mode, *args, **kwargs)
     ans = ans*255
     ans = ans.astype(np.int)
 
@@ -57,3 +59,11 @@ def random_replace_element_from_another_picture(gray_img, noise_img, percent):
     ans = np.reshape(one_dim, (w,h))
     return ans
 
+def generate_noise_pictures(path):
+    img = cv2.imread(path)
+    noise = ['gaussian', 'localvar', 'poisson', 'salt', 'pepper', 's&p', 'speckle']
+    for i in tqdm.tqdm(noise):
+        noise_img = traditional_noise(img, i)
+        filename = path.split(".")[0] + '_'+i+'.jpg'
+        cv2.imwrite(filename, noise_img)
+                

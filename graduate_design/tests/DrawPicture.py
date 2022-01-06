@@ -2,6 +2,7 @@ from genericpath import getsize
 import sys
 sys.path.append('graduate_design/Characteristics')
 sys.path.append('graduate_design/Tools')
+sys.path.append('graduate_design/Calculator')
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -27,12 +28,8 @@ def get_img(path):
     
 
     
-
-
-
-if __name__=="__main__":
-
-    
+def general_run():
+     
     start_time = time.perf_counter()
     print('Start!')
     
@@ -54,6 +51,12 @@ if __name__=="__main__":
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
 
-        
+
+if __name__=="__main__":
+    path_a = '/mnt/d/001Graduate/lyh_01/RealityCapture_Model/model_u1_v1.png'
+
+    Noise.generate_noise_pictures(path_a)
+   
+  
     
     

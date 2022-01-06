@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from numba import jit
 import cv2
-from cv2 import dnn_superres
+# from cv2 import dnn_superres
 import ColorCharacteristics as cc
 import TextureCharacteristics as tc
 import LossAboutColor as lac
