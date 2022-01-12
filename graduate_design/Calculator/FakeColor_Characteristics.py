@@ -11,7 +11,7 @@ import LossAboutColor as lac
 import TestScripts
 import time
 import multiprocessing
-import tqdm
+# import tqdm
 from functools import partial
 
 RGB_COLOR_CHANNEL = {
@@ -48,7 +48,8 @@ def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a,
     ans_a = []
     ans_b = []
 
-    for i in tqdm.trange(int(w/step)):
+    # for i in tqdm.trange(int(w/step)):
+    for i in range(int(w/step)):
         pool = multiprocessing.Pool()
         func = partial(__temura_inside, kmax = kmax, dist = dist, step = step, w = w, h = h,size_w = size_w, size_h = size_h, gray_img_a = gray_img_a, gray_img_b = gray_img_b, i = i)
         raw= pool.map(func, range(int(h/step)))
@@ -141,7 +142,8 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
     start_time = time.perf_counter()
     signal_single = False
     signal_inside = False
-    for i in tqdm.trange(int(w/step)):
+    # for i in tqdm.trange(int(w/step)):
+    for i in range(int(w/step)):
         raw_a = []
         raw_b = []
         #!
@@ -154,21 +156,21 @@ def single_channel_slide_window_parameters(gray_img_a,gray_img_b,  func , step =
             raw_a.append(func(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
             end_time_single = time.perf_counter() 
             if(signal_single==False):
-                print('单指令共运行了 {_time_}秒'.format(_time_=(end_time_single - start_time_single)))
+                # print('单指令共运行了 {_time_}秒'.format(_time_=(end_time_single - start_time_single)))
                 signal_single=True
             raw_b.append(func(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
             # print("raw_a type is {}".format(type(raw_a)))
         #!
         end_time_inside = time.perf_counter() 
         if(signal_inside==False):
-            print('内循环共运行了 {_time_}秒'.format(_time_=(end_time_inside - start_time_inside)))
+            # print('内循环共运行了 {_time_}秒'.format(_time_=(end_time_inside - start_time_inside)))
             signal_inside=True
         if(raw_a!=[]):ans_a.append(raw_a)
         if(raw_b!=[]):ans_b.append(raw_b) 
         
     #!
     end_time = time.perf_counter()  
-    print('循环共运行了 {_time_}秒'.format(_time_=(end_time - start_time)))
+    # print('循环共运行了 {_time_}秒'.format(_time_=(end_time - start_time)))
     ans_a = np.array(ans_a)
     ans_b = np.array(ans_b)
     ans = np.abs(ans_a-ans_b)
