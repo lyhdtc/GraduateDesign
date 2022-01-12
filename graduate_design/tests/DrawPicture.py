@@ -19,7 +19,7 @@ import csv
 import Noise
 import Crop
 import FakeColorCSV
-import ParsePicName
+import ParsePicName as PPN
 
 
 def get_img(path):
@@ -55,8 +55,8 @@ def general_run():
 
 if __name__=="__main__":
    
-    path_a = '/mnt/d/001Graduate/lyh_01/RenderPic/Camera1/36_N_Surface_N_N.jpg'
-    Noise.generate_noise_pictures(path_a)
+    # path_a = '/mnt/d/001Graduate/lyh_01/RenderPic/Camera1/36_N_Surface_N_N.jpg'
+    # Noise.generate_noise_pictures(path_a)
     # print(os.path.basename(path_a))
     # ans = os.listdir(path_a)
     # a = ParsePicName.get_pic_info(ans[3], "material")
@@ -64,6 +64,93 @@ if __name__=="__main__":
     # b = ParsePicName.generate_pic_info(['323','adf','adsf','ewr','rtte'])
     # print(b)
     
-  
+    step = 8
+    size_w = 40 
+    size_h = 40
+    figsize = (18,10)
     
+    material = ['Lambert', 'Phong', 'Blinn', 'PBR', 'Surface']
+    noise = ['gaussian', 'localvar', 'poisson', 'salt', 'pepper', 's&p', 'speckle']
+    lighting = ['Up', 'Down', 'Left', 'Right']
+    
+    start_time = time.perf_counter()
+    print('Start!')
+
+    
+    realpic_path = '/home/lyh/Data/RealPic/00001.png'
+    renderfolder_camera1 = '/home/lyh/Data/RenderPic/Camera1'
+    csv_path = '/home/lyh/results/Camera1/result.csv'
+    renderpics = os.listdir(renderfolder_camera1)    
+    renderpics.sort(key=lambda x:int(PPN.get_pic_info(x,'number')))
+    path_a=''
+    path_b=''
+    list_path_b=[]
+    
+
+# material comparement
+    for i in tqdm.tqdm(renderpics):
+        if(PPN.get_pic_info(i, 'pre_noise')=='N' and PPN.get_pic_info(i, 'lighting')=='N' and PPN.get_pic_info(i, 'after_noise')=='N'):
+            path_a = realpic_path
+            path_b = renderfolder_camera1+'/'+i
+            
+            
+            fakecolor_foldername = os.path.basename(realpic_path)[:-4]+"____"+i[:-4]
+            fakecolor_folder = '/home/lyh/results/Camera1/Material'+fakecolor_foldername+'/'  
+            FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
+    
+# prenoise comparement  
+    for i in material:
+        for j in renderpics:
+            if(PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
+                path_a=renderfolder_camera1+'/'+j
+            elif (PPN.get_pic_info(j, 'pre_noise')!='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
+                list_path_b.append(j)
+                                
+        for k in tqdm.tqdm(list_path_b):
+            path_b = renderfolder_camera1+'/'+k
+            fakecolor_foldername = os.path.basename(realpic_path)[:-4]+"____"+k[:-4]
+            fakecolor_folder = '/home/lyh/results/Camera1/Prenoise'+fakecolor_foldername+'/'  
+            FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
+
+        list_path_b=[]
+    
+# lighting comparement
+
+    for j in renderpics:
+        if(PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')=='PBR' and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
+            path_a=renderfolder_camera1+'/'+j
+        elif (PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')=='PBR' and PPN.get_pic_info(j, 'lighting')!='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
+            list_path_b.append(j)
+
+    for k in tqdm.tqdm(list_path_b):
+        path_b = renderfolder_camera1+'/'+k
+        fakecolor_foldername = os.path.basename(realpic_path)[:-4]+"____"+k[:-4]
+        fakecolor_folder = '/home/lyh/results/Camera1/Prenoise'+fakecolor_foldername+'/'  
+        FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
+
+    list_path_b=[]    
+        
+    
+# afternoise comparement
+    for i in material:
+        for j in renderpics:
+            if(PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
+                path_a=renderfolder_camera1+'/'+i
+            elif (PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')!='N'):
+                list_path_b.append(j)
+                
+        for k in tqdm.tqdm(list_path_b):
+            path_b = renderfolder_camera1+'/'+i
+            fakecolor_foldername = os.path.basename(realpic_path)[:-4]+"____"+k[:-4]
+            fakecolor_folder = '/home/lyh/results/Camera1/Prenoise'+fakecolor_foldername+'/'  
+            FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
+
+        list_path_b=[]
+
+ 
+
+    
+
+    end_time = time.perf_counter()  
+    print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
     
