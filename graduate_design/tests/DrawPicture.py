@@ -74,8 +74,8 @@ if __name__=="__main__":
     lighting = ['Up', 'Down', 'Left', 'Right']
     
     start_time = time.perf_counter()
-    print('Start!')
-
+    # print('Start!')
+    print("\033[1;33;40mStart!\033[0m")
     
     realpic_path = '/home/lyh/Data/RealPic/00001.png'
     renderfolder_camera1 = '/home/lyh/Data/RenderPic/Camera1'
@@ -97,6 +97,8 @@ if __name__=="__main__":
             fakecolor_foldername = os.path.basename(realpic_path)[:-4]+"____"+i[:-4]
             fakecolor_folder = '/home/lyh/results/Camera1/Material'+fakecolor_foldername+'/'  
             FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
+    print("\033[1;33;40mMaterial Finished!\033[0m")
+    
     
 # prenoise comparement  
     for i in material:
@@ -113,6 +115,7 @@ if __name__=="__main__":
             FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
 
         list_path_b=[]
+    print("\033[1;33;40mPreNoise Finished!\033[0m")
     
 # lighting comparement
 
@@ -129,7 +132,7 @@ if __name__=="__main__":
         FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
 
     list_path_b=[]    
-        
+    print("\033[1;33;40mLighting Finished!\033[0m")   
     
 # afternoise comparement
     for i in material:
@@ -146,11 +149,11 @@ if __name__=="__main__":
             FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path)
 
         list_path_b=[]
-
+    print("\033[1;33;40mAfterNoise Finished!\033[0m")
  
 
     
 
     end_time = time.perf_counter()  
-    print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
+    print("\033[1;33;40m程序共运行 {_time_}秒\033[0m".format(_time_=(end_time - start_time)))
     
