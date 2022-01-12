@@ -3,6 +3,8 @@ import skimage
 import numpy as np
 import cv2
 import tqdm
+import ParsePicName
+import os
 
 
 # 传统的噪声模式
@@ -22,6 +24,24 @@ import tqdm
 # local_vars：可选的，ndarry型，用于定义每个像素点的局部方差，在localvar中使用
 # amount： 可选的，float型，是椒盐噪声所占比例，默认值=0.05
 # salt_vs_pepper：可选的，float型，椒盐噪声中椒盐比例，值越大表示盐噪声越多，默认值=0.5，即椒盐等量
+def new_traditional_noise(img, mode, *args, **kwargs):
+    img_b,img_g,img_r = cv2.split(img)
+    noise_map = np.full_like(img_b, 255)
+    print(noise_map)
+    # print(np.shape(temp))
+    noise_map = skimage.util.random_noise(noise_map, mode = mode, *args, **kwargs)
+    # print(noise_map)
+    print(img_b)
+    print(noise_map)
+    img_b =img_b* noise_map
+    print(img_b)
+    img_g =img_g* noise_map
+    img_r =img_r* noise_map
+    ans = cv2.merge([img_b, img_g, img_r])
+    ans = ans.astype(np.int)
+
+    return ans
+
 def traditional_noise(img, mode, *args, **kwargs):
     ans = skimage.util.random_noise(img, mode = mode, *args, **kwargs)
     ans = ans*255
@@ -59,11 +79,24 @@ def random_replace_element_from_another_picture(gray_img, noise_img, percent):
     ans = np.reshape(one_dim, (w,h))
     return ans
 
-def generate_noise_pictures(path):
-    img = cv2.imread(path)
+# 输入绝对路径，在同一文件夹下按命名规则生成噪声图片
+def generate_noise_pictures(absolute_path):
+    img = cv2.imread(absolute_path)
     noise = ['gaussian', 'localvar', 'poisson', 'salt', 'pepper', 's&p', 'speckle']
+    folder = os.path.dirname(absolute_path)
+    pre_pic = os.path.basename(absolute_path)
+    pre_num = len(os.listdir(folder))
     for i in tqdm.tqdm(noise):
         noise_img = traditional_noise(img, i)
-        filename = path.split(".")[0] + '_'+i+'.jpg'
-        cv2.imwrite(filename, noise_img)
+        info=[str(pre_num), 
+              ParsePicName.get_pic_info(pre_pic,'pre_noise'), 
+              ParsePicName.get_pic_info(pre_pic,'material'),
+              ParsePicName.get_pic_info(pre_pic,'lighting'),
+              i]
+        filename = ParsePicName.generate_pic_info(info)
+        pre_num = pre_num + 1
+        
+        filepath = folder+'/'+filename
+        # print(filepath)
+        cv2.imwrite(filepath, noise_img)
                 

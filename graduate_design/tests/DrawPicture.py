@@ -19,6 +19,7 @@ import csv
 import Noise
 import Crop
 import FakeColorCSV
+import ParsePicName
 
 
 def get_img(path):
@@ -53,10 +54,16 @@ def general_run():
 
 
 if __name__=="__main__":
-    path_a = '/mnt/d/001Graduate/lyh_01/RealityCapture_Model/model_u1_v1.png'
-
-    Noise.generate_noise_pictures(path_a)
    
+    path_a = '/mnt/d/001Graduate/lyh_01/RenderPic/Camera1/36_N_Surface_N_N.jpg'
+    Noise.generate_noise_pictures(path_a)
+    # print(os.path.basename(path_a))
+    # ans = os.listdir(path_a)
+    # a = ParsePicName.get_pic_info(ans[3], "material")
+    # print(a)
+    # b = ParsePicName.generate_pic_info(['323','adf','adsf','ewr','rtte'])
+    # print(b)
+    
   
     
     
