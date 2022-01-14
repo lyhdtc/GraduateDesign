@@ -12,7 +12,7 @@ import Crop
 
 
 
-def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername, folder, csv_path):
+def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername, folder, csv_path, picpair_name):
     img_a = cv2.imread(path_a)
     img_b = cv2.imread(path_b)  
     
@@ -34,8 +34,10 @@ def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername,
         print("New Folder Created!")
     
     csv_label = []
+    csv_label.append('picpair_name')
     csv_label.append('foldername')
     csv_data = []
+    csv_data.append(picpair_name)
     csv_data.append(foldername)
          
     fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)

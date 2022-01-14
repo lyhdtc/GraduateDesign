@@ -344,7 +344,7 @@ class FakeColor_Color_Characteristics(object):
         cal = np.sum(ans>=10)
         total = np.size(ans)
         # print(cal, total, cal/total)
-        if(cal/total>0.1):
+        if(cal/total>0.01):
             self.csv_data.append(1)
         else:
             self.csv_data.append(0)
@@ -552,7 +552,7 @@ class FakeColor_Texture_Characteristecs(object):
         cal = np.sum(ans>=10)
         total = np.size(ans)
         # print(cal, total, cal/total)
-        if(cal/total>0.1):
+        if(cal/total>0.01):
             self.csv_data.append(1)
         else:
             self.csv_data.append(0)
@@ -606,7 +606,7 @@ class FakeColor_LossAboutColor_Characteristics(object):
         for j in range(ans.shape[0]):
             label = 'Loss_UnderexposedPhoto_CVPR2019_'+loss_label[j]
             path = self.folder + label+'.jpg'
-            self.csv_generate(label[j], label)
+            self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             print(path)
             plt.figure(figsize=self.figsize)
@@ -653,7 +653,7 @@ class FakeColor_LossAboutColor_Characteristics(object):
         cal = np.sum(ans>=10)
         total = np.size(ans)
         # print(cal, total, cal/total)
-        if(cal/total>0.1):
+        if(cal/total>0.01):
             self.csv_data.append(1)
         else:
             self.csv_data.append(0)
