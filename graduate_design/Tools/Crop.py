@@ -16,3 +16,14 @@ def use_mask(color_img, mask):
     for i in range(3):
         color_img[:,:,i] = np.multiply(color_img[:,:,i], mask)
     return color_img
+
+# TODO: Unfininshed
+def bounding_box(mask):
+    
+    th, binary = cv2.threshold(mask, 0, 255, cv2.THRESH_OTSU)
+    contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    
+    
+    bounding_boxes = [cv2.boundingRect(cnt) for cnt in contours]
+    
+    print(bounding_boxes)

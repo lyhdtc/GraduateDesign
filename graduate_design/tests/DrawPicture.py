@@ -66,10 +66,10 @@ def new_general_run():
     # print('Start!')
     print("\033[1;33;40mStart!\033[0m")
     
-    realpic_path = '/home/lyh/Data/RealPic/00002.png'
-    renderfolder_camera2 = '/home/lyh/Data/RenderPic/Camera2'
-    csv_path = '/home/lyh/results/Camera2/result.csv'
-    renderpics = os.listdir(renderfolder_camera2)    
+    realpic_path = '/mnt/d/001Graduate/Data/Pre/RealPic/00001.png'
+    renderfolder_path = '/mnt/d/001Graduate/Data/Pre/RenderPic/Camera1'
+    csv_path = '/mnt/d/001Graduate/Data/Res/Camera1/result.csv'
+    renderpics = os.listdir(renderfolder_path)    
     renderpics.sort(key=lambda x:int(PPN.get_pic_info(x,'number')))
     path_a=''
     path_b=''
@@ -83,11 +83,11 @@ def new_general_run():
     for i in tqdm.tqdm(renderpics):
         if(PPN.get_pic_info(i, 'pre_noise')=='N' and PPN.get_pic_info(i, 'lighting')=='N' and PPN.get_pic_info(i, 'after_noise')=='N'):
             path_a = realpic_path
-            path_b = renderfolder_camera2+'/'+i
+            path_b = renderfolder_path+'/'+i
             
             
             fakecolor_foldername = os.path.basename(path_a)[:-4]+"____"+os.path.basename(path_b)[:-4]
-            fakecolor_folder = '/home/lyh/results/Camera2/'+picpair_name+'/'+fakecolor_foldername+'/'  
+            fakecolor_folder = '/mnt/d/001Graduate/Data/Res/Camera1/'+picpair_name+'/'+fakecolor_foldername+'/'  
             FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
     print("\033[1;33;40mMaterial Finished!\033[0m")
     
@@ -97,14 +97,14 @@ def new_general_run():
     for i in material:
         for j in renderpics:
             if(PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
-                path_a=renderfolder_camera2+'/'+j
+                path_a=renderfolder_path+'/'+j
             elif (PPN.get_pic_info(j, 'pre_noise')!='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
                 list_path_b.append(j)
                                 
         for k in tqdm.tqdm(list_path_b):
-            path_b = renderfolder_camera2+'/'+k
+            path_b = renderfolder_path+'/'+k
             fakecolor_foldername = os.path.basename(path_a)[:-4]+"____"+os.path.basename(path_b)[:-4]
-            fakecolor_folder = '/home/lyh/results/Camera2/'+picpair_name+'/'+fakecolor_foldername+'/'  
+            fakecolor_folder = '/mnt/d/001Graduate/Data/Res/Camera1/'+picpair_name+'/'+fakecolor_foldername+'/'  
             FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
 
         list_path_b=[]
@@ -114,14 +114,14 @@ def new_general_run():
     picpair_name = 'Lighting'
     for j in renderpics:
         if(PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')=='PBR' and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
-            path_a=renderfolder_camera2+'/'+j
+            path_a=renderfolder_path+'/'+j
         elif (PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')=='PBR' and PPN.get_pic_info(j, 'lighting')!='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
             list_path_b.append(j)
 
     for k in tqdm.tqdm(list_path_b):
-        path_b = renderfolder_camera2+'/'+k
+        path_b = renderfolder_path+'/'+k
         fakecolor_foldername = os.path.basename(path_a)[:-4]+"____"+os.path.basename(path_b)[:-4]
-        fakecolor_folder = '/home/lyh/results/Camera2/'+picpair_name+'/'+fakecolor_foldername+'/'  
+        fakecolor_folder = '/mnt/d/001Graduate/Data/Res/Camera1/'+picpair_name+'/'+fakecolor_foldername+'/'  
         FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
 
     list_path_b=[]    
@@ -132,14 +132,14 @@ def new_general_run():
     for i in material:
         for j in renderpics:
             if(PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')=='N'):
-                path_a=renderfolder_camera2+'/'+j
+                path_a=renderfolder_path+'/'+j
             elif (PPN.get_pic_info(j, 'pre_noise')=='N' and PPN.get_pic_info(j,'material')==i and PPN.get_pic_info(j, 'lighting')=='N' and PPN.get_pic_info(j, 'after_noise')!='N'):
                 list_path_b.append(j)
                 
         for k in tqdm.tqdm(list_path_b):
-            path_b = renderfolder_camera2+'/'+k
+            path_b = renderfolder_path+'/'+k
             fakecolor_foldername = os.path.basename(path_a)[:-4]+"____"+os.path.basename(path_b)[:-4]
-            fakecolor_folder = '/home/lyh/results/Camera2/'+picpair_name+'/'+fakecolor_foldername+'/'  
+            fakecolor_folder = '/mnt/d/001Graduate/Data/Res/Camera1/'+picpair_name+'/'+fakecolor_foldername+'/'  
             FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
 
         list_path_b=[]
@@ -163,4 +163,6 @@ if __name__=="__main__":
     # print(b)
     
     new_general_run()
+    
+    
     

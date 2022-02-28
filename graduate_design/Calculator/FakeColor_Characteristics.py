@@ -2,7 +2,7 @@ import sys
 sys.path.append('graduate_design/tests')
 from matplotlib import pyplot as plt
 import numpy as np
-from numba import jit
+# from numba import jit
 import cv2
 # from cv2 import dnn_superres
 import ColorCharacteristics as cc
@@ -272,15 +272,18 @@ class FakeColor_Color_Characteristics(object):
                 label =  'Color_ColorMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+color_moments_label[j]
                 path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
+                
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
-                # cv2.imwrite(path, ans_fakecolor)
+                ans_highsolution = ans_highsolution.astype(np.uint8)
+                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_highsolution)
                 print(path)
-                plt.figure(figsize=self.figsize)
-                plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-                plt.colorbar()
-                plt.savefig(path)
-                plt.close()
+                # plt.figure()
+                # plt.figure(figsize=self.figsize)
+                # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                # plt.colorbar()
+                # plt.savefig(path)
+                # plt.close()
         return
     
     @TestScripts.timmer
@@ -297,15 +300,15 @@ class FakeColor_Color_Characteristics(object):
                 path = self.folder + label +'.jpg'
                 self.csv_generate(ans[j],label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                # ans_highsolution = ans_highsolution.astype(np.uint8)
-                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
-                # cv2.imwrite(path, ans_fakecolor)
+                ans_highsolution = ans_highsolution.astype(np.uint8)
+                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_highsolution)
                 print(path)
-                plt.figure(figsize=self.figsize)
-                plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-                plt.colorbar()
-                plt.savefig(path)
-                plt.close()
+                # plt.figure(figsize=self.figsize)
+                # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                # plt.colorbar()
+                # plt.savefig(path)
+                # plt.close()
         return
     
     @TestScripts.timmer
@@ -328,15 +331,15 @@ class FakeColor_Color_Characteristics(object):
                 path = self.folder + label +'.jpg'
                 self.csv_generate(ans[j],label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                # ans_highsolution = ans_highsolution.astype(np.uint8)
-                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
-                # cv2.imwrite(path, ans_fakecolor)
+                ans_highsolution = ans_highsolution.astype(np.uint8)
+                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_highsolution)
                 print(path)
-                plt.figure(figsize=self.figsize)
-                plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-                plt.colorbar()
-                plt.savefig(path)
-                plt.close()
+                # plt.figure(figsize=self.figsize)
+                # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                # plt.colorbar()
+                # plt.savefig(path)
+                # plt.close()
         return
     
     def csv_generate(self, ans, label):
@@ -351,7 +354,7 @@ class FakeColor_Color_Characteristics(object):
             
     
     def fakecolor_color_characteristics(self):
-        self.__fakecolor_color_characteristics_histogram()
+        # self.__fakecolor_color_characteristics_histogram()
         self.__fakecolor_color_characteristics_color_moments()
         self.__fakecolor_color_characteristics_ordinary_moments()
         self.__fakecolor_color_characteristics_color_coherence_vector()
@@ -390,12 +393,15 @@ class FakeColor_Texture_Characteristecs(object):
                     path = self.folder + label+'_'+glcm_feature_label[k]+'.jpg'
                     self.csv_generate(ans[k], label)
                     ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                    ans_highsolution = ans_highsolution.astype(np.uint8)
+                    ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                    cv2.imwrite(path, ans_highsolution)
                     print(path)
-                    plt.figure(figsize=self.figsize)
-                    plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-                    plt.colorbar()
-                    plt.savefig(path)
-                    plt.close()
+                    # plt.figure(figsize=self.figsize)
+                    # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                    # plt.colorbar()
+                    # plt.savefig(path)
+                    # plt.close()
         return
     
     #!Abandoned ! 单任务耗时过少，开启多进程反而增加时间消耗
@@ -489,15 +495,15 @@ class FakeColor_Texture_Characteristecs(object):
                 path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                # ans_highsolution = ans_highsolution.astype(np.uint8)
-                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
-                # cv2.imwrite(path, ans_fakecolor)
+                ans_highsolution = ans_highsolution.astype(np.uint8)
+                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_highsolution)
                 print(path)
-                plt.figure(figsize=self.figsize)
-                plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-                plt.colorbar()
-                plt.savefig(path)
-                plt.close()
+                # plt.figure(figsize=self.figsize)
+                # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                # plt.colorbar()
+                # plt.savefig(path)
+                # plt.close()
         return    
     
     @TestScripts.timmer
@@ -515,15 +521,15 @@ class FakeColor_Texture_Characteristecs(object):
                 path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                # ans_highsolution = ans_highsolution.astype(np.uint8)
-                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
-                # cv2.imwrite(path, ans_fakecolor)
+                ans_highsolution = ans_highsolution.astype(np.uint8)
+                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_highsolution)
                 print(path)
-                plt.figure(figsize=self.figsize)
-                plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-                plt.colorbar()
-                plt.savefig(path)
-                plt.close()
+                # plt.figure(figsize=self.figsize)
+                # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+                # plt.colorbar()
+                # plt.savefig(path)
+                # plt.close()
         return
     
     @TestScripts.timmer
@@ -540,12 +546,16 @@ class FakeColor_Texture_Characteristecs(object):
                 label = 'Texture_Laws_'+RGB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]
                 path = self.folder + label+'.jpg'
                 self.csv_generate(laws_feature_single_feature[j], label)
+                
+                ans_highsolution = laws_feature_single_feature[j].astype(np.uint8)
+                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_highsolution)
                 print(path)
-                plt.figure(figsize=self.figsize)
-                plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
-                plt.colorbar()
-                plt.savefig(path)
-                plt.close()
+                # plt.figure(figsize=self.figsize)
+                # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
+                # plt.colorbar()
+                # plt.savefig(path)
+                # plt.close()
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
@@ -563,7 +573,7 @@ class FakeColor_Texture_Characteristecs(object):
         
         self.__fakecolor_texture_characteristics_glcm_feature()
         
-        self.__fakecolor_texture_characteristics_lbp()
+        # self.__fakecolor_texture_characteristics_lbp()
         
         self.__multithread_fakecolor_texture_characteristics_tamura_feature()
         self.__fakecolor_texture_characteristics_dwt_feature()
@@ -592,12 +602,15 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + label+'.jpg'
             self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+            ans_highsolution = ans_highsolution.astype(np.uint8)
+            ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+            cv2.imwrite(path, ans_highsolution)
             print(path)
-            plt.figure(figsize=self.figsize)
-            plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-            plt.colorbar()
-            plt.savefig(path)
-            plt.close()
+            # plt.figure(figsize=self.figsize)
+            # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+            # plt.colorbar()
+            # plt.savefig(path)
+            # plt.close()
     
     @TestScripts.timmer        
     def __fakecolor_loss_UnderexposedPhoto_CVPR2019(self):
@@ -608,12 +621,15 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + label+'.jpg'
             self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+            ans_highsolution = ans_highsolution.astype(np.uint8)
+            ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+            cv2.imwrite(path, ans_highsolution)
             print(path)
-            plt.figure(figsize=self.figsize)
-            plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-            plt.colorbar()
-            plt.savefig(path)
-            plt.close()
+            # plt.figure(figsize=self.figsize)
+            # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+            # plt.colorbar()
+            # plt.savefig(path)
+            # plt.close()
     
     # @TestScripts.timmer
     def __fakecolor_loss_RangeScalingGlobalUNet_ECCV2018(self):
@@ -625,12 +641,15 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + label+'.jpg'
             self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+            ans_highsolution = ans_highsolution.astype(np.uint8)
+            ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+            cv2.imwrite(path, ans_highsolution)
             print(path)
-            plt.figure(figsize=self.figsize)
-            plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-            plt.colorbar()
-            plt.savefig(path)
-            plt.close()
+            # plt.figure(figsize=self.figsize)
+            # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+            # plt.colorbar()
+            # plt.savefig(path)
+            # plt.close()
             
     @TestScripts.timmer            
     def __fakecolor_loss_LossFunctions_IEEE2017(self):
@@ -641,12 +660,15 @@ class FakeColor_LossAboutColor_Characteristics(object):
             path = self.folder + label+'.jpg'
             self.csv_generate(ans[j], label)
             ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+            ans_highsolution = ans_highsolution.astype(np.uint8)
+            ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+            cv2.imwrite(path, ans_highsolution)         
             print(path)
-            plt.figure(figsize=self.figsize)
-            plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
-            plt.colorbar()
-            plt.savefig(path)
-            plt.close()
+            # plt.figure(figsize=self.figsize)
+            # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
+            # plt.colorbar()
+            # plt.savefig(path)
+            # plt.close()
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
