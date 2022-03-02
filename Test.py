@@ -1,30 +1,41 @@
 import os
 import sys
 sys.path.append(os.pardir)
-from Color import ColorAlgorithrm as CA
-from Tools import ColorSpaceTrans as CST
-import cv2
+from Tools import FakeColorCSV
+
 import numpy as np
+import time
 
-path = 'Data/批注 2022-03-01 153307.jpg'
-path2 = 'Data/bbb.jpg'
 
-bgr_img = cv2.imread(path)
-bgr_img2 = cv2.imread(path2)
 
-# print(CA.brightness(bgr_img))
-# print(CA.constract(bgr_img))
-# print(8**(1/3))
-# print(np.log(2))
+print('hello')
+def general_run():
+     
+    start_time = time.perf_counter()
+    print('Start!')
+    
+    
+    path_a = 'GraduateDesign/Data/Model.png'
+    path_b = 'GraduateDesign/Data/Photo.png'
 
-ans = CA.specular_shadow(bgr_img,0.3,'shadow')
-print(ans)
-ans = ans*255
-ans = ans.astype(np.uint8)
-cv2.imshow('asdf',ans)
-cv2.waitKey(0)
+    step = 8
+    size_w = 40 
+    size_h = 40
+    figsize = (18,10)
+    fakecolor_foldername = 'NewWorkflowTest'
+    fakecolor_folder = '/home/lyh/results/'+fakecolor_foldername+'/'   
+    csv_path = '/home/lyh/results/NewWorkflowTest.csv'
+    picpair_name = 'default'
+    FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
+    
 
-a = np.array((3,2,1,0,2,1,1,0))
+    end_time = time.perf_counter()  
+    print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
+    
+general_run()
 
-c = np.where(a<2, 1,0)
-print(c)
+# a = np.array([[[1,2,3,4,5],[3,4,6,6,7]],[[5,6,7,5,6],[6,7,8,3,5]],[[7,8,9,4,6],[8,9,0,7,4]]])
+# print(np.shape(a))
+# b = a[:,0:1,2:4]
+# print(np.shape(b))
+# print(b)

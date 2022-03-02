@@ -1,13 +1,14 @@
 from genericpath import getsize
+import os
 import sys
-sys.path.append('graduate_design/Characteristics')
-sys.path.append('graduate_design/Tools')
+sys.path.append(os.path.pardir)
 import cv2
 import numpy as np
-import FakeColor_Characteristics
+from Color import Color
+from Texture import Texture
 import os
 import csv
-import Crop
+from Tools import Crop
 
 
 
@@ -24,8 +25,8 @@ def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername,
     
 
     
-    matrix_a =  cv2.split(img_a)
-    matrix_b =  cv2.split(img_b)
+    matrix_a = np.array(cv2.split(img_a))
+    matrix_b = np.array(cv2.split(img_b))
     print(np.shape(matrix_a))
     print(np.shape(matrix_b))    
     
@@ -40,21 +41,18 @@ def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername,
     csv_data.append(picpair_name)
     csv_data.append(foldername)
          
-    fakecolor_cc = FakeColor_Characteristics.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    fakecolor_cc.fakecolor_color_characteristics()
-    csv_label = csv_label + fakecolor_cc.csv_label
-    csv_data  = csv_data  + fakecolor_cc.csv_data
+    fakecolor_color = Color.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    fakecolor_color.fakecolor_color_characteristics()
+    csv_label = csv_label + fakecolor_color.csv_label
+    csv_data  = csv_data  + fakecolor_color.csv_data
     # print(fakecolor_cc.csv_data)
     # print(fakecolor_cc.csv_label)
-    fakecolor_tc = FakeColor_Characteristics.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    fakecolor_tc.fakecolor_texture_characteristics()
-    csv_label = csv_label + fakecolor_tc.csv_label
-    csv_data  = csv_data  + fakecolor_tc.csv_data
-
-    fakecolor_lac = FakeColor_Characteristics.FakeColor_LossAboutColor_Characteristics(img_a, img_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    fakecolor_lac.fakecolor_loss_about_color()
-    csv_label = csv_label + fakecolor_lac.csv_label
-    csv_data  = csv_data  + fakecolor_lac.csv_data    
+    
+    fakecolor_texture = Texture.FakeColor_Texture_Characteristecs(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    fakecolor_texture.fakecolor_texture_characteristics()
+    csv_label = csv_label + fakecolor_texture.csv_label
+    csv_data  = csv_data  + fakecolor_texture.csv_data
+   
     if not os.path.exists(csv_path):
         print("Create New CSV File!")
         with open(csv_path, "w") as csvfile:

@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 from Color import ColorAlgorithrm as ca
-import TextureAlgorithrm as ta
+from Texture import TextureAlgorithrm as ta
 # import LossAboutColor as lac
 from Tools import TimeCount as tc
 from Tools import SlideWindow as sw
@@ -318,3 +318,14 @@ class FakeColor_Texture_Characteristecs(object):
         self.__fakecolor_texture_dwt_feature()
         self.__fakecolor_texture_laws_feature()
         return
+    
+    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):
+        self.matrix_a = matrix_a
+        self.matrix_b = matrix_b
+        self.step = step
+        self.size_w = size_w
+        self.size_h = size_h   
+        self.folder = folder 
+        self.figsize = figsize
+        self.csv_data = []
+        self.csv_label = []

@@ -6,7 +6,6 @@ import pywt
 from scipy import signal as sg
 from skimage.feature import local_binary_pattern
 import cv2
-import TestScripts
 np.set_printoptions(suppress=True)
 import time
 

@@ -3,28 +3,38 @@ import time
 
 # 三通道伪彩色，func调用一张图片作为参数版本，与下面2imgfunc对应
 def rgb_channel_parameters_1imgfunc(rgb_img_a, rgb_img_b, func , step = 8, size_w = 40, size_h = 40, *args, **kwargs):
-    w = rgb_img_a.shape[0]
-    h = rgb_img_a.shape[1]
+    w = rgb_img_a[0].shape[0]
+    h = rgb_img_a[0].shape[1]
     if((w%size_w!=0)or(h%size_h!=0)):
         print('Please check slide window SIZE!')
         return
-    ans = []  
+    ans_a = []
+    ans_b = []  
     for i in range(int(w/step)):
-        raw = [] 
+        raw_a = []
+        raw_b = []
         for j in range(int(h/step)): 
-            if(i*step+size_w>=w)or(j*step+size_h>=h):break           
-            raw.append(func(rgb_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], rgb_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
-        if(raw!=[]):ans.append(raw)
-    ans = np.array(ans)
-    ans = ans.transpose(2,0,1) 
+            if(i*step+size_w>=w)or(j*step+size_h>=h):break  
+            # print(type(rgb_img_a)) 
+            # print(np.shape(rgb_img_a[:, i*step:(i*step+size_w), j*step:(j*step+size_h)]))        
+            raw_a.append(func(rgb_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+            raw_b.append(func(rgb_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+        if(raw_a!=[]):ans_a.append(raw_a)
+        if(raw_b!=[]):ans_b.append(raw_b) 
+    ans_a = np.array(ans_a)
+    ans_b = np.array(ans_b)
+    ans = np.abs(ans_a-ans_b)
+    # print(np.shape(ans))
+    # print(ans_a)
+    # ans = ans.transpose(2,0,1)
     ans = (255*ans) / np.max(ans)    
     return ans
 
 
 # 三通道伪彩色，目前是为损失函数写的，故func调用了两张图片作为参数（与单通道不同）
 def rgb_channel_parameters_2imgfunc(rgb_img_a, rgb_img_b, func , step = 8, size_w = 40, size_h = 40, *args, **kwargs):
-    w = rgb_img_a.shape[0]
-    h = rgb_img_a.shape[1]
+    w = rgb_img_a[0].shape[0]
+    h = rgb_img_a[0].shape[1]
     if((w%size_w!=0)or(h%size_h!=0)):
         print('Please check slide window SIZE!')
         return
@@ -36,7 +46,7 @@ def rgb_channel_parameters_2imgfunc(rgb_img_a, rgb_img_b, func , step = 8, size_
             raw.append(func(rgb_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], rgb_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
         if(raw!=[]):ans.append(raw)
     ans = np.array(ans)
-    ans = ans.transpose(2,0,1) 
+    # ans = ans.transpose(2,0,1) 
     ans = (255*ans) / np.max(ans)    
     return ans
 
