@@ -224,7 +224,7 @@ class FakeColor_Texture_Characteristecs(object):
     def __multithread_fakecolor_texture_tamura_feature(self):
         kmax = 3    
         dist = 4
-        tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness']
+        tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness', 'regularity', 'roughness']
         # tamura_label = ['contrast']
         for i in range(3):
             ans = multithread_temurafeture_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)

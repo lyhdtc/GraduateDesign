@@ -140,19 +140,29 @@ def rotation_invariant_LBP(gray_img, radius=3, neighbors=8):
 #—————————————————————————————————————————————————————————————————————————————————
 
 # Tamura特征
+# https://sci-hub.mksa.top/10.1109/tsmc.1978.4309999
 # https://github.com/MarshalLeeeeee/Tamura-In-Python/blob/master/tamura-numpy.py
 
 def tamura_feature(gray_img, kmax, dist):
     tamura_feature = []
-    tamura_feature.append(__tamura_coarseness(gray_img, kmax))
+    f_crs = __tamura_coarseness(gray_img, kmax)
+    tamura_feature.append(f_crs)
     # print('coarseness finished')
-    tamura_feature.append(__tamura_contrast(gray_img))
+    f_con = __tamura_contrast(gray_img)
+    tamura_feature.append(f_con)
     # print('contrast finished')
-    fdir,theta = __tamura_directionality(gray_img)
-    tamura_feature.append(fdir)
+    f_dir,theta = __tamura_directionality(gray_img)
+    tamura_feature.append(f_dir)
     # print('directionality finished')
-    tamura_feature.append(__tamura_linelikeness(gray_img, theta, dist))
+    f_lin = __tamura_linelikeness(gray_img, theta, dist)
+    tamura_feature.append(f_lin)
     # print('linelikeness finished')
+    f_reg = __tamura_regularity(f_crs, f_con, f_dir, f_lin)
+    tamura_feature.append(f_reg)
+    
+    f_rgh = __tamura_roughness(f_crs, f_con)
+    tamura_feature.append(f_rgh)
+    
     return tamura_feature
 
 
@@ -280,7 +290,7 @@ def __tamura_directionality(gray_img):
 # 输入为图片，tamura_directionality输出的矩阵，共生矩阵计算时的像素间隔距离 
 
 # created by lyh 2021.11.24
-# 之前的版本运行时间过长，重写了线性度的计算函数
+# 之前的版本运行时间过长，重写了线性度的计算函数 https://github.com/lyhdtc/TamuraFeature_linelikeness
 def __tamura_linelikeness(gray_img, theta, dist):
     n = 16
     h = gray_img.shape[0]
@@ -362,14 +372,19 @@ def __tamura_linelikeness(gray_img, theta, dist):
 #     return res
 
 
-#规整度
-def __tamura_regularity(gray_img, filter):
-	pass
+#规整度 Freg = 1-r(theta_crs + theta_con + theta_dir + theta_lin), r是归一化因子， 每一个theta指前面的值选取一个滑动窗口计算后的标准差
+# 由于我的计算中全部已经是滑动窗口了，所以这里不再于滑动窗口上选取子窗了，要不然性能会爆炸，而且由于会计算两个图片的差距，因此这里稍微简化加速一下
+# Freg_lyh = 1 - 0.25((f_crs+f_con+f_dir+f_lin)/max(f_crs,f_con,f_dir,f_lin))
+def __tamura_regularity(f_crs,f_con,f_dir,f_lin):
+    f = np.arrau((f_crs,f_con,f_dir,f_lin))
+    res = 1- 0.25*(np.sum(f)/np.max(f))
+    return res
+	
 
 #粗略度
 #粗糙度和对比度之和
-def __tamura_roughness(fcrs, fcon):
-	return fcrs + fcon
+def __tamura_roughness(f_crs, f_con):
+	return f_crs + f_con
 
 # ————————————————————————————————————————————————————————————————————————————————————
 

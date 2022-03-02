@@ -32,10 +32,5 @@ def general_run():
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
     
-general_run()
+# general_run()
 
-# a = np.array([[[1,2,3,4,5],[3,4,6,6,7]],[[5,6,7,5,6],[6,7,8,3,5]],[[7,8,9,4,6],[8,9,0,7,4]]])
-# print(np.shape(a))
-# b = a[:,0:1,2:4]
-# print(np.shape(b))
-# print(b)
