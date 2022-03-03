@@ -32,7 +32,7 @@ RGB_COLOR_CHANNEL = {
 
 # TemuraFeature 多核优化版本，可以跑满cpu，从原来的8h降低至1h
 def __temura_inside(j, kmax, dist, step, w,h,size_w, size_h, gray_img_a, gray_img_b, i):
-    if(i*step+size_w>w)or(j*step+size_h>h):return ([0,0,0,0],[0,0,0,0])
+    if(i*step+size_w>w)or(j*step+size_h>h):return ([0,0,0,0,0,0],[0,0,0,0,0,0])
     raw_a = ta.tamura_feature(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist)
     raw_b = ta.tamura_feature(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], kmax, dist)
     return (raw_a, raw_b)

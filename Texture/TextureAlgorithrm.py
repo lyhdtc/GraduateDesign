@@ -376,7 +376,7 @@ def __tamura_linelikeness(gray_img, theta, dist):
 # 由于我的计算中全部已经是滑动窗口了，所以这里不再于滑动窗口上选取子窗了，要不然性能会爆炸，而且由于会计算两个图片的差距，因此这里稍微简化加速一下
 # Freg_lyh = 1 - 0.25((f_crs+f_con+f_dir+f_lin)/max(f_crs,f_con,f_dir,f_lin))
 def __tamura_regularity(f_crs,f_con,f_dir,f_lin):
-    f = np.arrau((f_crs,f_con,f_dir,f_lin))
+    f = np.array((f_crs,f_con,f_dir,f_lin))
     res = 1- 0.25*(np.sum(f)/np.max(f))
     return res
 	

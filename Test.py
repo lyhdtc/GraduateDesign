@@ -5,18 +5,18 @@ from Tools import FakeColorCSV
 
 import numpy as np
 import time
+import cv2
+from Texture import TextureAlgorithrm as ta
 
-
-
-print('hello')
+# print('hello')
 def general_run():
      
     start_time = time.perf_counter()
     print('Start!')
     
     
-    path_a = 'GraduateDesign/Data/Model.png'
-    path_b = 'GraduateDesign/Data/Photo.png'
+    path_a = 'Data/Model.png'
+    path_b = 'Data/Photo.png'
 
     step = 8
     size_w = 40 
@@ -32,5 +32,10 @@ def general_run():
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
     
-# general_run()
+general_run()
 
+# path_a = 'Data/Model.png'
+# img = cv2.imread(path_a)
+# b,g,r = cv2.split(img)
+# ans=ta.tamura_feature(b, 8, 4)
+# print(ans)

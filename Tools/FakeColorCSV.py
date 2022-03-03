@@ -23,7 +23,7 @@ def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername,
     mask = Crop.create_mask(img_b)
     img_a = Crop.use_mask(img_a, mask)
     
-
+    
     
     matrix_a = np.array(cv2.split(img_a))
     matrix_b = np.array(cv2.split(img_b))
