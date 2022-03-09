@@ -48,12 +48,12 @@ def general_experiment():
     experiment_folder = '/home/lyh/results/'+experiment_foldername+'/'   
     csv_path = experiment_folder+experiment_foldername+'.csv'
     picpair_name = 'default'
-    ExperimentCSV.experiment_and_csv(path_a, path_b, experiment_foldername, experiment_folder, csv_path, picpair_name)
+    # ExperimentCSV.experiment_and_csv(path_a, path_b, experiment_foldername, experiment_folder, csv_path, picpair_name)
     
-
+    ExperimentCSV.experiment1(path_a, path_b, 'sdf', csv_path, 'test')
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
-general_experiment()
+# general_experiment()
 
 # path_a = 'Data/fff.jpg'
 # img = cv2.imread(path_a)
@@ -86,3 +86,11 @@ general_experiment()
 # print(ta.tamura_feature(b1, 8,4))
 # end = time.perf_counter()
 # print(end-start_time)
+
+
+
+for i in range(1,20):
+    i = i/20.
+    print(i)
+    
+# print(ans)

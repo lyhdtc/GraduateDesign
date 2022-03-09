@@ -141,7 +141,7 @@ class Experiment_Color_Characteristics(object):
         self.__experiment_color_color_coherence_vector()
         return
     
-    def __init__(self, matrix_a, matrix_b, folder):
+    def __init__(self, matrix_a, matrix_b):
         self.matrix_a = matrix_a
         self.matrix_b = matrix_b
 

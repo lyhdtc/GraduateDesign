@@ -18,7 +18,7 @@ LAB_COLOR_CHANNEL = {
     1: 'a',
     2: 'b'
 }
-class Experiment_Texture_Characteristecs(object):
+class Experiment_Texture_Characteristics(object):
     
     # !窗口是20*20跑不了，40*40可以。。。
     @tc.timmer

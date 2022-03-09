@@ -16,29 +16,29 @@ TODO:
 '''
 
 # 亮度 亮度指hsv空间下h通道的均值
-def brightness(bgr_img):
-    if np.size(bgr_img)==0:return 0
-    bgr_img = cv2.merge(bgr_img)
-    h,s,v = cv2.split(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV))
+def brightness(lab_img):
+    if np.size(lab_img)==0:return 0
+    lab_img = cv2.merge(lab_img)
+    h,s,v = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
     return np.mean(h)
 
 # 对比度 这里计算的是RMS对比度，指hsv空间下h通道的强度标准差 https://www.itbaoku.cn/post/1703490/How-to-calculate-the-contrast-of-an-image
-def constract(bgr_img):
-    if np.size(bgr_img)==0:return 0
-    bgr_img = cv2.merge(bgr_img)
-    h,s,v = cv2.split(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV))
+def constract(lab_img):
+    if np.size(lab_img)==0:return 0
+    lab_img = cv2.merge(lab_img)
+    h,s,v = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
     return np.std(h)
 
 # 曝光度 photoshop修改曝光度的方式为 newValue = oldValue * (2 ^ exposureCompensation)
 # 通常exposureCompensation 为[-2.2]
 # 这里计算两张图片的差值,
 # https://stackoverflow.com/questions/12166117/what-is-the-math-behind-exposure-adjustment-on-photoshop
-def exposure(bgr_img1, bgr_img2):
-    if np.size(bgr_img1)==0:return 0
-    bgr_img1 = cv2.merge(bgr_img1)
-    bgr_img2 = cv2.merge(bgr_img2)
-    h1,s1,v1 = cv2.split(cv2.cvtColor(bgr_img1, cv2.COLOR_BGR2HSV))
-    h2,s2,v2 = cv2.split(cv2.cvtColor(bgr_img2, cv2.COLOR_BGR2HSV))
+def exposure(lab_img1, lab_img2):
+    if np.size(lab_img1)==0:return 0
+    lab_img1 = cv2.merge(lab_img1)
+    lab_img2 = cv2.merge(lab_img2)
+    h1,s1,v1 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img1, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
+    h2,s2,v2 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img2, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
     # 防止log(0)的情况
     h1 = h1 + 1e-7
     h2 = h2 + 1e-7
@@ -48,10 +48,10 @@ def exposure(bgr_img1, bgr_img2):
     return delta_exposure
     
 # 饱和度 photoshop的饱和度调整如下https://blog.csdn.net/xingyanxiao/article/details/48035537
-def saturation(bgr_img):
-    if np.size(bgr_img)==0:return 0
-    bgr_img = cv2.merge(bgr_img)
-    b,g,r = cv2.split(bgr_img)
+def saturation(lab_img):
+    if np.size(lab_img)==0:return 0
+    lab_img = cv2.cvtColor(cv2.merge(lab_img), cv2.COLOR_LAB2BGR)
+    b,g,r = cv2.split(lab_img)
     rgb_max = np.maximum.reduce((b,g,r))
     rgb_min = np.minimum.reduce((b,g,r))
     delta = (rgb_max - rgb_min)/255
@@ -67,10 +67,10 @@ def saturation(bgr_img):
 # 偏色检测（白平衡） 这里用了《基于图像分析的偏色检测及颜色校正方法》这篇文章的思路
 # 把这个人的代码改写了一下https://blog.csdn.net/qq_36187544/article/details/97657927
 
-def white_balance(bgr_img):
-    if np.size(bgr_img)==0:return 0
-    bgr_img = cv2.merge(bgr_img)
-    l,a,b = cv2.split(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2LAB))
+def white_balance(lab_img):
+    if np.size(lab_img)==0:return 0
+    lab_img = cv2.merge(lab_img)
+    l,a,b = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
     #d_a>0，表示偏红，d_a<0，表示偏绿；d_b>0，表示偏黄，d_b<0，表示偏蓝
     d_a = np.mean(a)-128
     d_b = np.mean(b)-128
@@ -81,10 +81,10 @@ def white_balance(bgr_img):
     return d/m
 
 # 高光/阴影检测 采用ps的提取方式，参考这个https://blog.csdn.net/u011520181/article/details/116244184
-def specular_shadow(bgr_img,mask_threshold=0.33, option='specular'):
-    if np.size(bgr_img)==0:return 0
-    bgr_img = cv2.merge(bgr_img)
-    gray_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2GRAY)
+def specular_shadow(lab_img,mask_threshold=0.33, option='specular'):
+    if np.size(lab_img)==0:return 0
+    lab_img = cv2.merge(lab_img)
+    gray_img = cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2GRAY)
     mask_threshold = mask_threshold * 255
     if option == 'specular':
         luminance = gray_img*gray_img
