@@ -13,10 +13,10 @@ import multiprocessing
 # import tqdm
 from functools import partial
 
-RGB_COLOR_CHANNEL = {
-    0: 'b',
-    1: 'g',
-    2: 'r'
+LAB_COLOR_CHANNEL = {
+    0: 'l',
+    1: 'a',
+    2: 'b'
 }
 
 # TODO:
@@ -128,7 +128,7 @@ class FakeColor_Texture_Characteristecs(object):
                 ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.glcm_feature, self.step, self.size_w, self.size_h,d_x=DIRECTION.get(j)[0],d_y=DIRECTION.get(j)[1])
                 
                 for k in range(ans.shape[0]):
-                    label = 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))
+                    label = 'Texture_GLCMFeature_'+LAB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))
                     path = self.folder + label+'_'+glcm_feature_label[k]+'.jpg'
                     self.csv_generate(ans[k], label)
                     ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
@@ -182,14 +182,14 @@ class FakeColor_Texture_Characteristecs(object):
             ax2 = plt.subplot(3,4,4*i+2)
             lbp_a = lbp_a.astype(np.uint8)
             hist_lbp_a = ca.histogram(lbp_a)
-            ax2.plot(hist_lbp_a,RGB_COLOR_CHANNEL.get(i))
+            ax2.plot(hist_lbp_a,LAB_COLOR_CHANNEL.get(i))
             ax3 = plt.subplot(3,4,4*i+3)
             lbp_b = ta.rotation_invariant_LBP(self.matrix_b[i])
             ax3.imshow(lbp_b,cmap='gray')
             ax4 = plt.subplot(3,4,4*i+4)
             lbp_b = lbp_b.astype(np.uint8)
             hist_lbp_b = ca.histogram(lbp_b)
-            ax4.plot(hist_lbp_b,RGB_COLOR_CHANNEL.get(i))
+            ax4.plot(hist_lbp_b,LAB_COLOR_CHANNEL.get(i))
         plt.tight_layout()
         plt.plot()
         plt.savefig(path)
@@ -230,7 +230,7 @@ class FakeColor_Texture_Characteristecs(object):
             ans = multithread_temurafeture_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)
           
             for j in range(ans.shape[0]):
-                label = 'Texture_TamuraFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]
+                label = 'Texture_TamuraFeature_'+LAB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]
                 path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
@@ -256,7 +256,7 @@ class FakeColor_Texture_Characteristecs(object):
             ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.dwt_feature, self.step, self.size_w, self.size_h, wave_func=wave_func)
             
             for j in range(ans.shape[0]):
-                label = 'Texture_DWTFeature_'+RGB_COLOR_CHANNEL.get(i) +'_'+dwt_label[j]
+                label = 'Texture_DWTFeature_'+LAB_COLOR_CHANNEL.get(i) +'_'+dwt_label[j]
                 path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
@@ -282,7 +282,7 @@ class FakeColor_Texture_Characteristecs(object):
             laws_feature_single_feature_b = np.array(laws_feature_single_feature_b)
             laws_feature_single_feature = np.absolute(laws_feature_single_feature_a-laws_feature_single_feature_b)
             for j in range(8):
-                label = 'Texture_Laws_'+RGB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]
+                label = 'Texture_Laws_'+LAB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]
                 path = self.folder + label+'.jpg'
                 self.csv_generate(laws_feature_single_feature[j], label)
                 

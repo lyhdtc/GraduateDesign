@@ -5,6 +5,11 @@ from Color import ColorAlgorithrm as ca
 import cv2
 from Tools import SlideWindow as sw
 import numpy as np
+LAB_COLOR_CHANNEL = {
+    0: 'l',
+    1: 'a',
+    2: 'b'
+}
 RGB_COLOR_CHANNEL = {
     0: 'b',
     1: 'g',
@@ -120,7 +125,7 @@ class FakeColor_Color_Characteristics(object):
         path = self.folder + 'Color_Histogram.jpg'
         for i in range(3):
             ax1 = plt.subplot(3,1,i+1)
-            hist_title = RGB_COLOR_CHANNEL.get(i)+' channel'
+            hist_title = LAB_COLOR_CHANNEL.get(i)+' channel'
             ax1.set_title(hist_title)
             hist_a = ca.histogram(self.matrix_a[i])        
             plt.plot(hist_a,RGB_COLOR_CHANNEL.get(i))
@@ -140,7 +145,7 @@ class FakeColor_Color_Characteristics(object):
             
             for j in range(ans.shape[0]):
                 
-                label =  'Color_ColorMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+color_moments_label[j]
+                label =  'Color_ColorMoments_'+LAB_COLOR_CHANNEL.get(i) +'_'+color_moments_label[j]
                 path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
@@ -165,7 +170,7 @@ class FakeColor_Color_Characteristics(object):
             
             for j in range(ans.shape[0]):
                 
-                label = 'Color_OrdinaryMoments_'+RGB_COLOR_CHANNEL.get(i) +'_'+ordinary_moments_label[j]
+                label = 'Color_OrdinaryMoments_'+LAB_COLOR_CHANNEL.get(i) +'_'+ordinary_moments_label[j]
                 path = self.folder + label +'.jpg'
                 self.csv_generate(ans[j],label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
@@ -197,7 +202,7 @@ class FakeColor_Color_Characteristics(object):
             
             for j in range(ans.shape[0]):
                 
-                label = 'Color_CoherenceVector_'+RGB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]
+                label = 'Color_CoherenceVector_'+LAB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]
                 path = self.folder + label +'.jpg'
                 self.csv_generate(ans[j],label)
                 ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
