@@ -178,10 +178,10 @@ def experiment3(path_a, path_b, folder, csv_path, picpair_name):
     img_b = cv2.imread(path_b)  
     img_a = cv2.cvtColor(img_a,cv2.COLOR_BGR2LAB)
     img_b = cv2.cvtColor(img_b,cv2.COLOR_BGR2LAB)
-    img_am = Experiment_Pic_Transform.experiment3_transform(img_a)
-    img_bm = Experiment_Pic_Transform.experiment3_transform(img_b)
-    img_as = Experiment_Pic_Transform.experiment3_transform(img_a)
-    img_bs = Experiment_Pic_Transform.experiment3_transform(img_b)
+    img_am = Experiment_Pic_Transform.experiment3_transform(img_a, 0.6)
+    img_bm = Experiment_Pic_Transform.experiment3_transform(img_b, 0.6)
+    img_as = Experiment_Pic_Transform.experiment3_transform(img_a, 0.3)
+    img_bs = Experiment_Pic_Transform.experiment3_transform(img_b, 0.3)
     matrix_a = np.array(cv2.split(img_a))
     matrix_b = np.array(cv2.split(img_b))
     matrix_am = np.array(cv2.split(img_am))
@@ -250,7 +250,7 @@ def experiment4(path_a, path_b, folder, csv_path, picpair_name):
     matrix_a = np.array(cv2.split(img_a))
     matrix_b = np.array(cv2.split(img_b))
     
-    img_b0 = Experiment_Pic_Transform.experiment4_transform(img_b)
+    img_b0 = Experiment_Pic_Transform.experiment4_transform(img_b, 0)
     matrix_b0 = np.array(cv2.split(img_b0))
     D_color_0 = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_b0)
     D_color_0.experiment_color_characteristics()
@@ -269,7 +269,7 @@ def experiment4(path_a, path_b, folder, csv_path, picpair_name):
     
     for i in range(1,20):
         i = i/20.
-        img_bi = Experiment_Pic_Transform.experiment4_transform(img_b)
+        img_bi = Experiment_Pic_Transform.experiment4_transform(img_b, i)
         matrix_bi = np.array(cv2.split(img_bi))
         D_color_i = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_bi)
         D_color_i.experiment_color_characteristics()
@@ -308,7 +308,7 @@ def experiment5(path_a, path_b, folder, csv_path, picpair_name):
     matrix_a = np.array(cv2.split(img_a))
     matrix_b = np.array(cv2.split(img_b))
     
-    img_b0 = Experiment_Pic_Transform.experiment4_transform(img_b)
+    img_b0 = Experiment_Pic_Transform.experiment4_transform(img_b, 0)
     matrix_b0 = np.array(cv2.split(img_b0))
     D_color_0 = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_b0)
     D_color_0.experiment_color_characteristics()
@@ -327,7 +327,7 @@ def experiment5(path_a, path_b, folder, csv_path, picpair_name):
     
     for i in range(1,20):
         i = i/20.
-        img_bi = Experiment_Pic_Transform.experiment5_transform(img_b)
+        img_bi = Experiment_Pic_Transform.experiment5_transform(img_b, i)
         matrix_bi = np.array(cv2.split(img_bi))
         D_color_i = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_bi)
         D_color_i.experiment_color_characteristics()
@@ -359,7 +359,7 @@ def experiment5(path_a, path_b, folder, csv_path, picpair_name):
             file.writerow(csv_data)
          
          
-            
+             
 def experiment6(path_a, folder, csv_path, picpair_name):
     img_a = cv2.imread(path_a)
  

@@ -3,7 +3,7 @@ import skimage
 import numpy as np
 import cv2
 import tqdm
-import ParsePicName
+from Tools import ParsePicName
 import os
 
 
@@ -27,25 +27,24 @@ import os
 def new_traditional_noise(img, mode, *args, **kwargs):
     img_b,img_g,img_r = cv2.split(img)
     noise_map = np.full_like(img_b, 255)
-    print(noise_map)
+    ##print(noise_map)
     # print(np.shape(temp))
     noise_map = skimage.util.random_noise(noise_map, mode = mode, *args, **kwargs)
     # print(noise_map)
-    print(img_b)
-    print(noise_map)
+    ##print(img_b)
+    ##print(noise_map)
     img_b =img_b* noise_map
-    print(img_b)
+    ##print(img_b)
     img_g =img_g* noise_map
     img_r =img_r* noise_map
     ans = cv2.merge([img_b, img_g, img_r])
-    ans = ans.astype(np.int)
+    # ans = ans.astype(np.int)
 
     return ans
-
 def traditional_noise(img, mode, *args, **kwargs):
     ans = skimage.util.random_noise(img, mode = mode, *args, **kwargs)
     ans = ans*255
-    ans = ans.astype(np.int)
+    ans = ans.astype(np.uint8)
 
     return ans
 
@@ -64,7 +63,7 @@ def random_replace_element(gray_img, percent):
 
 
 # 将图片指定百分比的像素替换为noise_img图片上随机的像素    
-def random_replace_element_from_another_picture(gray_img, noise_img, percent):
+def random_replace_element_from_another_picture_gray(gray_img, noise_img, percent):
     w = gray_img.shape[0]
     h = gray_img.shape[1]
     num = int(percent*w*h)
@@ -77,6 +76,32 @@ def random_replace_element_from_another_picture(gray_img, noise_img, percent):
     noise = np.take(noise_img, noise_pos)    
     np.put(one_dim, pos, noise)
     ans = np.reshape(one_dim, (w,h))
+    return ans
+# 将图片指定百分比的像素替换为img_noise上指定位置的像素
+def random_replace_element_from_another_picture_bgr(img_data, img_noise, percent):
+    h,w,c = np.shape(img_data)
+    num = int(percent*w*h)
+    b_data, g_data, r_data = cv2.split(img_data)
+    b_noise, g_noise, r_noise = cv2.split(img_noise)
+    
+    b_one_dim = np.reshape(b_data,w*h)
+    pos = np.random.choice(b_one_dim.shape[0], num, replace=False)
+    b_noise = np.take(b_noise, pos)    
+    np.put(b_one_dim, pos, b_noise)
+    b_ans = np.reshape(b_one_dim, (h,w))
+    
+    g_one_dim = np.reshape(g_data, w*h)
+    g_noise = np.take(g_noise, pos)    
+    np.put(g_one_dim, pos, g_noise)
+    g_ans = np.reshape(g_one_dim, (h,w))
+    
+    r_one_dim = np.reshape(r_data, w*h)
+    r_noise = np.take(r_noise, pos)    
+    np.put(r_one_dim, pos, r_noise)
+    r_ans = np.reshape(r_one_dim, (h,w))
+    
+    ans = cv2.merge([b_ans, g_ans, r_ans])
+    ans = ans.astype(np.uint8)
     return ans
 
 # 输入绝对路径，在同一文件夹下按命名规则生成噪声图片

@@ -1,8 +1,11 @@
 import os
 import sys
+
+from torch import uint8
 sys.path.append(os.pardir)
 from Tools import FakeColorCSV
 from Tools import ExperimentCSV
+from Tools import Experiment_Pic_Transform
 import numpy as np
 import time
 import cv2
@@ -88,9 +91,17 @@ def general_experiment():
 # print(end-start_time)
 
 
-
-for i in range(1,20):
-    i = i/20.
-    print(i)
     
 # print(ans)
+
+
+path_a = 'Data/aaa.jpg'
+path_b = 'Data/bbb.jpg'
+img = cv2.imread(path_a)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+noise = cv2.imread(path_b)
+noise = cv2.cvtColor(noise, cv2.COLOR_BGR2LAB)
+ans = Experiment_Pic_Transform.experiment6_transform(img)
+# ans = ans.astype(np.uint8)
+cv2.imshow('asdf', ans)
+cv2.waitKey(0)
