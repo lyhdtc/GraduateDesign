@@ -21,7 +21,7 @@ LAB_COLOR_CHANNEL = {
 class Experiment_Texture_Characteristics(object):
     
     # !窗口是20*20跑不了，40*40可以。。。
-    @tc.timmer
+    # @tc.timmer
     def __experiment_texture_glcm_feature(self):
         glcm_feature_label = ['Energy', 'Entropy', 'Contrast', 'IDM']
         DIRECTION = {
@@ -40,37 +40,28 @@ class Experiment_Texture_Characteristics(object):
         return
     
    
-    
-    @tc.timmer
+    # TODO: 仍然是两张结果做差了。。。
+    # @tc.timmer
     def __experiment_texture_lbp(self):
-        print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
-        plt.figure(figsize=self.figsize)
-        plt.title('lbp')
-        path = self.folder + 'Texture_LBP.jpg'
+
         for i in range(3):
             # print(i)
-            ax1 = plt.subplot(3,4,4*i+1)
+
             lbp_a = ta.rotation_invariant_LBP(self.matrix_a[i])
-            ax1.imshow(lbp_a,cmap='gray')
-            ax2 = plt.subplot(3,4,4*i+2)
-            lbp_a = lbp_a.astype(np.uint8)
-            hist_lbp_a = ca.histogram(lbp_a)
-            ax2.plot(hist_lbp_a,LAB_COLOR_CHANNEL.get(i))
-            ax3 = plt.subplot(3,4,4*i+3)
+
+
+
             lbp_b = ta.rotation_invariant_LBP(self.matrix_b[i])
-            ax3.imshow(lbp_b,cmap='gray')
-            ax4 = plt.subplot(3,4,4*i+4)
-            lbp_b = lbp_b.astype(np.uint8)
-            hist_lbp_b = ca.histogram(lbp_b)
-            ax4.plot(hist_lbp_b,LAB_COLOR_CHANNEL.get(i))
-        plt.tight_layout()
-        plt.plot()
-        plt.savefig(path)
-        plt.close()
+            lbp = np.abs(lbp_a-lbp_b)
+            ans = np.count_nonzero(lbp)
+            label = 'Texture_lbp_'+LAB_COLOR_CHANNEL.get(i)
+            self.csv_generate(ans, label)
+
+
         return 
 
     
-    @tc.timmer
+    # @tc.timmer
     def __experiment_texture_tamura_feature(self):
         kmax = 3    
         dist = 4
@@ -85,7 +76,7 @@ class Experiment_Texture_Characteristics(object):
 
         return    
     
-    @tc.timmer
+    # @tc.timmer
     def __experiment_texture_dwt_feature(self):
         wave_func = 'haar'
         dwt_label = ['average_ca', 'entropy_ca', 'sigma_ca', 'energy_ca',
@@ -100,7 +91,8 @@ class Experiment_Texture_Characteristics(object):
 
         return
     
-    @tc.timmer
+    # @tc.timmer
+    # TODO:这个也是直接出图的，所以也是就统计了不为0的像素的数量
     def __experiment_texture_laws_feature(self):
         laws_label = ['0', '1', '2', '3', '4', '5', '6', '7']
         for i in range(3):
@@ -112,18 +104,9 @@ class Experiment_Texture_Characteristics(object):
             laws_feature_single_feature = np.absolute(laws_feature_single_feature_a-laws_feature_single_feature_b)
             for j in range(8):
                 label = 'Texture_Laws_'+LAB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]
-                path = self.folder + label+'.jpg'
-                self.csv_generate(laws_feature_single_feature[j], label)
-                
-                ans_highsolution = laws_feature_single_feature[j].astype(np.uint8)
-                ans_experiment = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
-                cv2.imwrite(path, ans_highsolution)
-                print(path)
-                # plt.figure(figsize=self.figsize)
-                # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
-                # plt.colorbar()
-                # plt.savefig(path)
-                # plt.close()
+
+                self.csv_generate(np.count_nonzero(laws_feature_single_feature[j]), label)
+
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
@@ -135,18 +118,18 @@ class Experiment_Texture_Characteristics(object):
         
         self.__experiment_texture_glcm_feature()
         
-        # self.__experiment_texture_characteristics_lbp()
+        self.__experiment_texture_lbp()
         
         self.__experiment_texture_tamura_feature()
         self.__experiment_texture_dwt_feature()
-        # self.__experiment_texture_laws_feature()
+        self.__experiment_texture_laws_feature()
         return
     
-    def __init__(self, matrix_a, matrix_b, folder):
+    def __init__(self, matrix_a, matrix_b):
         self.matrix_a = matrix_a
         self.matrix_b = matrix_b
  
-        self.folder = folder 
+
     
         self.csv_data = []
         self.csv_label = []

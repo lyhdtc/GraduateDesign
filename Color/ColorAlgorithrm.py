@@ -78,7 +78,7 @@ def white_balance(lab_img):
     m_b = np.mean(np.abs(b-d_b-128))
     d = np.sqrt((np.square(d_a) + np.square(d_b)))
     m = np.sqrt((np.square(m_a) + np.square(m_b)))
-    return d/m
+    return d/(m+1e-7)
 
 # 高光/阴影检测 采用ps的提取方式，参考这个https://blog.csdn.net/u011520181/article/details/116244184
 def specular_shadow(lab_img,mask_threshold=0.33, option='specular'):
@@ -134,7 +134,7 @@ def ordinary_moments(img):
 def color_coherence_vector(img,color_threshold = 8, area_threshold = 100, bit_depth = 8):
     # 高斯模糊，测试1920*1080的图片不需要做此操作提速
     # img = cv2.GaussianBlur(img, (3,3),0)
-    # 使用opencv4自带函数之后就不需要手动量化图片了
+    # 使用opencv自带函数之后就不需要手动量化图片了
     # img = img_quantify(img, color_threshold, bit_depth)
     vec_smaller = np.zeros(color_threshold, dtype=int)
     vec_bigger  = np.zeros(color_threshold, dtype=int)

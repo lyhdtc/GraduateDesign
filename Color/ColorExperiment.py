@@ -44,6 +44,7 @@ class Experiment_Color_Characteristics(object):
         self.csv_generate(ans,label)
 
     # TODO: 这个是直接出图片的，应该做一下后期处理 
+    # 加了一个count_nonzero，应该是计算了两张高光区域重合之后不为0的部分的像素数量
     def __experiment_color_specular_shadow(self):
         label = 'Color_SpecularShadow'
         
@@ -52,13 +53,14 @@ class Experiment_Color_Characteristics(object):
         ans1 = ca.specular_shadow(self.matrix_a, mask_threshold, option)
         ans2 = ca.specular_shadow(self.matrix_b, mask_threshold, option)
         ans = np.logical_xor(ans1,ans2).astype(int)
-        
+        ans = np.count_nonzero(ans)
        
         self.csv_generate(ans,label)
 
 
     # TODO: 灰度直方图还需要算吗？ 
-    @tc.timmer
+    # 不算了，这个作为基本统计信息打算直接放在最后比较的结果里了
+    # @tc.timmer
     def __experiment_color_characteristics_histogram(self):
        
        
@@ -73,7 +75,7 @@ class Experiment_Color_Characteristics(object):
 
         return
     
-    @tc.timmer
+    # @tc.timmer
     def __experiment_color_color_moments(self):        
         color_moments_label = ['1st', '2nd', '3rd']
         for i in range(3):           
@@ -85,7 +87,7 @@ class Experiment_Color_Characteristics(object):
 
         return
     
-    @tc.timmer
+    # @tc.timmer
     def __experiment_color_ordinary_moments(self):
         ordinary_moments_label = ['m00', 'm10', 'm01', 'm20', 'm11', 'm02', 'm30', 'm21', 'm12',
                                      'm02', 'mu20', 'mu11', 'mu02', 'mu30', 'mu21', 'mu12', 'mu03',
@@ -100,7 +102,7 @@ class Experiment_Color_Characteristics(object):
                 self.csv_generate(ans[j],label)
         return
     
-    @tc.timmer
+    # @tc.timmer
     def __experiment_color_color_coherence_vector(self):
         color_threshold = 8
         area_threshold = 30
@@ -112,13 +114,14 @@ class Experiment_Color_Characteristics(object):
             cur_label = str(buttom) + "-" + str(top)
             ccv_label.append(cur_label)
         for i in range(3):
-            
-            ans = abs(np.array(ca.color_coherence_vector(self.matrix_a[i], color_threshold, area_threshold))-np.array(ca.color_coherence_vector(self.matrix_b[i], color_threshold, area_threshold)))
-            for j in range(ans.shape[0]):
+            vector_a = np.array(ca.color_coherence_vector(self.matrix_a[i], color_threshold, area_threshold))
+            vector_b = np.array(ca.color_coherence_vector(self.matrix_b[i], color_threshold, area_threshold))
+
+            for j in range(vector_a.shape[0]):
                 
                 label = 'Color_CoherenceVector_'+LAB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]
-
-                self.csv_generate(ans[j],label)
+                ans = np.linalg.norm(vector_a[j]-vector_b[j])
+                self.csv_generate(ans,label)
 
 
         return
@@ -134,7 +137,7 @@ class Experiment_Color_Characteristics(object):
         self.__experiment_color_exposure()
         self.__experiment_color_saturation()
         self.__experiment_color_white_balance()
-        # self.__experiment_color_specular_shadow()
+        self.__experiment_color_specular_shadow()
         # self.__experiment_color_characteristics_histogram()
         self.__experiment_color_color_moments()
         self.__experiment_color_ordinary_moments()
