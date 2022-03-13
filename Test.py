@@ -72,11 +72,11 @@ def experiment():
     print('Start!')
     
     
-    csv_folder = '/home/lyh/results/multithreadTest/'
-    pic_folder = '/mnt/d/GraduateDesign2/TestData/test/'
+    csv_folder = '/home/lyh/GraduateDesign2/CSVResult/'
+    pic_folder = '/home/lyh/GraduateDesign2/WIDER_Data_lyh/'
     files = os.listdir(pic_folder)
     num_img = len(files)
-    random_num_list = random.sample(range(0,num_img-1), 50)
+    random_num_list = random.sample(range(0,num_img-1), 700)
     random_num_a = random_num_list[::2]
     random_num_b = random_num_list[1::2]
     # for i in range(20):
@@ -86,12 +86,17 @@ def experiment():
     lock = manager.Lock()
     pool = multiprocessing.Pool()
     func=partial(ExperimentCSV.experiment_csv, random_num_a = random_num_a, random_num_b=random_num_b, pic_folder = pic_folder, csv_folder=csv_folder, lock=lock)
-    list( tqdm(pool.imap(func,range(20)), total = 20, desc='Progress'))
+    list( tqdm(pool.imap(func,range(500)), total = 500, desc='Progress'))
     pool.close()
     pool.join()
     end_time = time.perf_counter()
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
+    
+    
 experiment()   
+
+
+
 # path_a = 'Data/fff.jpg'
 # img = cv2.imread(path_a)
 # b,g,r = cv2.split(img)
