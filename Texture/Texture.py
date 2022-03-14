@@ -295,6 +295,18 @@ class FakeColor_Texture_Characteristecs(object):
                 # plt.colorbar()
                 # plt.savefig(path)
                 # plt.close()
+                
+    def __fakecolor_texture_gabor(self):
+        label = 'Texture_Gabor'
+        path = self.folder +'Texture_Gabor.jpg'
+
+        ans_a = ta.gabor_process(self.matrix_a)
+        ans_b = ta.gabor_process(self.matrix_b)
+        ans = np.abs(ans_a-ans_b)
+        ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+        self.csv_generate(ans, label)
+        cv2.imwrite(path, ans_highsolution)
+        print(path)
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
@@ -317,6 +329,7 @@ class FakeColor_Texture_Characteristecs(object):
         self.__multithread_fakecolor_texture_tamura_feature()
         self.__fakecolor_texture_dwt_feature()
         self.__fakecolor_texture_laws_feature()
+        self.__fakecolor_texture_gabor()
         return
     
     def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):

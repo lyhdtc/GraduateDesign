@@ -497,3 +497,92 @@ def  laws_feature(gray_img):
     
     return texture_maps
 
+# ----------------------------------Gabor滤波---------------------------------
+# 构建 Gabor Filter
+def __gabor_filter(K_size=111, Sigma=10, Gamma=1.2, Lambda=10, Psi=0, angle=0):
+	# get half size
+	d = K_size // 2
+
+	# prepare kernel
+	gabor = np.zeros((K_size, K_size), dtype=np.float32)
+
+	# each value
+	for y in range(K_size):
+		for x in range(K_size):
+			# distance from center
+			px = x - d
+			py = y - d
+
+			# degree -> radian
+			theta = angle / 180. * np.pi
+
+			# get kernel x
+			_x = np.cos(theta) * px + np.sin(theta) * py
+
+			# get kernel y
+			_y = -np.sin(theta) * px + np.cos(theta) * py
+
+			# fill kernel
+			gabor[y, x] = np.exp(-(_x**2 + Gamma**2 * _y**2) / (2 * Sigma**2)) * np.cos(2*np.pi*_x/Lambda + Psi)
+
+	# kernel normalization
+	gabor /= np.sum(np.abs(gabor))
+
+	return gabor
+# 将Gabor滤波器作用到图像上
+def __gabor_filtering(gray, K_size=111, Sigma=10, Gamma=1.2, Lambda=10, Psi=0, angle=0):
+    # get shape
+    H, W = gray.shape
+
+    # padding
+    gray = np.pad(gray, (K_size//2, K_size//2), 'edge')
+
+    # prepare out image
+    out = np.zeros((H, W), dtype=np.float32)
+
+    # get gabor filter
+    gabor = __gabor_filter(K_size=K_size, Sigma=Sigma, Gamma=Gamma, Lambda=Lambda, Psi=0, angle=angle)
+        
+    # filtering
+    for y in range(H):
+        for x in range(W):
+            out[y, x] = np.sum(gray[y : y + K_size, x : x + K_size] * gabor)
+
+    out = np.clip(out, 0, 255)
+    out = out.astype(np.uint8)
+
+    return out
+
+# 使用6个不同角度的Gabor滤波器对图像进行特征提取
+def gabor_process(lab_img):
+    lab_img = cv2.merge(lab_img)
+    bgr_img = cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR)
+    gray_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2GRAY)
+    # get shape
+    H, W, _ = gray_img.shape
+
+    # gray scale
+    gray = gray_img.astype(np.float32)
+
+    # define angle
+    #As = [0, 45, 90, 135]
+    As = [0,30,60,90,120,150]
+
+    # prepare pyplot
+    # plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0.2)
+
+    out = np.zeros([H, W], dtype=np.float32)
+
+    # each angle
+    for i, A in enumerate(As):
+        # gabor filtering
+        _out = __gabor_filtering(gray, K_size=11, Sigma=1.5, Gamma=1.2, Lambda=3, angle=A)
+
+        # add gabor filtered image
+        out += _out
+
+    # scale normalization
+    out = out / out.max() * 255
+    out = out.astype(np.uint8)
+
+    return out

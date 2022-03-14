@@ -107,6 +107,13 @@ class Experiment_Texture_Characteristics(object):
 
                 self.csv_generate(np.count_nonzero(laws_feature_single_feature[j]), label)
 
+
+    def __experiment_texture_gabor(self):
+        label = 'Texture_Gabor'
+        ans_a = ta.gabor_process(self.matrix_a)
+        ans_b = ta.gabor_process(self.matrix_b)
+        ans = np.abs(ans_a-ans_b) 
+        self.csv_generate(np.count_nonzero(ans), label)
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
@@ -123,6 +130,8 @@ class Experiment_Texture_Characteristics(object):
         self.__experiment_texture_tamura_feature()
         self.__experiment_texture_dwt_feature()
         self.__experiment_texture_laws_feature()
+        
+        self.__experiment_texture_gabor()
         return
     
     def __init__(self, matrix_a, matrix_b):
