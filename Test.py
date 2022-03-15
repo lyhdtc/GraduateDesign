@@ -53,7 +53,7 @@ def test_experiment():
     path_b = 'Data/ffff.jpg'
 
 
-    experiment_foldername = 'csvTest'
+    experiment_foldername = 'csvTest_gabor'
     experiment_folder = '/home/lyh/results/'+experiment_foldername+'/'   
     csv_path = experiment_folder+experiment_foldername+'.csv'
     picpair_name = 'default'
@@ -62,7 +62,7 @@ def test_experiment():
     # ExperimentCSV.experiment1(path_a, path_b,  csv_path, 'test')
     manager = multiprocessing.Manager()
     lock = manager.Lock()
-    ExperimentCSV.experiment_csv(0, ['fff'], ['ffff'], '/mnt/d/GraduateDesign2/GraduateDesign/Data/',experiment_folder,lock)
+    ExperimentCSV.experiment_csv(0, ['fff'], ['ffff'], '/home/lyh/GraduateDesign2/GraduateDesign/Data/',experiment_folder,lock)
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
 # test_experiment()
@@ -72,7 +72,7 @@ def experiment():
     print('Start!')
     
     
-    csv_folder = '/home/lyh/GraduateDesign2/CSVResult/'
+    csv_folder = '/home/lyh/GraduateDesign2/CSVResult_gabor/'
     pic_folder = '/home/lyh/GraduateDesign2/WIDER_Data_lyh/'
     files = os.listdir(pic_folder)
     num_img = len(files)
@@ -86,7 +86,9 @@ def experiment():
     lock = manager.Lock()
     pool = multiprocessing.Pool()
     func=partial(ExperimentCSV.experiment_csv, random_num_a = random_num_a, random_num_b=random_num_b, pic_folder = pic_folder, csv_folder=csv_folder, lock=lock)
-    list( tqdm(pool.imap(func,range(500)), total = 500, desc='Progress'))
+    list( tqdm(pool.imap(func,range(350)), total = 350, desc='Progress'))
+    
+    # list((tqdm(p.imap(f, range(10)), total=10, desc='监视进度')))
     pool.close()
     pool.join()
     end_time = time.perf_counter()

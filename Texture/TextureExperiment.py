@@ -112,6 +112,8 @@ class Experiment_Texture_Characteristics(object):
         label = 'Texture_Gabor'
         ans_a = ta.gabor_process(self.matrix_a)
         ans_b = ta.gabor_process(self.matrix_b)
+        ans_a = np.array(ans_a)
+        ans_b = np.array(ans_b)
         ans = np.abs(ans_a-ans_b) 
         self.csv_generate(np.count_nonzero(ans), label)
     

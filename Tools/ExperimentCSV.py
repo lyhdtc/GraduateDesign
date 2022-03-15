@@ -109,11 +109,8 @@ def experiment_csv(i, random_num_a, random_num_b, pic_folder,  csv_folder, lock)
     
     csv_path = csv_folder + '6.csv'
     picpair_name = name_a
-    __experiment6(path_a, csv_path, picpair_name, lock)
-    
-    csv_path = csv_folder + '6.csv'
-    picpair_name = name_b
-    __experiment6(path_b, csv_path, picpair_name, lock) 
+    __experiment6(path_a, path_b, csv_path, picpair_name, lock)    
+
              
 
 def __experiment1(path_a, path_b, csv_path, picpair_name, lock):
@@ -413,16 +410,16 @@ def __experiment5(path_a, path_b, csv_path, picpair_name, lock):
     lock.release()    
          
              
-def __experiment6(path_a, csv_path, picpair_name, lock):
+def __experiment6(path_a, path_b,csv_path, picpair_name, lock):
     img_a = cv2.imread(path_a)
- 
+    img_b = cv2.imread(path_b)  
     img_a = cv2.cvtColor(img_a,cv2.COLOR_BGR2LAB)
-
-    img_a1 = Experiment_Pic_Transform.experiment6_transform(img_a)
+    img_b = cv2.cvtColor(img_b,cv2.COLOR_BGR2LAB)
+    img_b1 = Experiment_Pic_Transform.experiment6_transform(img_b)
     # img_b1 = img_b
     matrix_a = np.array(cv2.split(img_a))
-    matrix_a1 = np.array(cv2.split(img_a1))
-
+    matrix_b = np.array(cv2.split(img_b))
+    matrix_b1 = np.array(cv2.split(img_b1))
     
     csv_label = []
     # csv_label.append('experiment_name')
@@ -431,19 +428,21 @@ def __experiment6(path_a, csv_path, picpair_name, lock):
     # csv_data.append(experiment_name)
     csv_data.append(picpair_name)
     
-    D_color = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_a1)
-    D_color.experiment_color_characteristics()    
-
-    S_color = D_color.csv_data
-    # S_color = S_color.tolist()
+    D_color_origin = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_b)
+    D_color_origin.experiment_color_characteristics()    
+    D_color_experiment = ColorExperiment.Experiment_Color_Characteristics(matrix_a, matrix_b1)
+    D_color_experiment.experiment_color_characteristics()    
+    S_color = np.array(D_color_experiment.csv_data)/(np.array(D_color_origin.csv_data)+1e-7)
+    S_color = S_color.tolist()
     
-    D_texture = TextureExperiment.Experiment_Texture_Characteristics(matrix_a, matrix_a1)
-    D_texture.experiment_texture_characteristics()    
- 
-    S_texture = D_texture.csv_data
-    # S_texture = S_texture.tolist()
+    D_texture_origin = TextureExperiment.Experiment_Texture_Characteristics(matrix_a, matrix_b)
+    D_texture_origin.experiment_texture_characteristics()    
+    D_texture_experiment = TextureExperiment.Experiment_Texture_Characteristics(matrix_a, matrix_b1)
+    D_texture_experiment.experiment_texture_characteristics()    
+    S_texture = np.array(D_texture_experiment.csv_data)/(np.array(D_texture_origin.csv_data)+1e-7)
+    S_texture = S_texture.tolist()
     
-    csv_label = csv_label + D_color.csv_label + D_texture.csv_label
+    csv_label = csv_label + D_color_origin.csv_label + D_texture_origin.csv_label
     csv_data = csv_data + S_color + S_texture
     
     lock.acquire()

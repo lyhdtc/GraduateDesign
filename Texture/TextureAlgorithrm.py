@@ -559,7 +559,7 @@ def gabor_process(lab_img):
     bgr_img = cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR)
     gray_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2GRAY)
     # get shape
-    H, W, _ = gray_img.shape
+    H, W= gray_img.shape
 
     # gray scale
     gray = gray_img.astype(np.float32)
