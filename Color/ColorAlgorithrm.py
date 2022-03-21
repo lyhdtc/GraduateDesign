@@ -69,8 +69,9 @@ def saturation(lab_img):
 
 def white_balance(lab_img):
     if np.size(lab_img)==0:return 0
-    lab_img = cv2.merge(lab_img)
-    l,a,b = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
+    # lab_img = cv2.merge(lab_img)
+    # l,a,b = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
+    l,a,b = lab_img
     #d_a>0，表示偏红，d_a<0，表示偏绿；d_b>0，表示偏黄，d_b<0，表示偏蓝
     d_a = np.mean(a)-128
     d_b = np.mean(b)-128
