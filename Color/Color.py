@@ -123,19 +123,27 @@ class FakeColor_Color_Characteristics(object):
         plt.figure(figsize=self.figsize)
         plt.title('histogram')
         path = self.folder + 'Color_Histogram.jpg'
+        
+        
+        lab_img_a = cv2.merge(self.matrix_a)
+        lab_img_b = cv2.merge(self.matrix_b)
+        bgr_img_a = cv2.cvtColor(lab_img_a, cv2.COLOR_LAB2BGR)
+        bgr_img_b = cv2.cvtColor(lab_img_b, cv2.COLOR_LAB2BGR)
         for i in range(3):
             ax1 = plt.subplot(3,1,i+1)
-            hist_title = LAB_COLOR_CHANNEL.get(i)+' channel'
+            hist_title = RGB_COLOR_CHANNEL.get(i)+' channel'
             ax1.set_title(hist_title)
-            hist_a = ca.histogram(self.matrix_a[i])        
+            hist_a = ca.histogram(bgr_img_a[i])        
             plt.plot(hist_a,RGB_COLOR_CHANNEL.get(i))
-            hist_b = ca.histogram(self.matrix_b[i])        
+            hist_b = ca.histogram(bgr_img_b[i])        
             plt.plot(hist_b,RGB_COLOR_CHANNEL.get(i),linestyle='dashed') 
         plt.tight_layout()
         plt.plot()
         plt.savefig(path)
         plt.close()
         return
+
+    
     
     @tc.timmer
     def __fakecolor_color_color_moments(self):        

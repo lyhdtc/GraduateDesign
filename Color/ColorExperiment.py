@@ -62,15 +62,18 @@ class Experiment_Color_Characteristics(object):
     # 不算了，这个作为基本统计信息打算直接放在最后比较的结果里了
     # @tc.timmer
     def __experiment_color_characteristics_histogram(self):
-       
+        lab_img_a = cv2.merge(self.matrix_a)
+        lab_img_b = cv2.merge(self.matrix_b)
+        bgr_img_a = cv2.cvtColor(lab_img_a, cv2.COLOR_LAB2BGR)
+        bgr_img_b = cv2.cvtColor(lab_img_b, cv2.COLOR_LAB2BGR)
        
         for i in range(3):
             ax1 = plt.subplot(3,1,i+1)
-            hist_title = LAB_COLOR_CHANNEL.get(i)+' channel'
+            hist_title = RGB_COLOR_CHANNEL.get(i)+' channel'
             ax1.set_title(hist_title)
-            hist_a = ca.histogram(self.matrix_a[i])        
+            hist_a = ca.histogram(bgr_img_a[i])        
             plt.plot(hist_a,RGB_COLOR_CHANNEL.get(i))
-            hist_b = ca.histogram(self.matrix_b[i])        
+            hist_b = ca.histogram(bgr_img_b[i])        
             plt.plot(hist_b,RGB_COLOR_CHANNEL.get(i),linestyle='dashed') 
 
         return

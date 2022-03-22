@@ -1,6 +1,8 @@
+from pickletools import uint8
 import sys
 import cv2
 import numpy as np
+from prometheus_client import delete_from_gateway
 
 
 '''
@@ -15,40 +17,108 @@ TODO:
 
 '''
 
-# 亮度 亮度指hsv空间下h通道的均值
+# 亮度 亮度指hsv空间下v通道的均值
+#! 更新 在ps中测试，提高亮度时将rgb三通道值同时增加
+def __brightness_abondoned(lab_img):
+    if np.size(lab_img)==0:return 0
+    lab_img = cv2.merge(lab_img)
+    h,s,v = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
+    return np.mean(v)
 def brightness(lab_img):
     if np.size(lab_img)==0:return 0
     lab_img = cv2.merge(lab_img)
-    h,s,v = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
-    return np.mean(h)
+    bgr_img = np.array(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR))
+    return np.mean(bgr_img)
 
-# 对比度 这里计算的是RMS对比度，指hsv空间下h通道的强度标准差 https://www.itbaoku.cn/post/1703490/How-to-calculate-the-contrast-of-an-image
-def constract(lab_img):
+# 对比度 这里计算的是RMS对比度，指hsv空间下v通道的强度标准差 https://www.itbaoku.cn/post/1703490/How-to-calculate-the-contrast-of-an-image
+def __constract_abondoned(lab_img):
     if np.size(lab_img)==0:return 0
     lab_img = cv2.merge(lab_img)
     h,s,v = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
-    return np.std(h)
+    return np.std(v)
+#  1) newRGB = RGB + (RGB - Threshold) * (1/(1 - Contrast/255) - 1)
+#  2) newRGB = RGB + (RGB - Threshold) * Contrast/255
+def constract(lab_img_new, lab_img_old):
+    if np.size(lab_img_new)==0:return 0
+    lab_img_new = cv2.merge(lab_img_new)
+    lab_img_old = cv2.merge(lab_img_old)
+    bgr_img_new = cv2.cvtColor(lab_img_new, cv2.COLOR_LAB2BGR)
+    bgr_img_old = cv2.cvtColor(lab_img_old, cv2.COLOR_LAB2BGR)
+    bn,gn,rn = np.array(cv2.split(bgr_img_new))
+    bo,go,ro = np.array(cv2.split(bgr_img_old))
+    th_b = int(np.mean(bo))
+    th_g = np.mean(go)
+    th_r = np.mean(ro)
+    mask = np.ones(np.shape(bn))
+    for p in [bn,bo]:
+        mask = np.where(p==255, 0, mask)
+        mask = np.where(p==0  , 0, mask)
+        mask = np.where(p==th_b, 0, mask)
+    # bn = np.sum(bn*mask)/np.count_nonzero(mask)
+
+    # bo = np.sum(bo*mask)/np.count_nonzero(mask)
+    ans = 100*(bn-bo)/(bn-th_b)
+    ans = np.rint(ans)
+    ans = np.bincount(ans)
+    # delta_b = bn-bo
+    # delta_g = gn-go
+    # delta_r = rn-ro
+    
+    # if delta_b>0:
+    #     ans = delta_b/(bn-th_b)
+    # elif delta_b<0:
+    #     ans = delta_b/(bo-th_b)
+    # else:
+    #     ans = 0
+    print(ans)
+    
 
 # 曝光度 photoshop修改曝光度的方式为 newValue = oldValue * (2 ^ exposureCompensation)
+# 实际上，新版的photoshop中为了防止过曝现象还进行了一次后矫正，因此本算法计算的结果会大于photoshop的值
 # 通常exposureCompensation 为[-2.2]
 # 这里计算两张图片的差值,
 # https://stackoverflow.com/questions/12166117/what-is-the-math-behind-exposure-adjustment-on-photoshop
-def exposure(lab_img1, lab_img2):
-    if np.size(lab_img1)==0:return 0
-    lab_img1 = cv2.merge(lab_img1)
-    lab_img2 = cv2.merge(lab_img2)
-    h1,s1,v1 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img1, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
-    h2,s2,v2 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img2, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HSV))
+def exposure(lab_img_new, lab_img_old):
+    if np.size(lab_img_new)==0:return 0
+    lab_img_new = cv2.merge(lab_img_new)
+    lab_img_old = cv2.merge(lab_img_old)
+    h1,v1,s1 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img_new, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HLS))
+    h2,v2,s2 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img_old, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HLS))
+    
+    mask = np.where(v1>254, 0, 1)
+    mask = np.where(v2>254, 0, mask)
+    mask = np.where(v1<1,   0, mask)
+    mask = np.where(v2<1,   0, mask)
     # 防止log(0)的情况
-    h1 = h1 + 1e-7
-    h2 = h2 + 1e-7
-    delta_exposure = np.mean((np.log(h1)-np.log(h2))/np.log(2))
+    v1 = v1 + 1e-7
+    v2 = v2 + 1e-7
+    # delta_exposure = np.mean((np.log(v1)-np.log(v2))/np.log(2))
+    # temp = np.log(v1)-np.log(v2)
+    # print(np.count_nonzero(np.where(v1<v2, 1, 0)))
+    # mask = np.where(v1>=255, 1,0)
+    # mask = np.where(v2<1, 1, mask)
+    # num = np.count_nonzero(mask)
+    # temp = np.where(v1>=255, 0, temp)
+    # temp = np.where(v2<1, 0, temp)
+
+
+    v1 = v1 * mask
+    v2 = v2 * mask
+    
+    v1 = np.sum(v1)/np.count_nonzero(mask)
+    v2 = np.sum(v2)/np.count_nonzero(mask)
+    
+    delta_exposure = (np.log(v1) - np.log(v2)) / np.log(2)
+    # delta_exposure = np.sum(delta_mat) / np.count_nonzero(mask)
+    # delta_exposure = np.sum(temp)/(temp.size-num)
+    
     # 归一化
-    delta_exposure = delta_exposure/2
-    return delta_exposure
+    # delta_exposure = delta_exposure/2
+    return delta_exposure*10
     
 # 饱和度 photoshop的饱和度调整如下https://blog.csdn.net/xingyanxiao/article/details/48035537
-def saturation(lab_img):
+# 更新 测试发现ps中是转换到HSL空间计算饱和度
+def __saturation_abondoned(lab_img):
     if np.size(lab_img)==0:return 0
     lab_img = cv2.cvtColor(cv2.merge(lab_img), cv2.COLOR_LAB2BGR)
     b,g,r = cv2.split(lab_img)
@@ -63,6 +133,23 @@ def saturation(lab_img):
     saturation2 = (delta/((2-value)+1e-7))*judge2
     saturation = np.where(saturation1>saturation2, saturation1, saturation2)
     return np.sum(saturation)
+
+def saturation(lab_img_new, lab_img_old):
+    if np.size(lab_img_new)==0:return 0
+    lab_img_new = cv2.merge(lab_img_new)
+    lab_img_old = cv2.merge(lab_img_old)
+    h1, l1, s1 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img_new, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HLS))
+    h2, l2, s2 = cv2.split(cv2.cvtColor(cv2.cvtColor(lab_img_old, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2HLS))
+    mask = np.where(s1==255, 0, 1)
+    mask = np.where(s2==255, 0, mask)
+    mask = np.where(s1==0, 0, mask)
+    mask = np.where(s2==0, 0, mask)
+    s1 = s1 * mask
+    s2 = s2 * mask
+    ans_new = np.sum(s1)/np.count_nonzero(mask)
+    ans_old = np.sum(s2)/np.count_nonzero(mask)
+    return (ans_new-ans_old)
+    
 
 # 偏色检测（白平衡） 这里用了《基于图像分析的偏色检测及颜色校正方法》这篇文章的思路
 # 把这个人的代码改写了一下https://blog.csdn.net/qq_36187544/article/details/97657927
@@ -139,20 +226,32 @@ def color_coherence_vector(img,color_threshold = 8, area_threshold = 100, bit_de
     # img = img_quantify(img, color_threshold, bit_depth)
     vec_smaller = np.zeros(color_threshold, dtype=int)
     vec_bigger  = np.zeros(color_threshold, dtype=int)
-    ret,th = cv2.threshold(img,127,255,0)
-    ret, labeled, stat, centroids = cv2.connectedComponentsWithStats(th, None, cv2.CC_STAT_AREA, None,connectivity=8)
-    
-    areas = [[v[4],label_idx] for label_idx,v in enumerate(stat)]
-    coord = [[v[0],v[1]] for label_idx,v in enumerate(stat)]
-    for a,c in zip(areas, coord):
-        area_size = a[0]
-        x,y = c[0],c[1]
-        if(x<img.shape[1])and(y<img.shape[0]):
-            bin_idx = int(img[y,x]/(256/color_threshold))
-            if(area_size >= area_threshold):
-                vec_bigger[bin_idx] = vec_bigger[bin_idx]+1
-            else:
-                vec_smaller[bin_idx] = vec_smaller[bin_idx]+1
+    for color_level in range(color_threshold):
+        # 将当前level的位置置1，其他位置置0
+        down =int( 0 + color_level * (256/color_threshold))
+        up   = int(down + (256/color_threshold))
+        th_up = np.where(img<up, 1, 0)
+        th_down = np.where(img>=down, 1, 0)
+        th = (th_up * th_down).astype(np.uint8)
+        
+        # ret,th = cv2.threshold(img,127,255,0)
+        ret, labeled, stat, centroids = cv2.connectedComponentsWithStats(th, None, cv2.CC_STAT_AREA, None,connectivity=8)
+        
+        areas = [[v[4],label_idx] for label_idx,v in enumerate(stat)]
+        coord = [[v[0],v[1],v[2],v[3]] for label_idx,v in enumerate(stat)]
+        for a,c in zip(areas, coord):
+            if(a[1]==0):continue
+            area_size = a[0]
+            x,y = np.argwhere(th[c[1]:c[1]+c[3], c[0]:c[0]+c[2]] != 0)[0]
+            x = x+c[1]
+            y = y+c[0]
+            if(img[x,y]<down or img[x,y]>=up):continue            
+            if(y<img.shape[1])and(x<img.shape[0]):
+                bin_idx = color_level
+                if(area_size >= area_threshold):
+                    vec_bigger[bin_idx] = vec_bigger[bin_idx]+area_size
+                else:
+                    vec_smaller[bin_idx] = vec_smaller[bin_idx]+area_size
     return vec_smaller,vec_bigger
 
 

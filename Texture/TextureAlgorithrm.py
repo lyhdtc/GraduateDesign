@@ -4,7 +4,7 @@ import numpy as np
 import math
 import pywt
 from scipy import signal as sg
-from skimage.feature import local_binary_pattern
+from skimage.feature import local_binary_pattern, greycomatrix, greycoprops
 import cv2
 np.set_printoptions(suppress=True)
 import time
@@ -24,8 +24,17 @@ def __norm(ar):
 # 熵（entropy）度量了图像包含信息量的随机性，表现了图像的复杂程度。当共生矩阵中所有值均相等或者像素值表现出最大的随机性时，熵最大
 # 对比度（contrast）反应了图像的清晰度和纹理的沟纹深浅。纹理越清晰反差越大对比度也就越大
 # 反差分矩阵（Inverse Differential Moment, IDM）反映了纹理的清晰程度和规则程度，纹理清晰、规律性较强、易于描述的，值较大
-def glcm_feature(gray_img,d_x, d_y,gray_level=16):
-    glcm = __glcm(gray_img,d_x, d_y,gray_level)
+def glcm_feature(gray_img, distance, gray_level=16):
+    angle = [0, np.pi / 4, np.pi / 2, np.pi * 3 / 4]
+    glcm = greycomatrix(gray_img, distance, angle, gray_level)
+    feature = ['contrast', 'dissimilarity','homogeneity', 'energy', 'correlation', 'ASM']
+    res = []
+    for f in feature:
+        res.append(np.mean(greycoprops(glcm, f)))
+    return res
+
+def __glcm_feature_abondoned(gray_img,d_x, d_y,gray_level=16):
+    glcm = glcm(gray_img,d_x, d_y,gray_level)
    
     res = []
     # feature == "energy":
@@ -58,7 +67,8 @@ def glcm_feature(gray_img,d_x, d_y,gray_level=16):
 
 
 # 计算并返回归一化后的灰度共生矩阵
-def __glcm(arr, d_x, d_y, gray_level=16):
+# 更新，直接调用skimage的库就可以了
+def __glcm_abondoned(arr, d_x, d_y, gray_level=16):
     max_gray = arr.max()
     height, width = arr.shape
     
@@ -76,6 +86,8 @@ def __glcm(arr, d_x, d_y, gray_level=16):
     else:
         ret = ret / float((height - 1) * (width - 1))  # 归一化, 45度或135度方向
     return ret
+
+
 # glcm_0 = glcm(gray_gray_img_gray, 1, 0)  # 水平方向
 # glcm_1  = glcm(gray_gray_img_gray, 0, 1)  # 垂直方向
 # glcm_2  = glcm(gray_gray_img_gray, 1, 1)  # 45度方向
@@ -191,7 +203,7 @@ def __tamura_coarseness(gray_img, kmax):
 				vertical[k][wi][hi] = average_gray[k][wi][hi+window] - average_gray[k][wi][hi-window]
 		horizon[k] = horizon[k] * (1.0 / np.power(2, 2*(k+1)))
 		vertical[k] = horizon[k] * (1.0 / np.power(2, 2*(k+1)))
-
+#论文中选取时为了考虑边缘效应，选取的并不完全是最大值，这里有一点不同
 	for wi in range(w):
 		for hi in range(h):
 			h_max = np.max(horizon[:,wi,hi])
@@ -200,7 +212,11 @@ def __tamura_coarseness(gray_img, kmax):
 			v_max_index = np.argmax(vertical[:,wi,hi])
 			index = h_max_index if (h_max > v_max) else v_max_index
 			Sbest[wi][hi] = np.power(2,index)
+   
+# horizon[:,wi,hi] = np.where(horizon[:,wi,hi]>=0.9*h_max, h_max, horizon[:,wi,hi])
 
+    
+    
 	fcrs = np.mean(Sbest)
 	return fcrs
 
