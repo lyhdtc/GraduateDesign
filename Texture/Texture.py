@@ -116,19 +116,13 @@ class FakeColor_Texture_Characteristecs(object):
     # !窗口是20*20跑不了，40*40可以。。。
     @tc.timmer
     def __fakecolor_texture_glcm_feature(self):
-        glcm_feature_label = ['Energy', 'Entropy', 'Contrast', 'IDM']
-        DIRECTION = {
-            0: [1,0],
-            1: [0,1],
-            2: [1,1],
-            3: [-1,1]
-        }
+        glcm_feature_label = ['energy','contrast','homogeneity','coorelation','entropy']
         for i in range(3):
-            for j in range(4):
-                ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.glcm_feature, self.step, self.size_w, self.size_h,d_x=DIRECTION.get(j)[0],d_y=DIRECTION.get(j)[1])
+          
+                ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.glcm_feature, self.step, self.size_w, self.size_h,distance=1)
                 
                 for k in range(ans.shape[0]):
-                    label = 'Texture_GLCMFeature_'+LAB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))
+                    label = 'Texture_GLCMFeature_'+LAB_COLOR_CHANNEL.get(i)
                     path = self.folder + label+'_'+glcm_feature_label[k]+'.jpg'
                     self.csv_generate(ans[k], label)
                     ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)

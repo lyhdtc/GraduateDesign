@@ -38,7 +38,7 @@ class FakeColor_Color_Characteristics(object):
         path = self.folder +'Color_Constract.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('constract')
-        ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.constract, self.step, self.size_w, self.size_h)
+        ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.constract, self.step, self.size_w, self.size_h)
         ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
         self.csv_generate(ans,label)
         cv2.imwrite(path, ans_highsolution)

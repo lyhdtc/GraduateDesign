@@ -21,16 +21,29 @@ def __norm(ar):
 # 输入图片和需要的灰度共生矩阵特征，输出对应的特征
 # 先列出了四个比较常见的特征，如下：
 # 能量（energy）是图像灰度分布均匀程度和纹理粗细的一个度量，反映了图像灰度分布均匀程度和纹理粗细度。当图像纹理均一规则时，能量值较大；反之灰度共生矩阵的元素值相近，能量值较小。
-# 熵（entropy）度量了图像包含信息量的随机性，表现了图像的复杂程度。当共生矩阵中所有值均相等或者像素值表现出最大的随机性时，熵最大
+
 # 对比度（contrast）反应了图像的清晰度和纹理的沟纹深浅。纹理越清晰反差越大对比度也就越大
-# 反差分矩阵（Inverse Differential Moment, IDM）反映了纹理的清晰程度和规则程度，纹理清晰、规律性较强、易于描述的，值较大
+# 反差分矩阵（Inverse Differential Moment, IDM）反映了纹理的清晰程度和规则程度，纹理清晰、规律性较强、易于描述的，值较大，也叫做同质性（Homogeneity）
+
+# 互相关（Correlation)返回整幅图像中某个像素与它的邻居之间的互相关度。取值范围是 [-1 , 1]。常量组成的图像的互相关度Correlation是NaN。相关度1和-1分别对应完全正相关和完全负相关。
+# 熵（entropy）度量了图像包含信息量的随机性，表现了图像的复杂程度。当共生矩阵中所有值均相等或者像素值表现出最大的随机性时，熵最大
 def glcm_feature(gray_img, distance, gray_level=16):
     angle = [0, np.pi / 4, np.pi / 2, np.pi * 3 / 4]
     glcm = greycomatrix(gray_img, distance, angle, gray_level)
-    feature = ['contrast', 'dissimilarity','homogeneity', 'energy', 'correlation', 'ASM']
+    feature = ['energy','contrast','homogeneity','coorelation']
     res = []
     for f in feature:
         res.append(np.mean(greycoprops(glcm, f)))
+        
+    # feature == "entropy":
+    w = glcm.shape[0]
+    h = glcm.shape[1]
+    matrix_delta = np.full((w,h), 1e-7)
+    glcm += matrix_delta
+    
+    matrix_log = np.log(glcm)
+    matrix_entropy = -1 * matrix_log * glcm
+    res.append(np.sum(matrix_entropy)) 
     return res
 
 def __glcm_feature_abondoned(gray_img,d_x, d_y,gray_level=16):

@@ -19,6 +19,7 @@ TODO:
 
 # 亮度 亮度指hsv空间下v通道的均值
 #! 更新 在ps中测试，提高亮度时将rgb三通道值同时增加
+# 实际上ps中修改亮度和对比度是同时进行的，当对比度增量大于0时，先修改亮度再修改对比度，小于0时先修改对比度再修改亮度
 def __brightness_abondoned(lab_img):
     if np.size(lab_img)==0:return 0
     lab_img = cv2.merge(lab_img)
@@ -38,39 +39,41 @@ def __constract_abondoned(lab_img):
     return np.std(v)
 #  1) newRGB = RGB + (RGB - Threshold) * (1/(1 - Contrast/255) - 1)
 #  2) newRGB = RGB + (RGB - Threshold) * Contrast/255
+# 不知道为什么ps的图像保存之后像素值不一样了....
 def constract(lab_img_new, lab_img_old):
     if np.size(lab_img_new)==0:return 0
     lab_img_new = cv2.merge(lab_img_new)
     lab_img_old = cv2.merge(lab_img_old)
     bgr_img_new = cv2.cvtColor(lab_img_new, cv2.COLOR_LAB2BGR)
     bgr_img_old = cv2.cvtColor(lab_img_old, cv2.COLOR_LAB2BGR)
-    bn,gn,rn = np.array(cv2.split(bgr_img_new))
-    bo,go,ro = np.array(cv2.split(bgr_img_old))
-    th_b = int(np.mean(bo))
-    th_g = np.mean(go)
-    th_r = np.mean(ro)
+    bn,gn,rn = np.array(cv2.split(bgr_img_new)).astype(np.int)
+    bo,go,ro = np.array(cv2.split(bgr_img_old)).astype(np.int)
+    th = int(np.mean([bo,go,ro]))
     mask = np.ones(np.shape(bn))
     for p in [bn,bo]:
         mask = np.where(p==255, 0, mask)
         mask = np.where(p==0  , 0, mask)
-        mask = np.where(p==th_b, 0, mask)
-    # bn = np.sum(bn*mask)/np.count_nonzero(mask)
-
-    # bo = np.sum(bo*mask)/np.count_nonzero(mask)
-    ans = 100*(bn-bo)/(bn-th_b)
-    ans = np.rint(ans)
-    ans = np.bincount(ans)
-    # delta_b = bn-bo
+    
+    
+    
+    
+    # ans = np.rint(ans)
+    # ans = np.bincount(ans)
+    delta_b =np.mean( bn-bo)
     # delta_g = gn-go
     # delta_r = rn-ro
     
-    # if delta_b>0:
-    #     ans = delta_b/(bn-th_b)
-    # elif delta_b<0:
-    #     ans = delta_b/(bo-th_b)
-    # else:
-    #     ans = 0
-    print(ans)
+    if delta_b>0:
+        ans = (bn-bo)/(bn-th)
+        ans = ans*mask
+        ans = np.sum(ans)/np.count_nonzero(mask)
+    elif delta_b<0:
+        ans = (bn-bo)/(bo-th)
+        ans = ans*mask
+        ans = np.sum(ans)/np.count_nonzero(mask)
+    else:
+        ans = 0
+    return ans
     
 
 # 曝光度 photoshop修改曝光度的方式为 newValue = oldValue * (2 ^ exposureCompensation)
@@ -151,8 +154,8 @@ def saturation(lab_img_new, lab_img_old):
     return (ans_new-ans_old)
     
 
-# 偏色检测（白平衡） 这里用了《基于图像分析的偏色检测及颜色校正方法》这篇文章的思路
-# 把这个人的代码改写了一下https://blog.csdn.net/qq_36187544/article/details/97657927
+# 偏色检测（白平衡） 这里用了《基于图像分析的数字图像色偏检测方法》这篇文章的思路
+
 
 def white_balance(lab_img):
     if np.size(lab_img)==0:return 0
@@ -169,15 +172,25 @@ def white_balance(lab_img):
     return d/(m+1e-7)
 
 # 高光/阴影检测 采用ps的提取方式，参考这个https://blog.csdn.net/u011520181/article/details/116244184
-def specular_shadow(lab_img,mask_threshold=0.33, option='specular'):
+def specular_shadow(lab_img,option='specular'):
     if np.size(lab_img)==0:return 0
     lab_img = cv2.merge(lab_img)
-    gray_img = cv2.cvtColor(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR), cv2.COLOR_BGR2GRAY)
-    mask_threshold = mask_threshold * 255
+    bgr_img = cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR)
+    bgr_img = bgr_img.astype(np.float)/255.0
+    b = bgr_img[:,:,0]
+    g = bgr_img[:,:,1]
+    r = bgr_img[:,:,2]
+
+    gray_img = 0.299*r + 0.587 * g + 0.144*b
+    
     if option == 'specular':
+        mask_threshold=0.64
         luminance = gray_img*gray_img
-    elif option == 'shadow':        
+        luminance = np.where(luminance > mask_threshold, luminance, 0)
+    elif option == 'shadow':   
+        mask_threshold=0.33    
         luminance = (1-gray_img)*(1-gray_img)
+        luminance = np.where(luminance > mask_threshold, luminance, 0)
     else:
         print('please chack out option!')
         return

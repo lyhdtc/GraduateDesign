@@ -2,7 +2,7 @@
 Author: lyh
 Date: 2022-03-21 19:10:36
 LastEditors: lyh
-LastEditTime: 2022-03-22 12:47:10
+LastEditTime: 2022-03-23 08:53:58
 FilePath: /GraduateDesign/AlgoTest.py
 Description: 
 
@@ -70,8 +70,8 @@ def brightness_test(path_origin, path_new):
 # TODO:
 def constract_test(path_origin, path_new):
     lab_matrix_origin , lab_matrix_new = path2labmat(path_origin, path_new)
-    ca.constract(lab_matrix_new, lab_matrix_origin)
-    # print(f'constract result:\n  constract_origin = {ans_origin}\n  constract_new = {ans_new}\n  delta = {ans_new-ans_origin}')
+    ans = ca.constract(lab_matrix_new, lab_matrix_origin)
+    print(f'constract result:{ans}')
 
 # 生成直方图
 # color_characteristics_histogram(lab_img, (18,10), 'AlgoTest/')
@@ -84,9 +84,11 @@ def exposure_test(path_origin, path_new):
 def saturation_test(path_origin, path_new):
     lab_matrix_origin , lab_matrix_new = path2labmat(path_origin, path_new)
     ans = ca.saturation(lab_matrix_new, lab_matrix_origin)
-    print(ans)
+    print(f'saturation result:{ans}')
     
-    
+def white_balance_test(path_origin, path_new):
+    lab_matrix_origin, lab_matrix_new = path2labmat(path_origin, path_new)
+    print(ca.white_balance(lab_matrix_origin), ca.white_balance(lab_matrix_new))
     
 def color_coherence_vector_test(path_origin):
     test_img = cv2.imread(path_origin)
@@ -120,14 +122,78 @@ def glcm_test():
     glcm = greycomatrix(test_mat, [1], [0], levels=3)
     print(glcm) 
 
-path_origin = 'AlgoTest/AlgoTestPic.jpg'
-path_new    = 'AlgoTest/AlgoTestPic_Constract+50.jpg'
+def specular_shadow_test(path_origin, path_new):
+    lab_matrix_origin, lab_matrix_new = path2labmat(path_origin, path_new)
+    ans = ca.specular_shadow(lab_matrix_origin, option='shadow')
+    ans = ans*255
+    ans = ans.astype(np.uint8)
+    cv2.imshow('asdf',ans)
+    cv2.waitKey(0)
+    # img = cv2.imread(path_origin)
 
-# exposure_test(path_origin, path_new)
-# color_coherence_vector_test(path_origin)
-constract_test(path_origin, path_new)
+   
+
+    # # 分离 RGB 三个通道，注意：openCV 中图像格式是 BGR
+    # srcR = img[:, :, 2]
+    # srcG = img[:, :, 1]
+    # srcB = img[:, :, 0]
+
+    # # 将原图转成灰度图
+    # # grayImg = 0.299 * srcR + 0.587 * srcG + 0.114 * srcB
+    # grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # img = img.astype(np.float)/255.0
+    # # 高光选区
+    # maskThreshold = 0.64
+    # luminance = grayImg * grayImg
+    # luminance = np.where(luminance > maskThreshold, luminance, 0)
 
 
+    # # 阴影选区
+    # # maskThreshold = 0.33
+    # # luminance = (1 - grayImg) * (1 - grayImg)
+    # # luminance = np.where(luminance > maskThreshold, luminance, 0)
+
+    # mask = luminance > maskThreshold
+
+ 
+    # # 显示正交叠底图
+    # # img[:, :, 0] = luminance
+    # # img[:, :, 1] = luminance
+    # # img[:, :, 2] = luminance
+
+    # # 显示选区内原图
+    # img[:, :, 0][~mask] = 0
+    # img[:, :, 1][~mask] = 0
+    # img[:, :, 2][~mask] = 0
+
+    # img = img * 255
+    # img = img.astype(np.uint8)
+
+    # mask = np.where(mask==True, 255, 0)
+    # mask = mask.astype(np.uint8)
+    
+    # # 创建图片显示窗口
+    # title = "ShadowHighlight"
+    # cv2.namedWindow(title, cv2.WINDOW_NORMAL)   
+    # cv2.resizeWindow(title, 800, 600)
+    # cv2.moveWindow(title, 0, 0)
+    # while True:
+    #     # 循环显示图片，按 ‘q’ 键退出
+    #     cv2.imshow(title, mask)
+    #     if cv2.waitKey(1) == ord('q'):
+    #         break
+    # cv2.destroyAllWindows() 
+
+    
+
+path_origin = '/mnt/d/GraduateDesign2/GraduateDesign/AlgoTest/AlgoTestPic.jpg'
+path_new    = 'AlgoTest/AlgoTestPic_Balance_r_35.jpg'
+# brightness_test(path_origin, path_new)
+# white_balance_test(path_origin, path_new)
+color_coherence_vector_test(path_origin)
+# saturation_test(path_origin, path_new)
+# 
+# specular_shadow_test(path_origin, path_new)
 
 
 
