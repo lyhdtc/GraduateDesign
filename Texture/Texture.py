@@ -116,7 +116,7 @@ class FakeColor_Texture_Characteristecs(object):
     # !窗口是20*20跑不了，40*40可以。。。
     @tc.timmer
     def __fakecolor_texture_glcm_feature(self):
-        glcm_feature_label = ['energy','contrast','homogeneity','coorelation','entropy']
+        glcm_feature_label = ['energy','contrast','homogeneity','correlation','entropy']
         for i in range(3):
           
                 ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.glcm_feature, self.step, self.size_w, self.size_h,distance=1)
@@ -165,29 +165,26 @@ class FakeColor_Texture_Characteristecs(object):
     @tc.timmer
     def __fakecolor_texture_lbp(self):
         print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
-        plt.figure(figsize=self.figsize)
-        plt.title('lbp')
+
         path = self.folder + 'Texture_LBP.jpg'
         for i in range(3):
             # print(i)
-            ax1 = plt.subplot(3,4,4*i+1)
+            label = 'Texture_LBP_' + LAB_COLOR_CHANNEL.get(i)
             lbp_a = ta.rotation_invariant_LBP(self.matrix_a[i])
-            ax1.imshow(lbp_a,cmap='gray')
-            ax2 = plt.subplot(3,4,4*i+2)
+
+
             lbp_a = lbp_a.astype(np.uint8)
-            hist_lbp_a = ca.histogram(lbp_a)
-            ax2.plot(hist_lbp_a,LAB_COLOR_CHANNEL.get(i))
-            ax3 = plt.subplot(3,4,4*i+3)
+
+
             lbp_b = ta.rotation_invariant_LBP(self.matrix_b[i])
-            ax3.imshow(lbp_b,cmap='gray')
-            ax4 = plt.subplot(3,4,4*i+4)
+
             lbp_b = lbp_b.astype(np.uint8)
-            hist_lbp_b = ca.histogram(lbp_b)
-            ax4.plot(hist_lbp_b,LAB_COLOR_CHANNEL.get(i))
-        plt.tight_layout()
-        plt.plot()
-        plt.savefig(path)
-        plt.close()
+            ans = np.abs(lbp_b - lbp_a)
+            ans = (255*ans) / np.max(ans)
+            self.csv_generate(ans,label)
+            ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+            cv2.imwrite(path, ans)
+            print(path)
         return 
     
     # ! ABANDONED
@@ -222,7 +219,7 @@ class FakeColor_Texture_Characteristecs(object):
         # tamura_label = ['contrast']
         for i in range(3):
             ans = multithread_temurafeture_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)
-          
+            # ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.tamura_feature, self.step, self.size_w, self.size_h, kmax=3, dist=4)
             for j in range(ans.shape[0]):
                 label = 'Texture_TamuraFeature_'+LAB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]
                 path = self.folder + label+'.jpg'
@@ -318,12 +315,12 @@ class FakeColor_Texture_Characteristecs(object):
         
         self.__fakecolor_texture_glcm_feature()
         
-        # self.__fakecolor_texture_characteristics_lbp()
+        self.__fakecolor_texture_lbp()
         
         self.__multithread_fakecolor_texture_tamura_feature()
         self.__fakecolor_texture_dwt_feature()
         self.__fakecolor_texture_laws_feature()
-        self.__fakecolor_texture_gabor()
+        # self.__fakecolor_texture_gabor()
         return
     
     def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):

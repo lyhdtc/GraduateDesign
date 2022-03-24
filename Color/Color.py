@@ -70,7 +70,7 @@ class FakeColor_Color_Characteristics(object):
         path = self.folder +'Color_Saturation.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('saturation')
-        ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.saturation, self.step, self.size_w, self.size_h)
+        ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.saturation, self.step, self.size_w, self.size_h)
         ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
         self.csv_generate(ans, label)
         cv2.imwrite(path, ans_highsolution)
@@ -102,10 +102,9 @@ class FakeColor_Color_Characteristics(object):
         path = self.folder +'Color_SpecularShadow.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('specular shadow')
-        mask_threshold = 0.33
         option = 'specular'
-        ans1 = ca.specular_shadow(self.matrix_a, mask_threshold, option)
-        ans2 = ca.specular_shadow(self.matrix_b, mask_threshold, option)
+        ans1 = ca.specular_shadow(self.matrix_a, option)
+        ans2 = ca.specular_shadow(self.matrix_b, option)
         ans = np.logical_xor(ans1,ans2).astype(int)
         
         # ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)

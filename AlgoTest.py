@@ -2,7 +2,7 @@
 Author: lyh
 Date: 2022-03-21 19:10:36
 LastEditors: lyh
-LastEditTime: 2022-03-23 08:53:58
+LastEditTime: 2022-03-24 09:01:40
 FilePath: /GraduateDesign/AlgoTest.py
 Description: 
 
@@ -18,7 +18,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 from skimage.feature import greycomatrix, greycoprops
-
+from scipy import signal as sg
 LAB_COLOR_CHANNEL = {
     0: 'l',
     1: 'a',
@@ -184,19 +184,80 @@ def specular_shadow_test(path_origin, path_new):
     #         break
     # cv2.destroyAllWindows() 
 
+def tamuratest(gray_img):
+    kmax = 1
+    gray_img = np.array(gray_img)
+    gray_img = gray_img.astype(np.float64)
+    w = gray_img.shape[0]
+    h = gray_img.shape[1]
+    kmax = kmax if (np.power(2,kmax) < w) else int(np.log(w) / np.log(2))
+    kmax = kmax if (np.power(2,kmax) < h) else int(np.log(h) / np.log(2))
     
+    horizon = np.zeros([kmax,w,h])
+    vertical = np.zeros([kmax,w,h])
+    Sbest = np.zeros([w,h])
+    average_gray = np.zeros([kmax,w,h])
+    horizon = np.zeros([kmax,w,h])
+    horizon2 = np.zeros([kmax,w,h])
+    vertical = np.zeros([kmax,w,h])
+    Sbest = np.zeros([w,h])
 
-path_origin = '/mnt/d/GraduateDesign2/GraduateDesign/AlgoTest/AlgoTestPic.jpg'
+    k=0
+    
+    window = np.power(2,k)
+    
+    nurcle = np.ones((2*window+1, 2*window+1))
+    nurcle[:,0] = 0
+    nurcle[0,:] = 0
+    average_gray[k] = sg.convolve2d(gray_img, nurcle, 'same')
+    for i in range(window):
+        average_gray[k][i,:] = 0
+        average_gray[k][:,i] = 0
+        average_gray[k][w-i-1,:] = 0
+        average_gray[k][:,h-i-1] = 0
+    for wi in range(w)[window:(w-window-1)]:
+        for hi in range(h)[window:(h-window-1)]:
+            horizon[k][wi][hi] = average_gray[k][wi+window][hi] - average_gray[k][wi-window][hi]
+            vertical[k][wi][hi] = average_gray[k][wi][hi+window] - average_gray[k][wi][hi-window]
+    horizon[k] = horizon[k] * (1.0 / np.power(2, 2*(k+1)))
+    vertical[k] = horizon[k] * (1.0 / np.power(2, 2*(k+1)))
+            
+    nurcle_h = np.zeros((2*window+1, 2*window+1))
+    nurcle_h[0][window] = 1
+    nurcle_h[2*window][window]=-1
+    horizon2[k] = sg.convolve2d(average_gray[k], nurcle_h, 'same') 
+    for i in range(window):
+        horizon2[k][i,:] = 0
+        horizon2[k][:,i] = 0
+        horizon2[k][w-i-1,:] = 0
+        horizon2[k][:,h-i-1] = 0    
+    horizon2[k][w-window-1,:] = 0
+    horizon2[k][:, h-window-1]= 0
+    horizon2[k] = horizon2[k] * (1.0 / np.power(2, 2*(k+1)))
+    ans = horizon- horizon2
+    index = int(ans.argmin())
+    x = int(index/h)
+    y = int(index%h)
+    print(horizon[k][x][y], horizon2[k][x][y])
+    return ans
+path_origin = 'Data/ggg.jpg'
 path_new    = 'AlgoTest/AlgoTestPic_Balance_r_35.jpg'
 # brightness_test(path_origin, path_new)
 # white_balance_test(path_origin, path_new)
-color_coherence_vector_test(path_origin)
+# color_coherence_vector_test(path_origin)
 # saturation_test(path_origin, path_new)
 # 
 # specular_shadow_test(path_origin, path_new)
 
+a, b = path2labmat(path_origin, path_new)
+# f, theta = ta.tamura_directionality_lyh(a[0])
+# ans = ta.tamura_linelikeness_2(a[0], theta,4)
+# print(ans)
+# ans2 = ta.tamura_linelikeness(a[0], theta,4)
+# print(ans2)
+ans = ta.tamura_feature(a[0], 3, 4)
 
-
-
+print(ans)
+ans2 = ta.glcm_feature(a[0], 4)
 
 

@@ -1,3 +1,13 @@
+'''
+Author: lyh
+Date: 2022-03-23 19:36:51
+LastEditors: lyh
+LastEditTime: 2022-03-23 11:36:47
+FilePath: /GraduateDesign/Tools/FakeColorCSV.py
+Description: 
+
+Copyright (c) 2022 by lyh, All Rights Reserved. 
+'''
 from genericpath import getsize
 import os
 import sys
@@ -41,10 +51,10 @@ def fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, foldername,
     csv_data.append(picpair_name)
     csv_data.append(foldername)
          
-    fakecolor_color = Color.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
-    fakecolor_color.fakecolor_color_characteristics()
-    csv_label = csv_label + fakecolor_color.csv_label
-    csv_data  = csv_data  + fakecolor_color.csv_data
+    # fakecolor_color = Color.FakeColor_Color_Characteristics(matrix_a, matrix_b, step = step, size_w = size_w, size_h = size_h, folder = folder, figsize=figsize)
+    # fakecolor_color.fakecolor_color_characteristics()
+    # csv_label = csv_label + fakecolor_color.csv_label
+    # csv_data  = csv_data  + fakecolor_color.csv_data
     # print(fakecolor_cc.csv_data)
     # print(fakecolor_cc.csv_label)
     

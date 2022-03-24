@@ -34,9 +34,9 @@ def general_run():
     size_w = 40 
     size_h = 40
     figsize = (18,10)
-    fakecolor_foldername = 'TextureChangeTest'
-    fakecolor_folder = '/home/lyh/results/'+fakecolor_foldername+'/'   
-    csv_path = '/home/lyh/results/TextureChangeTest.csv'
+    fakecolor_foldername = 'AlgoTest'
+    fakecolor_folder = '/mnt/d/GraduateDesign2/'+fakecolor_foldername+'/'   
+    csv_path = '/mnt/d/GraduateDesign2/AlgoTest.csv'
     picpair_name = 'default'
     FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
     
@@ -95,7 +95,7 @@ def experiment():
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
     
     
-experiment()   
+# experiment()   
 
 
 
@@ -136,8 +136,8 @@ experiment()
 # print(ans)
 
 
-# path_a = 'Data/aaa.jpg'
-# path_b = 'Data/bbb.jpg'
+path_a = 'Data/aaa.jpg'
+path_b = 'Data/bbb.jpg'
 # img = cv2.imread(path_a)
 # img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
 # noise = cv2.imread(path_b)
@@ -146,3 +146,18 @@ experiment()
 # # ans = ans.astype(np.uint8)
 # cv2.imshow('asdf', ans)
 # cv2.waitKey(0)
+general_run()
+
+# a = np.zeros((2,3,4))
+# a[1,:,:] = 1
+# a[0,1,1] = 3
+# a[1,1,1] = 3
+# print(a)
+# b = np.max(a, axis = 0)
+# c = np.argmax(a, axis=0)
+# print(c)
+# a = a[::-1, :, :]
+# print(a)
+# b = np.max(a, axis = 0)
+# c = np.argmax(a, axis=0)
+# print(c)
