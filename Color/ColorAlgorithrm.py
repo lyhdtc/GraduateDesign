@@ -2,7 +2,7 @@ from pickletools import uint8
 import sys
 import cv2
 import numpy as np
-from prometheus_client import delete_from_gateway
+# from prometheus_client import delete_from_gateway
 
 
 '''

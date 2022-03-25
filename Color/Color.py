@@ -5,6 +5,7 @@ from Color import ColorAlgorithrm as ca
 import cv2
 from Tools import SlideWindow as sw
 import numpy as np
+import os
 LAB_COLOR_CHANNEL = {
     0: 'l',
     1: 'a',
@@ -19,13 +20,15 @@ RGB_COLOR_CHANNEL = {
 class FakeColor_Color_Characteristics(object): 
     def __fakecolor_color_brightness(self):
         label =  'Color_Brightness'
-        path = self.folder +'Color_Brightness.jpg'
+        path = os.path.join(self.folder, 'Color_Brightness.jpg')
+        # path = self.folder +'Color_Brightness.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('brightness')
         ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.brightness, self.step, self.size_w, self.size_h)
-        ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+        ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
-        cv2.imwrite(path, ans_highsolution)
+        
+        cv2.imwrite(path, ans_reshape)
         print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -35,13 +38,14 @@ class FakeColor_Color_Characteristics(object):
     
     def __fakecolor_color_constract(self):
         label = 'Color_Constract'
-        path = self.folder +'Color_Constract.jpg'
+        path = os.path.join(self.folder, 'Color_Constract.jpg')
+        # path = self.folder +'Color_Constract.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('constract')
         ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.constract, self.step, self.size_w, self.size_h)
-        ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+        ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
-        cv2.imwrite(path, ans_highsolution)
+        cv2.imwrite(path, ans_reshape)
         print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -51,13 +55,14 @@ class FakeColor_Color_Characteristics(object):
     
     def __fakecolor_color_exposure(self):
         label = 'Color_Exposure'
-        path = self.folder +'Color_Exposure.jpg'
+        path = os.path.join(self.folder, 'Color_Exposure.jpg')
+        # path = self.folder +'Color_Exposure.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('exposure')
         ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.exposure, self.step, self.size_w, self.size_h)
-        ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+        ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
-        cv2.imwrite(path, ans_highsolution)
+        cv2.imwrite(path, ans_reshape)
         print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -67,13 +72,14 @@ class FakeColor_Color_Characteristics(object):
         
     def __fakecolor_color_saturation(self):
         label = 'Color_Saturation'
-        path = self.folder +'Color_Saturation.jpg'
+        path = os.path.join(self.folder, 'Color_Saturation.jpg')
+        # path = self.folder +'Color_Saturation.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('saturation')
         ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.saturation, self.step, self.size_w, self.size_h)
-        ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-        self.csv_generate(ans, label)
-        cv2.imwrite(path, ans_highsolution)
+        ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
+        self.csv_generate(ans,label)
+        cv2.imwrite(path, ans_reshape)
         print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -83,13 +89,14 @@ class FakeColor_Color_Characteristics(object):
     
     def __fakecolor_color_white_balance(self):
         label = 'Color_WhiteBalance'
-        path = self.folder +'Color_WhiteBalance.jpg'
+        path = os.path.join(self.folder, 'Color_WhiteBalance.jpg')
+        # path = self.folder +'Color_WhiteBalance.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('white balance')
         ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.white_balance, self.step, self.size_w, self.size_h)
-        ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-        self.csv_generate(ans, label)
-        cv2.imwrite(path, ans_highsolution)
+        ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
+        self.csv_generate(ans,label)
+        cv2.imwrite(path, ans_reshape)
         print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -99,17 +106,18 @@ class FakeColor_Color_Characteristics(object):
         
     def __fakecolor_color_specular_shadow(self):
         label = 'Color_SpecularShadow'
-        path = self.folder +'Color_SpecularShadow.jpg'
+        path = os.path.join(self.folder, 'Color_SpecularShadow.jpg')
+        # path = self.folder +'Color_SpecularShadow.jpg'
         plt.figure(figsize=self.figsize)
         plt.title('specular shadow')
         option = 'specular'
         ans1 = ca.specular_shadow(self.matrix_a, option)
         ans2 = ca.specular_shadow(self.matrix_b, option)
-        ans = np.logical_xor(ans1,ans2).astype(int)
-        
-        # ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+        ans = np.logical_xor(ans1,ans2).astype(np.int)
+        ans = (ans*255).astype(np.uint8)
+        ans_reshape = cv2.resize(ans, self.reshape_size)
         self.csv_generate(ans,label)
-        cv2.imwrite(path, ans)
+        cv2.imwrite(path, ans_reshape)
         print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -121,8 +129,8 @@ class FakeColor_Color_Characteristics(object):
     def __fakecolor_color_characteristics_histogram(self):
         plt.figure(figsize=self.figsize)
         plt.title('histogram')
-        path = self.folder + 'Color_Histogram.jpg'
-        
+        # path = self.folder + 'Color_Histogram.jpg'
+        path = os.path.join(self.folder, 'Color_Histogram.jpg')
         
         lab_img_a = cv2.merge(self.matrix_a)
         lab_img_b = cv2.merge(self.matrix_b)
@@ -153,12 +161,14 @@ class FakeColor_Color_Characteristics(object):
             for j in range(ans.shape[0]):
                 
                 label =  'Color_ColorMoments_'+LAB_COLOR_CHANNEL.get(i) +'_'+color_moments_label[j]
-                path = self.folder + label+'.jpg'
+                # path = self.folder + label+'.jpg'
+                path = os.path.join(self.folder, label+'.jpg')
                 self.csv_generate(ans[j], label)
-                ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                # ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                ans_reshape = cv2.resize(ans[j], self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
-                cv2.imwrite(path, ans_highsolution)
+                cv2.imwrite(path, ans_reshape)
                 print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -178,13 +188,15 @@ class FakeColor_Color_Characteristics(object):
             for j in range(ans.shape[0]):
                 
                 label = 'Color_OrdinaryMoments_'+LAB_COLOR_CHANNEL.get(i) +'_'+ordinary_moments_label[j]
-                path = self.folder + label +'.jpg'
+                # path = self.folder + label +'.jpg'
+                path = os.path.join(self.folder, label+'.jpg')
                 self.csv_generate(ans[j],label)
-                ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                # ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                ans_reshape = cv2.resize(ans[j], self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
-                cv2.imwrite(path, ans_highsolution)
+                cv2.imwrite(path, ans_reshape)
                 print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -210,13 +222,15 @@ class FakeColor_Color_Characteristics(object):
             for j in range(ans.shape[0]):
                 
                 label = 'Color_CoherenceVector_'+LAB_COLOR_CHANNEL.get(i) +'_'+ccv_label[j]
-                path = self.folder + label +'.jpg'
+                # path = self.folder + label +'.jpg'
+                path = os.path.join(self.folder, label+'.jpg')
                 self.csv_generate(ans[j],label)
-                ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                # ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                ans_reshape = cv2.resize(ans[j], self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
                 # ans_highsolution = ans_highsolution.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
-                cv2.imwrite(path, ans_highsolution)
+                cv2.imwrite(path, ans_reshape)
                 print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -243,13 +257,13 @@ class FakeColor_Color_Characteristics(object):
         self.__fakecolor_color_saturation()
         self.__fakecolor_color_white_balance()
         self.__fakecolor_color_specular_shadow()
-        self.__fakecolor_color_characteristics_histogram()
+        # self.__fakecolor_color_characteristics_histogram()
         self.__fakecolor_color_color_moments()
         self.__fakecolor_color_ordinary_moments()
         self.__fakecolor_color_color_coherence_vector()
         return
     
-    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):
+    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize, reshape_size):
         self.matrix_a = matrix_a
         self.matrix_b = matrix_b
         self.step = step
@@ -259,3 +273,4 @@ class FakeColor_Color_Characteristics(object):
         self.figsize = figsize
         self.csv_data = []
         self.csv_label = []
+        self.reshape_size = reshape_size

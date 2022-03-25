@@ -123,12 +123,15 @@ class FakeColor_Texture_Characteristecs(object):
                 
                 for k in range(ans.shape[0]):
                     label = 'Texture_GLCMFeature_'+LAB_COLOR_CHANNEL.get(i)
-                    path = self.folder + label+'_'+glcm_feature_label[k]+'.jpg'
+                    # path = self.folder + label+'_'+glcm_feature_label[k]+'.jpg'
+                    path = os.path.join(self.folder, label+'_'+glcm_feature_label[k]+'.jpg')
                     self.csv_generate(ans[k], label)
-                    ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                    ans_highsolution = ans_highsolution.astype(np.uint8)
-                    ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
-                    cv2.imwrite(path, ans_highsolution)
+                    # ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                    # ans_highsolution = ans_highsolution.astype(np.uint8)
+                    # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                    ans_reshape = cv2.resize(ans[k], self.reshape_size, cv2.INTER_LINEAR)
+                    ans_reshape = ans_reshape.astype(np.uint8)
+                    cv2.imwrite(path, ans_reshape)
                     print(path)
                     # plt.figure(figsize=self.figsize)
                     # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
@@ -165,8 +168,8 @@ class FakeColor_Texture_Characteristecs(object):
     @tc.timmer
     def __fakecolor_texture_lbp(self):
         print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
-
-        path = self.folder + 'Texture_LBP.jpg'
+        path = os.path.join(self.folder,'Texture_LBP.jpg')
+        # path = self.folder + 'Texture_LBP.jpg'
         for i in range(3):
             # print(i)
             label = 'Texture_LBP_' + LAB_COLOR_CHANNEL.get(i)
@@ -182,8 +185,9 @@ class FakeColor_Texture_Characteristecs(object):
             ans = np.abs(lbp_b - lbp_a)
             ans = (255*ans) / np.max(ans)
             self.csv_generate(ans,label)
-            ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-            cv2.imwrite(path, ans)
+            # ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+            ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR)
+            cv2.imwrite(path, ans_reshape)
             print(path)
         return 
     
@@ -222,12 +226,15 @@ class FakeColor_Texture_Characteristecs(object):
             # ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.tamura_feature, self.step, self.size_w, self.size_h, kmax=3, dist=4)
             for j in range(ans.shape[0]):
                 label = 'Texture_TamuraFeature_'+LAB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]
-                path = self.folder + label+'.jpg'
+                path = os.path.join(self.folder,label+'.jpg')
+                # path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
-                ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                ans_highsolution = ans_highsolution.astype(np.uint8)
-                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
-                cv2.imwrite(path, ans_highsolution)
+                # ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                # ans_highsolution = ans_highsolution.astype(np.uint8)
+                ans_reshape = cv2.resize(ans[j], self.reshape_size, cv2.INTER_LINEAR)
+                ans_reshape = ans_reshape.astype(np.uint8)
+                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                cv2.imwrite(path, ans_reshape)
                 print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
@@ -248,12 +255,16 @@ class FakeColor_Texture_Characteristecs(object):
             
             for j in range(ans.shape[0]):
                 label = 'Texture_DWTFeature_'+LAB_COLOR_CHANNEL.get(i) +'_'+dwt_label[j]
-                path = self.folder + label+'.jpg'
+                path = os.path.join(self.folder,label+'.jpg')
+                # path = self.folder + label+'.jpg'
                 self.csv_generate(ans[j], label)
-                ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-                ans_highsolution = ans_highsolution.astype(np.uint8)
-                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
-                cv2.imwrite(path, ans_highsolution)
+                # ans_highsolution = cv2.resize(ans[j], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
+                # ans_highsolution = ans_highsolution.astype(np.uint8)
+                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                
+                ans_reshape = cv2.resize(ans[j], self.reshape_size, cv2.INTER_LINEAR)
+                ans_reshape = ans_reshape.astype(np.uint8)
+                cv2.imwrite(path, ans_reshape)
                 print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
@@ -274,12 +285,15 @@ class FakeColor_Texture_Characteristecs(object):
             laws_feature_single_feature = np.absolute(laws_feature_single_feature_a-laws_feature_single_feature_b)
             for j in range(8):
                 label = 'Texture_Laws_'+LAB_COLOR_CHANNEL.get(i)+'_'+laws_label[j]
-                path = self.folder + label+'.jpg'
+                path = os.path.join(self.folder,label+'.jpg')
+                # path = self.folder + label+'.jpg'
                 self.csv_generate(laws_feature_single_feature[j], label)
                 
-                ans_highsolution = laws_feature_single_feature[j].astype(np.uint8)
-                ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
-                cv2.imwrite(path, ans_highsolution)
+                # ans_highsolution = laws_feature_single_feature[j].astype(np.uint8)
+                # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
+                ans_reshape = cv2.resize(laws_feature_single_feature[j], self.reshape_size, cv2.INTER_LINEAR)
+                ans_reshape = ans_reshape.astype(np.uint8)
+                cv2.imwrite(path, ans_reshape)
                 print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
@@ -323,7 +337,7 @@ class FakeColor_Texture_Characteristecs(object):
         # self.__fakecolor_texture_gabor()
         return
     
-    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize):
+    def __init__(self, matrix_a, matrix_b, step, size_w, size_h, folder, figsize, reshape_size):
         self.matrix_a = matrix_a
         self.matrix_b = matrix_b
         self.step = step
@@ -333,3 +347,4 @@ class FakeColor_Texture_Characteristecs(object):
         self.figsize = figsize
         self.csv_data = []
         self.csv_label = []
+        self.reshape_size = reshape_size

@@ -27,18 +27,19 @@ def general_run():
     print('Start!')
     
     
-    path_a = 'Data/fff.jpg'
-    path_b = 'Data/ffff.jpg'
+    path_a = '/home/lyh/results/GIF_DataSetTest5/images/o/00000.png'
+    path_b = '/home/lyh/results/GIF_DataSetTest5/images/p0/00000.png'
 
     step = 8
-    size_w = 40 
+    size_w = 40
     size_h = 40
     figsize = (18,10)
-    fakecolor_foldername = 'AlgoTest'
-    fakecolor_folder = '/mnt/d/GraduateDesign2/'+fakecolor_foldername+'/'   
-    csv_path = '/mnt/d/GraduateDesign2/AlgoTest.csv'
+    reshape_size = (400,400)
+    fakecolor_foldername = '001DataTest'
+    fakecolor_folder = '/home/lyh/results/'+fakecolor_foldername+'/'   
+    csv_path = '/home/lyh/results/DataTest.csv'
     picpair_name = 'default'
-    FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name)
+    FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name, reshape_size)
     
 
     end_time = time.perf_counter()  
@@ -97,7 +98,45 @@ def experiment():
     
 # experiment()   
 
+def dataset_run():
+     
+    start_time = time.perf_counter()
+    print('Start!')
+    step = 8
+    size_w = 40
+    size_h = 40
+    figsize = (18,10)
+    reshape_size = (400,400)
+    
+    # 网络生成的文件夹路径，这个路径下面应该有o,p0,p1三个文件夹
+    dataset_folder = '/home/lyh/results/GIF_DataSetTest5/images'
+    
+    o_folder = os.path.join(dataset_folder, 'o')
+    p0_folder = os.path.join(dataset_folder, 'p0')
+    p1_folder = os.path.join(dataset_folder, 'p1')
+    # 保存结果的根路径
+    save_path = '/home/lyh/results/002DataTest'
+    # csv
+    csv_path = '/home/lyh/results/DataTest.csv'
+    fileslen = len(os.listdir(o_folder))
+    for i in range(fileslen):
+        filename = str(i).zfill(5) + '.png'
+        filepath_o = os.path.join(o_folder, filename)
+        filepath_p0= os.path.join(p0_folder, filename)
+        filepath_p1= os.path.join(p1_folder, filename)
+        
+        save_path_i = os.path.join(save_path, str(i).zfill(5))
+        save_path_o_p0 = os.path.join(save_path_i, 'o_p0')
+        save_path_o_p1 = os.path.join(save_path_i, 'o_p1')
+        
+        FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p0, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p0, csv_path, 'o_p0', reshape_size)
+        FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p1, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p1, csv_path, 'o_p1', reshape_size)
+    
+    
+    
 
+    end_time = time.perf_counter()  
+    print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
 
 # path_a = 'Data/fff.jpg'
 # img = cv2.imread(path_a)
@@ -146,7 +185,7 @@ path_b = 'Data/bbb.jpg'
 # # ans = ans.astype(np.uint8)
 # cv2.imshow('asdf', ans)
 # cv2.waitKey(0)
-general_run()
+dataset_run()
 
 # a = np.zeros((2,3,4))
 # a[1,:,:] = 1
