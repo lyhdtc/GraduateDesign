@@ -64,13 +64,13 @@ def constract(lab_img_new, lab_img_old):
     # delta_r = rn-ro
     
     if delta_b>0:
-        ans = (bn-bo)/(bn-th)
+        ans = (bn-bo)/(bn-th+1e-7)
         ans = ans*mask
-        ans = np.sum(ans)/np.count_nonzero(mask)
+        ans = np.sum(ans)/(np.count_nonzero(mask)+1e-7)
     elif delta_b<0:
-        ans = (bn-bo)/(bo-th)
+        ans = (bn-bo)/(bo-th+1e-7)
         ans = ans*mask
-        ans = np.sum(ans)/np.count_nonzero(mask)
+        ans = np.sum(ans)/(np.count_nonzero(mask)+1e-7)
     else:
         ans = 0
     return ans
@@ -108,8 +108,9 @@ def exposure(lab_img_new, lab_img_old):
     v1 = v1 * mask
     v2 = v2 * mask
     
-    v1 = np.sum(v1)/np.count_nonzero(mask)
-    v2 = np.sum(v2)/np.count_nonzero(mask)
+    v1 = np.sum(v1)/(np.count_nonzero(mask)+1e-7)
+    v2 = np.sum(v2)/(np.count_nonzero(mask)+1e-7)
+    if v1==v2:return 0
     
     delta_exposure = (np.log(v1) - np.log(v2)) / np.log(2)
     # delta_exposure = np.sum(delta_mat) / np.count_nonzero(mask)
@@ -149,6 +150,7 @@ def saturation(lab_img_new, lab_img_old):
     mask = np.where(s2==0, 0, mask)
     s1 = s1 * mask
     s2 = s2 * mask
+    if np.count_nonzero(mask)==0:return 0
     ans_new = np.sum(s1)/np.count_nonzero(mask)
     ans_old = np.sum(s2)/np.count_nonzero(mask)
     return (ans_new-ans_old)

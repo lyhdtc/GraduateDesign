@@ -22,14 +22,14 @@ class FakeColor_Color_Characteristics(object):
         label =  'Color_Brightness'
         path = os.path.join(self.folder, 'Color_Brightness.jpg')
         # path = self.folder +'Color_Brightness.jpg'
-        plt.figure(figsize=self.figsize)
-        plt.title('brightness')
+        # plt.figure(figsize=self.figsize)
+        # plt.title('brightness')
         ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.brightness, self.step, self.size_w, self.size_h)
         ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
         
         cv2.imwrite(path, ans_reshape)
-        print(path)
+        #print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
         # plt.colorbar()
@@ -40,13 +40,13 @@ class FakeColor_Color_Characteristics(object):
         label = 'Color_Constract'
         path = os.path.join(self.folder, 'Color_Constract.jpg')
         # path = self.folder +'Color_Constract.jpg'
-        plt.figure(figsize=self.figsize)
-        plt.title('constract')
+        # plt.figure(figsize=self.figsize)
+        # plt.title('constract')
         ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.constract, self.step, self.size_w, self.size_h)
         ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
         cv2.imwrite(path, ans_reshape)
-        print(path)
+        #print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
         # plt.colorbar()
@@ -57,13 +57,13 @@ class FakeColor_Color_Characteristics(object):
         label = 'Color_Exposure'
         path = os.path.join(self.folder, 'Color_Exposure.jpg')
         # path = self.folder +'Color_Exposure.jpg'
-        plt.figure(figsize=self.figsize)
-        plt.title('exposure')
+        # plt.figure(figsize=self.figsize)
+        # plt.title('exposure')
         ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.exposure, self.step, self.size_w, self.size_h)
         ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
         cv2.imwrite(path, ans_reshape)
-        print(path)
+        #print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
         # plt.colorbar()
@@ -74,13 +74,13 @@ class FakeColor_Color_Characteristics(object):
         label = 'Color_Saturation'
         path = os.path.join(self.folder, 'Color_Saturation.jpg')
         # path = self.folder +'Color_Saturation.jpg'
-        plt.figure(figsize=self.figsize)
-        plt.title('saturation')
+        # plt.figure(figsize=self.figsize)
+        # plt.title('saturation')
         ans = sw.rgb_channel_parameters_2imgfunc(self.matrix_a,self.matrix_b, ca.saturation, self.step, self.size_w, self.size_h)
         ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
         cv2.imwrite(path, ans_reshape)
-        print(path)
+        #print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
         # plt.colorbar()
@@ -91,13 +91,13 @@ class FakeColor_Color_Characteristics(object):
         label = 'Color_WhiteBalance'
         path = os.path.join(self.folder, 'Color_WhiteBalance.jpg')
         # path = self.folder +'Color_WhiteBalance.jpg'
-        plt.figure(figsize=self.figsize)
-        plt.title('white balance')
+        # plt.figure(figsize=self.figsize)
+        # plt.title('white balance')
         ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.white_balance, self.step, self.size_w, self.size_h)
         ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
         cv2.imwrite(path, ans_reshape)
-        print(path)
+        #print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
         # plt.colorbar()
@@ -108,8 +108,8 @@ class FakeColor_Color_Characteristics(object):
         label = 'Color_SpecularShadow'
         path = os.path.join(self.folder, 'Color_SpecularShadow.jpg')
         # path = self.folder +'Color_SpecularShadow.jpg'
-        plt.figure(figsize=self.figsize)
-        plt.title('specular shadow')
+        # plt.figure(figsize=self.figsize)
+        # plt.title('specular shadow')
         option = 'specular'
         ans1 = ca.specular_shadow(self.matrix_a, option)
         ans2 = ca.specular_shadow(self.matrix_b, option)
@@ -118,14 +118,14 @@ class FakeColor_Color_Characteristics(object):
         ans_reshape = cv2.resize(ans, self.reshape_size)
         self.csv_generate(ans,label)
         cv2.imwrite(path, ans_reshape)
-        print(path)
+        #print(path)
         # plt.figure(figsize=self.figsize)
         # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
         # plt.colorbar()
         # plt.savefig(path)
         # plt.close()
         
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_color_characteristics_histogram(self):
         plt.figure(figsize=self.figsize)
         plt.title('histogram')
@@ -152,7 +152,7 @@ class FakeColor_Color_Characteristics(object):
 
     
     
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_color_color_moments(self):        
         color_moments_label = ['1st', '2nd', '3rd']
         for i in range(3):
@@ -169,7 +169,7 @@ class FakeColor_Color_Characteristics(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 cv2.imwrite(path, ans_reshape)
-                print(path)
+                #print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
                 # plt.colorbar()
@@ -177,7 +177,7 @@ class FakeColor_Color_Characteristics(object):
                 # plt.close()
         return
     
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_color_ordinary_moments(self):
         ordinary_moments_label = ['m00', 'm10', 'm01', 'm20', 'm11', 'm02', 'm30', 'm21', 'm12',
                                      'm02', 'mu20', 'mu11', 'mu02', 'mu30', 'mu21', 'mu12', 'mu03',
@@ -197,7 +197,7 @@ class FakeColor_Color_Characteristics(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 cv2.imwrite(path, ans_reshape)
-                print(path)
+                #print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
                 # plt.colorbar()
@@ -205,7 +205,7 @@ class FakeColor_Color_Characteristics(object):
                 # plt.close()
         return
     
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_color_color_coherence_vector(self):
         color_threshold = 8
         area_threshold = 30
@@ -231,7 +231,7 @@ class FakeColor_Color_Characteristics(object):
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
                 # cv2.imwrite(path, ans_fakecolor)
                 cv2.imwrite(path, ans_reshape)
-                print(path)
+                #print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
                 # plt.colorbar()
@@ -241,9 +241,10 @@ class FakeColor_Color_Characteristics(object):
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
+        ans = np.nan_to_num(ans)
         cal = np.sum(ans>=10)
         total = np.size(ans)
-        # print(cal, total, cal/total)
+        # #print(cal, total, cal/total)
         if(cal/total>0.1):
             self.csv_data.append(1)
         else:

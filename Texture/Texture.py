@@ -42,7 +42,7 @@ def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a,
     kmax = 3    
     dist = 4
     if((w%size_w!=0)or(h%size_h!=0)):
-        print('Please check slide window SIZE!')
+        #print('Please check slide window SIZE!')
         return
     ans_a = []
     ans_b = []
@@ -71,7 +71,7 @@ def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a,
 #!Abandoned ! 单任务耗时过少，开启多进程反而增加时间消耗
 # # glcm feature 多核优化版本，可以跑满cpu
 # def __glcm_inside(j, d_x, d_y, step, w,h,size_w, size_h, gray_img_a, gray_img_b, i):
-#     print(i,j)
+#     #print(i,j)
 #     if(i*step+size_w>w)or(j*step+size_h>h):return ([0,0,0,0],[0,0,0,0])
 #     raw_a = tc.tamura_feature(gray_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], d_x, d_y)
 #     raw_b = tc.tamura_feature(gray_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], d_x, d_y)
@@ -83,7 +83,7 @@ def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a,
 #     h = gray_img_a.shape[1]
 
 #     if((w%size_w!=0)or(h%size_h!=0)):
-#         print('Please check slide window SIZE!')
+#         #print('Please check slide window SIZE!')
 #         return
 #     ans_a = []
 #     ans_b = []
@@ -114,7 +114,7 @@ def multithread_temurafeture_single_channel_slide_window_parameters( gray_img_a,
 class FakeColor_Texture_Characteristecs(object):
     
     # !窗口是20*20跑不了，40*40可以。。。
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_texture_glcm_feature(self):
         glcm_feature_label = ['energy','contrast','homogeneity','correlation','entropy']
         for i in range(3):
@@ -132,7 +132,7 @@ class FakeColor_Texture_Characteristecs(object):
                     ans_reshape = cv2.resize(ans[k], self.reshape_size, cv2.INTER_LINEAR)
                     ans_reshape = ans_reshape.astype(np.uint8)
                     cv2.imwrite(path, ans_reshape)
-                    print(path)
+                    #print(path)
                     # plt.figure(figsize=self.figsize)
                     # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                     # plt.colorbar()
@@ -141,7 +141,7 @@ class FakeColor_Texture_Characteristecs(object):
         return
     
     #!Abandoned ! 单任务耗时过少，开启多进程反而增加时间消耗
-    # @TestScripts.timmer
+    # #@TestScripts.timmer
     # def __multithread_fakecolor_texture_characteristics_glcm_feature(self):
     #     glcm_feature_label = ['Energy', 'Entropy', 'Contrast', 'IDM']
     #     DIRECTION = {
@@ -157,7 +157,7 @@ class FakeColor_Texture_Characteristecs(object):
     #             for k in range(ans.shape[0]):
     #                 path = self.folder + 'Texture_GLCMFeature_'+RGB_COLOR_CHANNEL.get(i) +'_direction'+str(DIRECTION.get(j))+'_'+glcm_feature_label[k]+'.jpg'
     #                 ans_highsolution = cv2.resize(ans[k], None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
-    #                 print(path)
+    #                 #print(path)
     #                 plt.figure(figsize=self.figsize)
     #                 plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
     #                 plt.colorbar()
@@ -165,13 +165,13 @@ class FakeColor_Texture_Characteristecs(object):
     #                 plt.close()
     #     return
     
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_texture_lbp(self):
-        print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
+        #print("LBP的结构信息不适用于滑动窗口的局部计算,将计算整体信息")
         path = os.path.join(self.folder,'Texture_LBP.jpg')
         # path = self.folder + 'Texture_LBP.jpg'
         for i in range(3):
-            # print(i)
+            # #print(i)
             label = 'Texture_LBP_' + LAB_COLOR_CHANNEL.get(i)
             lbp_a = ta.rotation_invariant_LBP(self.matrix_a[i])
 
@@ -188,11 +188,11 @@ class FakeColor_Texture_Characteristecs(object):
             # ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
             ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR)
             cv2.imwrite(path, ans_reshape)
-            print(path)
+            #print(path)
         return 
     
     # ! ABANDONED
-    # @TestScripts.timmer
+    # #@TestScripts.timmer
     # def __fakecolor_texture_characteristics_tamura_feature(self):
     #     kmax = 3    
     #     dist = 4
@@ -207,7 +207,7 @@ class FakeColor_Texture_Characteristecs(object):
     #             # ans_highsolution = ans_highsolution.astype(np.uint8)
     #             # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_JET)
     #             # cv2.imwrite(path, ans_fakecolor)
-    #             print(path)
+    #             #print(path)
     #             plt.figure(figsize=self.figsize)
     #             plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
     #             plt.colorbar()
@@ -215,15 +215,15 @@ class FakeColor_Texture_Characteristecs(object):
     #             plt.close()
     #     return
     
-    @tc.timmer
+    #@tc.timmer
     def __multithread_fakecolor_texture_tamura_feature(self):
         kmax = 3    
         dist = 4
         tamura_label = ['coarseness', 'contrast', 'directionality', 'linelikeness', 'regularity', 'roughness']
         # tamura_label = ['contrast']
         for i in range(3):
-            ans = multithread_temurafeture_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)
-            # ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.tamura_feature, self.step, self.size_w, self.size_h, kmax=3, dist=4)
+            # ans = multithread_temurafeture_single_channel_slide_window_parameters(self.matrix_a[i], self.matrix_b[i], self.step, self.size_w, self.size_h)
+            ans = sw.single_channel_parameters(self.matrix_a[i], self.matrix_b[i], ta.tamura_feature, self.step, self.size_w, self.size_h, kmax=3, dist=4)
             for j in range(ans.shape[0]):
                 label = 'Texture_TamuraFeature_'+LAB_COLOR_CHANNEL.get(i) +'_'+tamura_label[j]
                 path = os.path.join(self.folder,label+'.jpg')
@@ -235,7 +235,7 @@ class FakeColor_Texture_Characteristecs(object):
                 ans_reshape = ans_reshape.astype(np.uint8)
                 # ans_fakecolor = cv2.applyColorMap(ans_highsolution, cv2.COLORMAP_HOT)
                 cv2.imwrite(path, ans_reshape)
-                print(path)
+                #print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 # plt.colorbar()
@@ -243,7 +243,7 @@ class FakeColor_Texture_Characteristecs(object):
                 # plt.close()
         return    
     
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_texture_dwt_feature(self):
         wave_func = 'haar'
         dwt_label = ['average_ca', 'entropy_ca', 'sigma_ca', 'energy_ca',
@@ -265,7 +265,7 @@ class FakeColor_Texture_Characteristecs(object):
                 ans_reshape = cv2.resize(ans[j], self.reshape_size, cv2.INTER_LINEAR)
                 ans_reshape = ans_reshape.astype(np.uint8)
                 cv2.imwrite(path, ans_reshape)
-                print(path)
+                #print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(ans_highsolution,vmin = 0, vmax = 255,cmap = "hot")
                 # plt.colorbar()
@@ -273,7 +273,7 @@ class FakeColor_Texture_Characteristecs(object):
                 # plt.close()
         return
     
-    @tc.timmer
+    #@tc.timmer
     def __fakecolor_texture_laws_feature(self):
         laws_label = ['0', '1', '2', '3', '4', '5', '6', '7']
         for i in range(3):
@@ -294,7 +294,7 @@ class FakeColor_Texture_Characteristecs(object):
                 ans_reshape = cv2.resize(laws_feature_single_feature[j], self.reshape_size, cv2.INTER_LINEAR)
                 ans_reshape = ans_reshape.astype(np.uint8)
                 cv2.imwrite(path, ans_reshape)
-                print(path)
+                #print(path)
                 # plt.figure(figsize=self.figsize)
                 # plt.imshow(laws_feature_single_feature[j],vmin = 0, vmax = 255,cmap = "hot")
                 # plt.colorbar()
@@ -311,13 +311,13 @@ class FakeColor_Texture_Characteristecs(object):
         ans_highsolution = cv2.resize(ans, None, fx=self.step, fy=self.step, interpolation=cv2.INTER_LINEAR)
         self.csv_generate(ans, label)
         cv2.imwrite(path, ans_highsolution)
-        print(path)
+        #print(path)
     
     def csv_generate(self, ans, label):
         self.csv_label.append(label)
         cal = np.sum(ans>=10)
         total = np.size(ans)
-        # print(cal, total, cal/total)
+        # #print(cal, total, cal/total)
         if(cal/total>0.01):
             self.csv_data.append(1)
         else:

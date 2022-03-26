@@ -119,25 +119,42 @@ def dataset_run():
     # csv
     csv_path = '/home/lyh/results/DataTest.csv'
     fileslen = len(os.listdir(o_folder))
-    for i in range(fileslen):
-        filename = str(i).zfill(5) + '.png'
-        filepath_o = os.path.join(o_folder, filename)
-        filepath_p0= os.path.join(p0_folder, filename)
-        filepath_p1= os.path.join(p1_folder, filename)
+    # for i in range(fileslen):
+    #     filename = str(i).zfill(5) + '.png'
+    #     filepath_o = os.path.join(o_folder, filename)
+    #     filepath_p0= os.path.join(p0_folder, filename)
+    #     filepath_p1= os.path.join(p1_folder, filename)
         
-        save_path_i = os.path.join(save_path, str(i).zfill(5))
-        save_path_o_p0 = os.path.join(save_path_i, 'o_p0')
-        save_path_o_p1 = os.path.join(save_path_i, 'o_p1')
+    #     save_path_i = os.path.join(save_path, str(i).zfill(5))
+    #     save_path_o_p0 = os.path.join(save_path_i, 'o_p0')
+    #     save_path_o_p1 = os.path.join(save_path_i, 'o_p1')
         
-        FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p0, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p0, csv_path, 'o_p0', reshape_size)
-        FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p1, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p1, csv_path, 'o_p1', reshape_size)
+    #     FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p0, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p0, csv_path, 'o_p0', reshape_size)
+    #     FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p1, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p1, csv_path, 'o_p1', reshape_size)
+    pool = multiprocessing.Pool()
+    func = partial(calculate_dataset_inside, step=step, size_w=size_w, size_h=size_h, figsize=figsize, csv_path=csv_path, reshape_size=reshape_size, o_folder=o_folder, p0_folder=p0_folder, p1_folder=p1_folder, save_path=save_path)
+    list( tqdm(pool.imap(func,range(fileslen)), total = fileslen, desc='Progress'))
     
-    
-    
+    # list((tqdm(p.imap(f, range(10)), total=10, desc='监视进度')))
+    pool.close()
+    pool.join()
 
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
 
+def calculate_dataset_inside(i, step, size_w, size_h, figsize, csv_path, reshape_size, o_folder, p0_folder, p1_folder, save_path):
+    filename = str(i).zfill(5) + '.png'
+    filepath_o = os.path.join(o_folder, filename)
+    filepath_p0= os.path.join(p0_folder, filename)
+    filepath_p1= os.path.join(p1_folder, filename)
+    
+    save_path_i = os.path.join(save_path, str(i).zfill(5))
+    save_path_o_p0 = os.path.join(save_path_i, 'o_p0')
+    save_path_o_p1 = os.path.join(save_path_i, 'o_p1')
+    
+    FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p0, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p0, csv_path, 'o_p0', reshape_size)
+    FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p1, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p1, csv_path, 'o_p1', reshape_size)
+    pass
 # path_a = 'Data/fff.jpg'
 # img = cv2.imread(path_a)
 # b,g,r = cv2.split(img)
