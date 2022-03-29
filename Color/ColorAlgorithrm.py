@@ -28,6 +28,7 @@ def __brightness_abondoned(lab_img):
 def brightness(lab_img):
     if np.size(lab_img)==0:return 0
     lab_img = cv2.merge(lab_img)
+    a = cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR)
     bgr_img = np.array(cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR))
     return np.mean(bgr_img)
 

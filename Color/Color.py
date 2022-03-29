@@ -25,6 +25,7 @@ class FakeColor_Color_Characteristics(object):
         # plt.figure(figsize=self.figsize)
         # plt.title('brightness')
         ans = sw.rgb_channel_parameters_1imgfunc(self.matrix_a,self.matrix_b, ca.brightness, self.step, self.size_w, self.size_h)
+        # ans = np.abs(ans)
         ans_reshape = cv2.resize(ans, self.reshape_size, cv2.INTER_LINEAR).astype(np.uint8)
         self.csv_generate(ans,label)
         

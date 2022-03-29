@@ -240,24 +240,24 @@ def tamuratest(gray_img):
     y = int(index%h)
     print(horizon[k][x][y], horizon2[k][x][y])
     return ans
-path_origin = 'Data/ggg.jpg'
-path_new    = 'AlgoTest/AlgoTestPic_Balance_r_35.jpg'
-# brightness_test(path_origin, path_new)
+path_origin = '/home/lyh/000Dataset/DataSet_0325_lit/images/o/00000.png'
+path_new    = '/home/lyh/000Dataset/DataSet_0325_lit/images/p1/00000.png'
+brightness_test(path_origin, path_new)
 # white_balance_test(path_origin, path_new)
 # color_coherence_vector_test(path_origin)
 # saturation_test(path_origin, path_new)
 # 
 # specular_shadow_test(path_origin, path_new)
 
-a, b = path2labmat(path_origin, path_new)
+# a, b = path2labmat(path_origin, path_new)
 # f, theta = ta.tamura_directionality_lyh(a[0])
 # ans = ta.tamura_linelikeness_2(a[0], theta,4)
 # print(ans)
 # ans2 = ta.tamura_linelikeness(a[0], theta,4)
 # print(ans2)
-ans = ta.tamura_feature(a[0], 3, 4)
+# ans = ta.tamura_feature(a[0], 3, 4)
 
-print(ans)
-ans2 = ta.glcm_feature(a[0], 4)
+# print(ans)
+# ans2 = ta.glcm_feature(a[0], 4)
 
 

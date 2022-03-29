@@ -27,8 +27,8 @@ def general_run():
     print('Start!')
     
     
-    path_a = '/home/lyh/results/GIF_DataSetTest5/images/o/00000.png'
-    path_b = '/home/lyh/results/GIF_DataSetTest5/images/p0/00000.png'
+    path_a = '/home/lyh/000Dataset/DataSet_0325_lit/images/o/00000.png'
+    path_b = '/home/lyh/000Dataset/DataSet_0325_lit/images/p1/00000.png'
 
     step = 8
     size_w = 40
@@ -37,7 +37,7 @@ def general_run():
     reshape_size = (400,400)
     fakecolor_foldername = '001DataTest'
     fakecolor_folder = '/home/lyh/results/'+fakecolor_foldername+'/'   
-    csv_path = '/home/lyh/results/DataTest.csv'
+    csv_path = '/home/lyh/results/0328.csv'
     picpair_name = 'default'
     FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name, reshape_size)
     
@@ -154,7 +154,7 @@ def calculate_dataset_inside(i, step, size_w, size_h, figsize, csv_path, reshape
     
     FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p0, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p0, csv_path, 'o_p0', reshape_size)
     FakeColorCSV.fakecolor_and_csv(filepath_o, filepath_p1, step, size_w, size_h, figsize, str(i).zfill(5), save_path_o_p1, csv_path, 'o_p1', reshape_size)
-    pass
+    
 # path_a = 'Data/fff.jpg'
 # img = cv2.imread(path_a)
 # b,g,r = cv2.split(img)
@@ -203,7 +203,7 @@ path_b = 'Data/bbb.jpg'
 # cv2.imshow('asdf', ans)
 # cv2.waitKey(0)
 dataset_run()
-
+# general_run()
 # a = np.zeros((2,3,4))
 # a[1,:,:] = 1
 # a[0,1,1] = 3

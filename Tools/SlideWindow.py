@@ -16,18 +16,22 @@ def rgb_channel_parameters_1imgfunc(rgb_img_a, rgb_img_b, func , step = 8, size_
         for j in range(int(h/step)): 
             if(i*step+size_w>=w)or(j*step+size_h>=h):break  
             # print(type(rgb_img_a)) 
-            # print(np.shape(rgb_img_a[:, i*step:(i*step+size_w), j*step:(j*step+size_h)]))        
-            raw_a.append(func(rgb_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
-            raw_b.append(func(rgb_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+            # print(np.shape(rgb_img_a[:, i*step:(i*step+size_w), j*step:(j*step+size_h)]))  
+            b = func(rgb_img_b[:,i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs)
+            a =       func(rgb_img_a[:,i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs)
+            raw_a.append(a)
+            raw_b.append(b)
         if(raw_a!=[]):ans_a.append(raw_a)
         if(raw_b!=[]):ans_b.append(raw_b) 
     ans_a = np.array(ans_a)
     ans_b = np.array(ans_b)
     ans = np.abs(ans_a-ans_b)
+    # print(ans)
     # print(np.shape(ans))
     # print(ans_a)
     # ans = ans.transpose(2,0,1)
-    ans = (255*ans) / np.max(ans)    
+    ans = (255*ans) / (np.max(ans)+1e-7)  
+    # print(ans)  
     return ans
 
 
@@ -43,7 +47,7 @@ def rgb_channel_parameters_2imgfunc(rgb_img_a, rgb_img_b, func , step = 8, size_
         raw = [] 
         for j in range(int(h/step)): 
             if(i*step+size_w>=w)or(j*step+size_h>=h):break           
-            raw.append(func(rgb_img_a[i*step:(i*step+size_w), j*step:(j*step+size_h)], rgb_img_b[i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
+            raw.append(func(rgb_img_a[:,i*step:(i*step+size_w), j*step:(j*step+size_h)], rgb_img_b[:,i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
         if(raw!=[]):ans.append(raw)
     ans = np.array(ans)
     # ans = ans.transpose(2,0,1) 
@@ -99,7 +103,7 @@ def single_channel_parameters(gray_img_a,gray_img_b,  func , step = 8, size_w = 
     # print(np.shape(ans))
     # print(ans_a)
     ans = ans.transpose(2,0,1)
-    ans = (255*ans) / np.max(ans)    
+    ans = (255*ans) / (np.max(ans)+1e-7)
     return ans
 
 # 单通道伪彩色，输入为灰度矩阵，输出为低分辨率向量距离矩阵
@@ -120,7 +124,7 @@ def single_channel_vectors(gray_img_a, gray_img_b, func , step = 8, size_w = 0, 
         ans.append(raw)
     ans = np.array(ans)
     ans = ans.transpose(2,0,1)
-    ans = (255*ans) / np.max(ans)    
+    ans = (255*ans) / (np.max(ans)+1e-7)   
     return ans
 
 # !:有大问题，输出的矩阵看起来是二维的，实际上是list拼list拼list拼出来的，画图或者计算max都报错
