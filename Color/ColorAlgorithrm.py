@@ -1,4 +1,4 @@
-from pickletools import uint8
+# from pickletools import uint8
 import sys
 import cv2
 import numpy as np
@@ -91,8 +91,8 @@ def exposure(lab_img_new, lab_img_old):
     
     mask = np.where(v1>254, 0, 1)
     mask = np.where(v2>254, 0, mask)
-    mask = np.where(v1<1,   0, mask)
-    mask = np.where(v2<1,   0, mask)
+    mask = np.where(v1<10,   0, mask)
+    mask = np.where(v2<10,   0, mask)
     # 防止log(0)的情况
     v1 = v1 + 1e-7
     v2 = v2 + 1e-7

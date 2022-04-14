@@ -8,7 +8,7 @@ Description:
 
 Copyright (c) 2022 by lyh, All Rights Reserved. 
 '''
-from genericpath import getsize
+# from genericpath import getsize
 import os
 import sys
 sys.path.append(os.path.pardir)

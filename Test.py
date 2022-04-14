@@ -1,9 +1,9 @@
-from concurrent.futures import process
+# from concurrent.futures import process
 import os
-from pydoc import describe
+# from pydoc import describe
 import sys
 
-from torch import uint8
+# from torch import uint8
 from tqdm import tqdm,trange
 sys.path.append(os.pardir)
 from Tools import FakeColorCSV
@@ -27,17 +27,17 @@ def general_run():
     print('Start!')
     
     
-    path_a = '/home/lyh/000Dataset/DataSet_0325_lit/images/o/00000.png'
-    path_b = '/home/lyh/000Dataset/DataSet_0325_lit/images/p1/00000.png'
+    path_a = 'Data/o_00029.png'
+    path_b = 'Data/p1_00029.png'
 
     step = 8
     size_w = 40
     size_h = 40
     figsize = (18,10)
     reshape_size = (400,400)
-    fakecolor_foldername = '001DataTest'
-    fakecolor_folder = '/home/lyh/results/'+fakecolor_foldername+'/'   
-    csv_path = '/home/lyh/results/0328.csv'
+    fakecolor_foldername = 'NormTest2'
+    fakecolor_folder = '/home/lyh/002Experiment/'+fakecolor_foldername+'/'   
+    csv_path = '/home/lyh/002Experiment/0401.csv'
     picpair_name = 'default'
     FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name, reshape_size)
     
@@ -109,15 +109,15 @@ def dataset_run():
     reshape_size = (400,400)
     
     # 网络生成的文件夹路径，这个路径下面应该有o,p0,p1三个文件夹
-    dataset_folder = '/home/lyh/results/GIF_DataSetTest5/images'
+    dataset_folder = '/home/lyh/002Experiment/Masked'
     
     o_folder = os.path.join(dataset_folder, 'o')
     p0_folder = os.path.join(dataset_folder, 'p0')
     p1_folder = os.path.join(dataset_folder, 'p1')
     # 保存结果的根路径
-    save_path = '/home/lyh/results/002DataTest'
+    save_path = '/home/lyh/002Experiment/NormTest_Shading'
     # csv
-    csv_path = '/home/lyh/results/DataTest.csv'
+    csv_path = '/home/lyh/002Experiment/DataTest.csv'
     fileslen = len(os.listdir(o_folder))
     # for i in range(fileslen):
     #     filename = str(i).zfill(5) + '.png'
@@ -134,7 +134,7 @@ def dataset_run():
     pool = multiprocessing.Pool()
     func = partial(calculate_dataset_inside, step=step, size_w=size_w, size_h=size_h, figsize=figsize, csv_path=csv_path, reshape_size=reshape_size, o_folder=o_folder, p0_folder=p0_folder, p1_folder=p1_folder, save_path=save_path)
     list( tqdm(pool.imap(func,range(fileslen)), total = fileslen, desc='Progress'))
-    
+
     # list((tqdm(p.imap(f, range(10)), total=10, desc='监视进度')))
     pool.close()
     pool.join()

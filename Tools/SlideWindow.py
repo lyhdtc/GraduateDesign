@@ -50,8 +50,11 @@ def rgb_channel_parameters_2imgfunc(rgb_img_a, rgb_img_b, func , step = 8, size_
             raw.append(func(rgb_img_a[:,i*step:(i*step+size_w), j*step:(j*step+size_h)], rgb_img_b[:,i*step:(i*step+size_w), j*step:(j*step+size_h)], *args, **kwargs))
         if(raw!=[]):ans.append(raw)
     ans = np.array(ans)
+    ans = np.abs(ans)
     # ans = ans.transpose(2,0,1) 
-    ans = (255*ans) / (np.max(ans)+1e-7)    
+    ans = (255*ans) / (np.max(ans)+1e-7)  
+    # print(ans)
+    # ans = 255 * (ans/80)  
     return ans
 
 

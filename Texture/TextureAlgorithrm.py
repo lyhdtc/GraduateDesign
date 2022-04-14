@@ -678,14 +678,14 @@ def __dwt(gray_img, wave_func):
 
 # 一些小波变换中常用的特征，通常在分解之后将子带图像的下述特征组合构造向量，来达到好的分类效果
 
-# 均值
+# 均值 描述信号在频谱中分量较大的信号成分的频率，反映信号功率谱的分布情况
 def __dwt_average(gray_img):
     h = gray_img.shape[0]
     w = gray_img.shape[1]
     res = np.sum(gray_img) / (h*w)
     return res
 
-# 熵
+# 熵 描述了图像纹理频率的组成数量，熵值越大，说明不同频率的纹理数量越多，反之则相反
 def __dwt_entropy(gray_img):
     h = gray_img.shape[0]
     w = gray_img.shape[1]
@@ -701,12 +701,12 @@ def __dwt_entropy(gray_img):
     res = np.sum(matrix_entropy) / (h*w)
     return res
     
-# 标准差  
+# 标准差  描述能量谱的分散程度，指的是以中心频率为中心的惯性半径，重心附近的频谱幅值较大，则频率标准差较小；若重心附近的频谱较小，则频率标准差较大
 def __dwt_sigma(gray_img):
     res = np.std(gray_img)
     return res
 
-# 能量  
+# 能量  描述图像整体的频率强度
 def __dwt_energy(gray_img):
     matrix_energy = np.square(gray_img)
     res = np.sum(matrix_energy)
@@ -724,6 +724,7 @@ def  laws_feature(gray_img):
     
     filter_vectors = np.array(  [[1, 4, 6,  4, 1],
                                 [-1, -2, 0, 2, 1],
+                                [-1, 0, 2, 0, -1],
                                 [-1, 0, 2, 0, 1],
                                 [1, -4, 6, -4, 1]])
     filters = list()
