@@ -1,4 +1,5 @@
 # from concurrent.futures import process
+from email.mime import base
 import os
 # from pydoc import describe
 import sys
@@ -27,24 +28,60 @@ def general_run():
     print('Start!')
     
     
-    path_a = 'Data/o_00029.png'
-    path_b = 'Data/p1_00029.png'
+    path_a = '/home/lyh/Chapter4Experiment/4_3Exp/origin_Pic.png'
+    path_b = '/home/lyh/Chapter4Experiment/4_3Exp/origin_Face.png'
 
     step = 8
     size_w = 40
     size_h = 40
     figsize = (18,10)
     reshape_size = (400,400)
-    fakecolor_foldername = 'NormTest2'
-    fakecolor_folder = '/home/lyh/002Experiment/'+fakecolor_foldername+'/'   
-    csv_path = '/home/lyh/002Experiment/0401.csv'
+    fakecolor_foldername = 'origin'
+    fakecolor_folder = '/home/lyh/Chapter4Experiment/4_3Exp/NewCal_Data/Face/'+fakecolor_foldername+'/'   
+    csv_path = '/home/lyh/Chapter4Experiment/4_3Exp/0419.csv'
     picpair_name = 'default'
     FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name, reshape_size)
     
 
     end_time = time.perf_counter()  
     print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
+
+def chapter4_general_run():
+     
+    start_time = time.perf_counter()
+    print('Start!')
     
+    save_dir = '/home/lyh/Chapter4Experiment/4_3Exp/NewCal_Data'
+    base_folder = '/home/lyh/Chapter4Experiment/4_3Exp/NewNetRes'
+    folder_list = ['O', 'Face']
+    pic_list = ['albedo', 'normal', 'roughness']
+    
+    for f in folder_list:
+        for p in pic_list:
+            print(f,p)
+            path_a = os.path.join(base_folder, 'Pic')
+            path_a = os.path.join(path_a, p+'.png')
+            path_b = os.path.join(base_folder, f)
+            path_b = os.path.join(path_b, p+'.png')
+
+            step = 8
+            size_w = 40
+            size_h = 40
+            figsize = (18,10)
+            reshape_size = (400,400)
+            # fakecolor_foldername = 'albedo'
+            # fakecolor_folder = '/home/lyh/Chapter4Experiment/4_3Exp/Cal_Data/Face/'+fakecolor_foldername+'/'   
+            fakecolor_foldername = p
+            fakecolor_folder = os.path.join(save_dir, f)
+            fakecolor_folder = os.path.join(fakecolor_folder, p) 
+            csv_path = '/home/lyh/Chapter4Experiment/4_3Exp/0419.csv'
+            picpair_name = 'default'
+            FakeColorCSV.fakecolor_and_csv(path_a, path_b, step, size_w, size_h, figsize, fakecolor_foldername, fakecolor_folder, csv_path, picpair_name, reshape_size)
+            
+
+    end_time = time.perf_counter()  
+    print('程序共运行 {_time_}秒'.format(_time_=(end_time - start_time)))
+   
 def test_experiment():
     start_time = time.perf_counter()
     print('Start!')
@@ -202,8 +239,8 @@ path_b = 'Data/bbb.jpg'
 # # ans = ans.astype(np.uint8)
 # cv2.imshow('asdf', ans)
 # cv2.waitKey(0)
-dataset_run()
-# general_run()
+# dataset_run()
+general_run()
 # a = np.zeros((2,3,4))
 # a[1,:,:] = 1
 # a[0,1,1] = 3
